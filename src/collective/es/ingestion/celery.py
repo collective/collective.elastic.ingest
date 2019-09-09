@@ -1,19 +1,49 @@
 # -*- coding: utf-8 -*-
+from .ingest import ingest
+from .plone import fetch_content
+from .plone import fetch_schema
+from .removal import remove
 from celery import Celery
 
+import logging
 import os
 
-app = Celery(
-    'collective.es.ingestion',
-    broker=os.environ.get('CELERY_BROKER'),
-)
+logger = logging.getLogger(__name__)
+
+app = Celery("collective.es.ingestion", broker=os.environ.get("CELERY_BROKER"))
 
 
-@app.task(name='collective.es.ingestion.index')
-def index(object_base_url):
-    return 'indexed {0}'.format(object_base_url)
+@app.task(name="collective.es.ingestion.index")
+def index(path, timestamp, index_name):
+    try:
+        content = fetch_content(path, timestamp)
+    except Exception:
+        msg = "Error while fetching content from Plone"
+        logger.exception(msg)
+        return msg
+    try:
+        schema = fetch_schema(content)
+    except Exception:
+        msg = "Error while fetching schema from Plone"
+        logger.exception(msg)
+        return msg
+    except Exception:
+        logger.exception("")
+    try:
+        ingest(content, schema, index_name)
+    except Exception:
+        msg = "Error while writing data to ElasticSearch"
+        logger.exception(msg)
+        return msg
+    return "indexed {0} on timestamp {1}".format(path, timestamp)
 
 
-@app.task(name='collective.es.ingestion.unindex')
-def unindex(object_base_url):
-    return 'unindexed {0}'.format(object_base_url)
+@app.task(name="collective.es.ingestion.unindex")
+def unindex(uid, index_name):
+    try:
+        remove(uid, index_name)
+    except Exception:
+        msg = "Error while removing data to ElasticSearch"
+        logger.exception(msg)
+        return msg
+    return "unindexed {0}".format(uid)

@@ -23,18 +23,22 @@ Install ``collective.es.ingestion`` using pip::
 
     pip install collective.es.ingestion
 
-
 Starting
 --------
 
-Define the configuration as environment varibales::
+Define the configuration as environment variables::
 
     CELERY_BROKER=redis://localhost:6379/0
     ELASTICSEARCH_INGEST_SERVER=localhost:9200
+    ELASTICSEARCH_INGEST_USE_SSL=0
+    ELASTICSEARCH_INDEX=0
+    PLONE_BASE_URL=http://localhost:8080/Plone
+    PLONE_USER=admin
+    PLONE_PASSWORD=admin
 
 The run celery::
 
-    celery -A collective.es.ingestion worker --loglevel=info
+    celery worker -A collective.es.ingestion.celery.app -l info
 
 Source Code
 -----------
@@ -58,7 +62,7 @@ Idea and testing by Peter Holzer
 
 Concept & code by Jens W. Klein
 
-Authors:
+Contributors:
 
 - no others so far
 

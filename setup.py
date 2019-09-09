@@ -43,5 +43,6 @@ setup(
         'elasticsearch',
         'celery',
         'setuptools',
+        'requests',
     ],
 )
