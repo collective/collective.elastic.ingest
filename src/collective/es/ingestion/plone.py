@@ -14,18 +14,18 @@ RETRY_MAX = 10000  # ms (ceiling time for retries)
 
 
 def _full_url(path):
-    "/".join([os.environ.get("PLONE_BASE_URL"), path])
+    return "/".join([os.environ.get("PLONE_BASE_URL"), path])
 
 
-def _schema_url(path):
-    "/".join([os.environ.get("PLONE_BASE_URL"), "@cesp-schema"])
+def _schema_url():
+    return "/".join([os.environ.get("PLONE_BASE_URL"), "@cesp-schema"])
 
 
 def fetch_content(path, timestamp):
     resp = session.get(_full_url(path))
-    return resp.json
+    return resp.json()
 
 
 def fetch_schema():
     resp = session.get(_schema_url())
-    return resp.json
+    return resp.json()

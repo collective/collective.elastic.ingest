@@ -22,7 +22,7 @@ def index(path, timestamp, index_name):
         logger.exception(msg)
         return msg
     try:
-        schema = fetch_schema(content)
+        schema = fetch_schema()
     except Exception:
         msg = "Error while fetching schema from Plone"
         logger.exception(msg)
@@ -43,7 +43,7 @@ def unindex(uid, index_name):
     try:
         remove(uid, index_name)
     except Exception:
-        msg = "Error while removing data to ElasticSearch"
+        msg = "Error while removing data from ElasticSearch"
         logger.exception(msg)
         return msg
     return "unindexed {0}".format(uid)
