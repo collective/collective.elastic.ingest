@@ -4,6 +4,7 @@ from cachecontrol import CacheControl
 import os
 import requests
 
+
 session = requests.Session()
 session = CacheControl(session)
 session.headers.update({"Accept": "application/json"})

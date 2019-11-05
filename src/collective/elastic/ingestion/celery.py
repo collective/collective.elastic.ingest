@@ -8,6 +8,7 @@ from celery import Celery
 import logging
 import os
 
+
 logger = logging.getLogger(__name__)
 
 app = Celery("collective.elastic.ingest", broker=os.environ.get("CELERY_BROKER"))

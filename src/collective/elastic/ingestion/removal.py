@@ -3,6 +3,7 @@ from .elastic import get_ingest_client
 
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 
