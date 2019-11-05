@@ -1,4 +1,4 @@
-collective.es.plone Copyright 2019, Jens W. Klein
+collective.elastic.plone Copyright 2019, Jens W. Klein
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License version 2

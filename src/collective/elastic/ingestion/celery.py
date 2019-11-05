@@ -10,10 +10,10 @@ import os
 
 logger = logging.getLogger(__name__)
 
-app = Celery("collective.es.ingestion", broker=os.environ.get("CELERY_BROKER"))
+app = Celery("collective.elastic.ingest", broker=os.environ.get("CELERY_BROKER"))
 
 
-@app.task(name="collective.es.ingestion.index")
+@app.task(name="collective.elastic.ingest.index")
 def index(path, timestamp, index_name):
     try:
         content = fetch_content(path, timestamp)
@@ -38,7 +38,7 @@ def index(path, timestamp, index_name):
     return "indexed {0} on timestamp {1}".format(path, timestamp)
 
 
-@app.task(name="collective.es.ingestion.unindex")
+@app.task(name="collective.elastic.ingest.unindex")
 def unindex(uid, index_name):
     try:
         remove(uid, index_name)

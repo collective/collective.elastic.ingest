@@ -3,7 +3,7 @@
    This text does not appear on pypi or github. It is a comment.
 
 =======================
-collective.es.ingestion
+collective.elastic.ingestion
 =======================
 
 Celery-Tasks for ElasticSearch Integration for Plone content
@@ -19,9 +19,9 @@ Celery-Tasks for ElasticSearch Integration for Plone content
 Installation
 ------------
 
-Install ``collective.es.ingestion`` using pip::
+Install ``collective.elastic.ingestion`` using pip::
 
-    pip install collective.es.ingestion
+    pip install collective.elastic.ingestion
 
 Starting
 --------
@@ -38,12 +38,12 @@ Define the configuration as environment variables::
 
 The run celery::
 
-    celery worker -A collective.es.ingestion.celery.app -l info
+    celery worker -A collective.elastic.ingestion.celery.app -l info
 
 Source Code
 -----------
 
-The sources are in a GIT DVCS with its main branches at `github <http://github.com/collective/collective.es.ingestion>`_.
+The sources are in a GIT DVCS with its main branches at `github <http://github.com/collective/collective.elastic.ingestion>`_.
 There you can report issue too.
 
 We'd be happy to see many forks and pull-requests to make this addon even better.

@@ -13,7 +13,7 @@ long_description = "\n\n".join(
 
 
 setup(
-    name="collective.es.ingestion",
+    name="collective.elastic.ingest",
     version="1.0a1",
     description="Celery Queue Tasks for ElasticSearch integration with plone.restapi",
     long_description=long_description,
@@ -27,16 +27,16 @@ setup(
     keywords="Plone ElasticSearch Celery",
     author="Jens W. Klein",
     author_email="jk@kleinundpartner.at",
-    url="https://github.com/collective/collective.es.ingestion",
+    url="https://github.com/collective/collective.elastic.ingest",
     project_urls={
-        "PyPI": "https://pypi.python.org/pypi/collective.es.ingestion",
-        "Source": "https://github.com/collective/collective.es.ingestion",
-        "Tracker": "https://github.com/collective/collective.es.ingestion/issues",
-        # 'Documentation': 'https://collective.es.ingestion.readthedocs.io/en/latest/',
+        "PyPI": "https://pypi.python.org/pypi/collective.elastic.ingest",
+        "Source": "https://github.com/collective/collective.elastic.ingest",
+        "Tracker": "https://github.com/collective/collective.elastic.ingest/issues",
+        # 'Documentation': 'https://collective.elastic.ingest.readthedocs.io/en/latest/',
     },
     license="GPL version 2",
     packages=find_packages("src", exclude=["ez_setup"]),
-    namespace_packages=["collective", "collective.es"],
+    namespace_packages=["collective", "collective.elastic"],
     package_dir={"": "src"},
     include_package_data=True,
     zip_safe=False,

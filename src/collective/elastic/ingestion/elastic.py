@@ -5,7 +5,7 @@ import os
 
 
 def get_ingest_client():
-    """return elasticsearch client for ingestion
+    """return elasticsearch client for.ingest
     """
     raw_addr = os.environ.get("ELASTICSEARCH_INGEST_SERVER", "http://localhost:9200")
     use_ssl = os.environ.get("ELASTICSEARCH_INGEST_USE_SSL", "0")

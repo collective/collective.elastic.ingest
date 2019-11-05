@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from collective.es.ingestion.elastic import get_ingest_client
+from collective.elastic.ingest.elastic import get_ingest_client
 
 import logging
 import operator
