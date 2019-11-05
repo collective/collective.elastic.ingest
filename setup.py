@@ -47,5 +47,6 @@ setup(
         "elasticsearch",
         "requests",
         "setuptools",
+        "six",
     ],
 )
