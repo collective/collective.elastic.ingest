@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from collective.elastic.ingest.elastic import get_ingest_client
-from elasticsearch.exceptions import NotFoundError
 
 import logging
 import operator
-import six
 
 
 logger = logging.getLogger(__name__)
@@ -22,7 +20,7 @@ FIELDMAP = {
                 "field": "{name}",
                 "target_field": "{name}__extracted",
                 "ignore_missing": True,
-            },
+            }
         },
         "type": "text",
     },
@@ -32,7 +30,7 @@ FIELDMAP = {
                 "field": "{name}",
                 "target_field": "{name}__extracted",
                 "ignore_missing": True,
-            },
+            }
         },
         "type": "text",
     },
@@ -42,7 +40,7 @@ FIELDMAP = {
                 "field": "{name}",
                 "target_field": "{name}__extracted",
                 "ignore_missing": True,
-            },
+            }
         },
         "type": "text",
     },
@@ -60,54 +58,14 @@ FIELDMAP = {
     "zope.schema._field.URI": {"type": "text"},
 }
 
-PIPELINE_PREFIX = "attachment_ingest"
 
-
-def _es_pipeline_name(index_name):
-    return "{0}_{1}".format(PIPELINE_PREFIX, index_name)
-
-
-def _iterate_schema(full_schema):
+def iterate_schema(full_schema):
     for section_name, section in sorted(
         full_schema.items(), key=operator.itemgetter(0)
     ):
         for schema_name, schema in sorted(section.items(), key=operator.itemgetter(0)):
             for field in sorted(schema, key=operator.itemgetter("name")):
                 yield section_name, schema_name, field
-
-
-def setup_ingest_pipelines(full_schema, index_name):
-    es = get_ingest_client()
-    pipeline_name = _es_pipeline_name(index_name)
-    do_create = False
-    try:
-        es.ingest.get_pipeline(pipeline_name)
-    except NotFoundError:
-        do_create = True
-    if not do_create:
-        return
-    pipelines = {
-        'description': 'Extract Plone Binary attachment information',
-        'processors': []
-    }
-    for section_name, schema_name, field in _iterate_schema(full_schema):
-        value_type = field.get("value_type", field["field"])
-        fqfieldname = "/".join([section_name, schema_name, field["name"]])
-        definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(value_type, None))
-        if not definition or "processor" not in definition:
-            continue
-        attachment = {}
-        pipelines['processors'].append({'attachment': attachment})
-        for key, value in definition["processor"]["attachment"].items():
-            if isinstance(value, six.string_types):
-                attachment[key] = value.format(name=field["name"])
-            else:
-                attachment[key] = value
-    logger.warning(str(pipelines))
-    if pipelines['processors']:
-        es.ingest.put_pipeline(pipeline_name, pipelines)
-    else:
-        es.ingest.delete_pipeline(pipeline_name)
 
 
 def create_or_update_mapping(full_schema, index_name):
@@ -127,7 +85,7 @@ def create_or_update_mapping(full_schema, index_name):
     logger.info(mapping)
     # process mapping
     changed = False
-    for section_name, schema_name, field in _iterate_schema(full_schema):
+    for section_name, schema_name, field in iterate_schema(full_schema):
         if field["name"] in mapping[index_name]["mappings"]["properties"]:
             # todo: check if its the same as before!
             logger.info("skip existing definition for field {0}".format(field["name"]))
@@ -151,7 +109,7 @@ def create_or_update_mapping(full_schema, index_name):
             mapping[index_name]["mappings"]["properties"][field["name"]] = {
                 "type": "nested",
                 "properties": {
-                    "content": {"type": definition['type']},
+                    "content": {"type": definition["type"]},
                     "content_length": {"type": "long"},
                     "content_type": {"type": "keyword"},
                     "language": {"type": "keyword"},
