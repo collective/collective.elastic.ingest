@@ -57,7 +57,7 @@ def setup_ingest_pipelines(full_schema, index_name):
 
 def ingest(content, full_schema, index_name):
     # preprocess content and schema
-    preprocess(content, full_schema, index_name)
+    preprocess(content, full_schema)
     if full_schema:
         if not STATES["pipelines_created"]:
             setup_ingest_pipelines(full_schema, index_name)
