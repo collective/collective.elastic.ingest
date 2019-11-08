@@ -20,7 +20,7 @@ STATES = {"mapping_fetched": 0}
 MAPPING_TIMEOUT_SEK = 3600
 
 
-def _full_url(path: str):
+def _full_url(path):
     return "/".join([str(os.environ.get("PLONE_SERVICE")), path.strip("/")])
 
 
@@ -34,14 +34,14 @@ def _schema_url():
     )
 
 
-def fetch_content(path: str, timestamp: float):
+def fetch_content(path, timestamp):
     url = _full_url(path)
     logger.info("fetch content from {0}".format(url))
     resp = session.get(url)
     return resp.json()
 
 
-def fetch_schema(refetch: bool = False):
+def fetch_schema(refetch=False):
     # from celery.contrib import rdb; rdb.set_trace()
     if refetch or time.time() + MAPPING_TIMEOUT_SEK > STATES["mapping_fetched"]:
         url = _schema_url()
@@ -51,6 +51,6 @@ def fetch_schema(refetch: bool = False):
     return
 
 
-def fetch_binary(url: str):
+def fetch_binary(url):
     resp = session.get(url)
     return resp.content

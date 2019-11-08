@@ -147,7 +147,7 @@ def iterate_schema(full_schema):
                 yield section_name, schema_name, field
 
 
-def _expand_dict(mapping: dict, **kw):
+def _expand_dict(mapping, **kw):
     record = {}
     for key, value in mapping.items():
         if isinstance(value, str):
@@ -158,14 +158,14 @@ def _expand_dict(mapping: dict, **kw):
     return record
 
 
-def expanded_processors(processors: list, source: str, target: str):
+def expanded_processors(processors, source, target):
     result = []
     for processor in processors:
         result.append(_expand_dict(processor, source=source, target=target))
     return result
 
 
-def create_or_update_mapping(full_schema: dict, index_name: str):
+def create_or_update_mapping(full_schema, index_name):
     es = get_ingest_client()
     if es is None:
         logger.warning("No ElasticSearch client available.")
@@ -205,14 +205,13 @@ def create_or_update_mapping(full_schema: dict, index_name: str):
         seen.add(field["name"])
         logger.info("Map {0} to {1}".format(field["name"], definition))
         if "pipeline" in definition:
-            # complex defintion
+            # complex definition
             properties[field["name"]] = definition["type"]
             # ingest through pipeline, store result
             pipeline = definition["pipeline"]
             source = pipeline["source"].format(name=field["name"])
             target = pipeline["target"].format(name=field["name"])
             properties[target] = {"type": "binary"}
-            processors = expanded_processors(pipeline["processors"], source, target)
             properties[target] = pipeline["type"]
 
             # memorize this field as expansion field for later use in post_processors

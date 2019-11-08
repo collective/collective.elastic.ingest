@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-PREPROCESSORS: OrderedDict = OrderedDict()
+PREPROCESSORS = OrderedDict()
 
 
 def add_additional_field(full_schema, section_name, definition):

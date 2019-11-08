@@ -4,7 +4,7 @@ from collective.elastic.ingest.plone import fetch_binary
 
 import base64
 
-POSTPROCESSORS: OrderedDict = OrderedDict()
+POSTPROCESSORS = OrderedDict()
 
 
 def _extract_binary(content: dict, info: dict, key: str):
