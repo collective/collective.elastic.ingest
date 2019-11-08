@@ -15,15 +15,8 @@ long_description = "\n\n".join(
 setup(
     name="collective.elastic.ingest",
     version="1.0a1",
-    description="Celery Queue Tasks for ElasticSearch integration with plone.restapi",
+    description="Queue runner for collective.elastic.plone",
     long_description=long_description,
-    # Get more from https://pypi.org/classifiers/
-    classifiers=[
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3.7",
-        "Operating System :: OS Independent",
-        "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
-    ],
     keywords="Plone ElasticSearch Celery",
     author="Jens W. Klein",
     author_email="jk@kleinundpartner.at",
@@ -32,10 +25,9 @@ setup(
         "PyPI": "https://pypi.python.org/pypi/collective.elastic.ingest",
         "Source": "https://github.com/collective/collective.elastic.ingest",
         "Tracker": "https://github.com/collective/collective.elastic.ingest/issues",
-        # 'Documentation': 'https://collective.elastic.ingest.readthedocs.io/en/latest/',
     },
     license="GPL version 2",
-    packages=find_packages("src", exclude=["ez_setup"]),
+    packages=find_packages("src"),
     namespace_packages=["collective", "collective.elastic"],
     package_dir={"": "src"},
     include_package_data=True,

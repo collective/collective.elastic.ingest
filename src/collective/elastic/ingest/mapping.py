@@ -7,44 +7,124 @@ import operator
 
 logger = logging.getLogger(__name__)
 
+ATTACHMENT_DEFINITION_FULL = {
+    "type": "nested",
+    "properties": {
+        "author": {"type": "text"},
+        "content": {"type": "text"},
+        "content_length": {"type": "long"},
+        "content_type": {"type": "keyword"},
+        "date": {"type": "date"},
+        "keywords": {"type": "keyword"},
+        "language": {"type": "keyword"},
+        "name": {"type": "text"},
+        "title": {"type": "text"},
+    },
+}
+
 # the fieldmap maps schema fields to elasticseach fields
 # key can be
 # 1. a dotted name of a schema field class
 # 2. the "fully qualified fieldname" from "section_name/schema_name/field_name"
 #    example: types/Image/image or behaviors/plone.collection/query
 FIELDMAP = {
+    "behaviors/plone.categorization/language": {
+        "type": "nested",
+        "properties": {"title": {"type": "keyword"}, "token": {"type": "keyword"}},
+    },
     "plone.app.textfield.RichText": {
         "processor": {
             # see https://www.elastic.co/guide/en/elasticsearch/plugins/master/using-ingest-attachment.html  # noqa
             "attachment": {
-                "field": "{name}",
+                "field": "{name}__data",
                 "target_field": "{name}__extracted",
                 "ignore_missing": True,
-            }
+            },
+            "type": ATTACHMENT_DEFINITION_FULL,
+            "expansion": {
+                "method": "field",
+                "field": "data",
+                "data_field": "{name}__data",
+            },
         },
-        "type": "text",
+        "type": {
+            "type": "nested",
+            "properties": {
+                "data": {"type": "text"},
+                "content-type": {"type": "keyword"},
+                "encoding": {"type": "keyword"},
+            },
+        },
     },
     "plone.namedfile.field.NamedBlobFile": {
         "processor": {
             "attachment": {
-                "field": "{name}",
+                "field": "{name}__data",
                 "target_field": "{name}__extracted",
                 "ignore_missing": True,
-            }
+            },
+            "type": ATTACHMENT_DEFINITION_FULL,
+            "expansion": {
+                "method": "fetch",
+                "field": "download",
+                "data_field": "{name}__data",
+            },
         },
-        "type": "text",
+        "type": {
+            "type": "nested",
+            "properties": {
+                "content-type": {"type": "keyword"},
+                "download": {"type": "text"},
+                "filename": {"type": "text"},
+                "size": {"type": "long"},
+            },
+        },
     },
     "plone.namedfile.field.NamedBlobImage": {
         "processor": {
             "attachment": {
-                "field": "{name}",
+                "field": "{name}__data",
                 "target_field": "{name}__extracted",
                 "ignore_missing": True,
-            }
+            },
+            "type": ATTACHMENT_DEFINITION_FULL,
+            "expansion": {
+                "method": "fetch",
+                "field": "download",
+                "data_field": "{name}__data",
+            },
         },
-        "type": "text",
+        "type": {
+            "type": "nested",
+            "properties": {
+                "content-type": {"type": "keyword"},
+                "download": {"type": "text"},
+                "filename": {"type": "text"},
+                "size": {"type": "long"},
+                "height": {"type": "long"},
+                "width": {"type": "long"},
+                "scales": {
+                    "type": "nested",
+                    "properties": {
+                        "download": {"type": "text"},
+                        "height": {"type": "long"},
+                        "width": {"type": "long"},
+                    },
+                },
+            },
+        },
     },
     "plone.schema.jsonfield.JSONField": {"type": "text"},
+    # "z3c.relationfield.schema.RelationList": {
+    #     "type": "nested",
+    #     "properties": {
+    #         "@id": {"type": "keyword"},
+    #         "@type": {"type": "keyword"},
+    #         "description": {"type": "text"},
+    #         "review_state": {"type": "keyword"},
+    #         "title": {"type": "text"},
+    #     }
+    # },
     "zope.schema._bootstrapfields.Bool": {"type": "boolean"},
     "zope.schema._bootstrapfields.Int": {"type": "long"},
     "zope.schema._bootstrapfields.Text": {"type": "text"},
@@ -57,6 +137,11 @@ FIELDMAP = {
     "zope.schema._field.Tuple": {"type": "keyword"},
     "zope.schema._field.URI": {"type": "text"},
 }
+
+# to be filled as cache and renewed on create_or_update_mapping
+EXPANSION_FIELDS = {}
+
+STATE = {"initial": True}
 
 
 def iterate_schema(full_schema):
@@ -75,25 +160,28 @@ def create_or_update_mapping(full_schema, index_name):
         return
 
     # get current mapping
-    if es.indices.exists(index_name):
+    index_exists = es.indices.exists(index_name)
+    if index_exists:
         mapping = es.indices.get_mapping(index=index_name)
         if "properties" not in mapping[index_name]["mappings"]:
             mapping[index_name]["mappings"]["properties"] = {}
     else:
         # ftr: here is the basic structure of a mapping
         mapping = {index_name: {"mappings": {"properties": {}}, "settings": {}}}
-    logger.info(mapping)
     # process mapping
-    changed = False
+    properties = mapping[index_name]["mappings"]["properties"]
+    seen = set()
     for section_name, schema_name, field in iterate_schema(full_schema):
-        if field["name"] in mapping[index_name]["mappings"]["properties"]:
-            # todo: check if its the same as before!
-            logger.info("skip existing definition for field {0}".format(field["name"]))
-            continue
-        logger.info("process " + str([section_name, field]))
         # try "section_name/schema_name/field[name]/type)"
         value_type = field.get("value_type", field["field"])
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
+        if field["name"] in seen:
+            logger.info(
+                "Skip dup field definition {0} with {1}. Already defined: {2}".format(
+                    fqfieldname, value_type, properties[field["name"]]
+                )
+            )
+            continue
         definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(value_type, None))
         if definition is None:
             logger.warning(
@@ -102,37 +190,40 @@ def create_or_update_mapping(full_schema, index_name):
                 )
             )
             continue
-        # full_field['name'] = "{0}.{1}".format(section_name, field['name'])
-        changed = True
+        seen.add(field["name"])
+        logger.info("Map {0} to {1}".format(field["name"], definition))
         if "processor" in definition:
+            # complex defintion
             # ingest through pipeline, store result
-            mapping[index_name]["mappings"]["properties"][field["name"]] = {
-                "type": "nested",
-                "properties": {
-                    "content": {"type": definition["type"]},
-                    "content_length": {"type": "long"},
-                    "content_type": {"type": "keyword"},
-                    "language": {"type": "keyword"},
-                },
-            }
-        elif "type" in definition:
-            mapping[index_name]["mappings"]["properties"][field["name"]] = definition
-        if not ("type" in definition or "processor" in definition):
-            logger.warning(
-                "'{0}' field type '{1}' FQFN definition in map {2} invalid,"
-                "ignore.".format(value_type, fqfieldname, definition)
+            properties[field["name"]] = definition["type"]
+            target_field = definition["processor"]["attachment"]["target_field"].format(
+                name=field["name"]
             )
+            properties[target_field] = definition["processor"]["type"]
+            # from celery.contrib import rdb; rdb.set_trace()
 
-    if not changed:
-        return
-    logger.info(repr(mapping))
+            # memorize this field as expansion field for later use in post_processors
+            EXPANSION_FIELDS[field["name"]] = definition["processor"]["expansion"]
+            data_field = EXPANSION_FIELDS[field["name"]]["data_field"].format(
+                name=field["name"]
+            )
+            EXPANSION_FIELDS[field["name"]]["data_field"] = data_field
+        else:
+            # simple defintion
+            properties[field["name"]] = definition
 
-    if not es.indices.exists(index_name):
-        # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
+    STATE["initial"] = False
+
+    # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
+    from pprint import pformat
+
+    logger.warn(pformat(mapping))
+    if index_exists:
+        # xxx: here a check if the schema is different from the original could be fine
+        es.indices.put_mapping(index=index_name, body=mapping[index_name]["mappings"])
+    else:
+        # from celery.contrib import rdb; rdb.set_trace()
         mapping[index_name].setdefault(
             "settings", {"blocks": {"read_only_allow_delete": False}}
         )
-        # from celery.contrib import rdb; rdb.set_trace()
         es.indices.create(index_name, body=mapping[index_name])
-    else:
-        es.indices.put_mapping(index=index_name, body=mapping)

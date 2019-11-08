@@ -3,7 +3,9 @@ from collective.elastic.ingest.elastic import get_ingest_client
 from collective.elastic.ingest.mapping import create_or_update_mapping
 from collective.elastic.ingest.mapping import FIELDMAP
 from collective.elastic.ingest.mapping import iterate_schema
+from collective.elastic.ingest.mapping import EXPANSION_FIELDS
 from collective.elastic.ingest.preprocessing import preprocess
+from collective.elastic.ingest.postprocessing import postprocess
 from elasticsearch.exceptions import NotFoundError
 
 
@@ -48,7 +50,6 @@ def setup_ingest_pipelines(full_schema, index_name):
                 attachment[key] = value.format(name=field["name"])
             else:
                 attachment[key] = value
-    logger.warning(str(pipelines))
     if pipelines["processors"]:
         es.ingest.put_pipeline(pipeline_name, pipelines)
     else:
@@ -59,7 +60,21 @@ def ingest(content, full_schema, index_name):
     # preprocess content and schema
     preprocess(content, full_schema)
     if full_schema:
+        create_or_update_mapping(full_schema, index_name)
         if not STATES["pipelines_created"]:
             setup_ingest_pipelines(full_schema, index_name)
             STATES["pipelines_created"] = True
-        create_or_update_mapping(full_schema, index_name)
+    info = {"expansion_fields": EXPANSION_FIELDS}
+    logger.warn(str(info))
+    postprocess(content, info)
+
+    # now, ingest
+    logger.info(content)
+    es = get_ingest_client()
+    es_kwargs = dict(
+        index=index_name,
+        id=content["UID"],
+        pipeline=_es_pipeline_name(index_name),
+        body=content,
+    )
+    es.index(**es_kwargs)
