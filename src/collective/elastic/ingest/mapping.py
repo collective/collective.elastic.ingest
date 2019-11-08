@@ -21,6 +21,19 @@ ATTACHMENT_DEFINITION_FULL = {
         "title": {"type": "text"},
     },
 }
+ATTACHMENT_PROCESSORS_DEFAULT = [
+    # see https://www.elastic.co/guide/en/elasticsearch/plugins/master/using-ingest-attachment.html  # noqa
+    {
+        "attachment": {
+            "field": "{source}",
+            "target_field": "{target}",
+            "ignore_missing": True,
+        }
+    },
+    # https://stackoverflow.com/questions/46465523/how-disable-base64-storing-for-ingest-attachment-elasticsearch-plugin # noqa
+    {"remove": {"field": "{source}", "ignore_missing": True}},
+]
+
 
 # the fieldmap maps schema fields to elasticseach fields
 # key can be
@@ -33,19 +46,12 @@ FIELDMAP = {
         "properties": {"title": {"type": "keyword"}, "token": {"type": "keyword"}},
     },
     "plone.app.textfield.RichText": {
-        "processor": {
-            # see https://www.elastic.co/guide/en/elasticsearch/plugins/master/using-ingest-attachment.html  # noqa
-            "attachment": {
-                "field": "{name}__data",
-                "target_field": "{name}__extracted",
-                "ignore_missing": True,
-            },
+        "pipeline": {
+            "source": "{name}__data",
+            "target": "{name}__extracted",
+            "processors": ATTACHMENT_PROCESSORS_DEFAULT,
             "type": ATTACHMENT_DEFINITION_FULL,
-            "expansion": {
-                "method": "field",
-                "field": "data",
-                "data_field": "{name}__data",
-            },
+            "expansion": {"method": "field", "field": "data"},
         },
         "type": {
             "type": "nested",
@@ -57,18 +63,12 @@ FIELDMAP = {
         },
     },
     "plone.namedfile.field.NamedBlobFile": {
-        "processor": {
-            "attachment": {
-                "field": "{name}__data",
-                "target_field": "{name}__extracted",
-                "ignore_missing": True,
-            },
+        "pipeline": {
+            "source": "{name}__data",
+            "target": "{name}__extracted",
+            "processors": ATTACHMENT_PROCESSORS_DEFAULT,
             "type": ATTACHMENT_DEFINITION_FULL,
-            "expansion": {
-                "method": "fetch",
-                "field": "download",
-                "data_field": "{name}__data",
-            },
+            "expansion": {"method": "fetch", "field": "download"},
         },
         "type": {
             "type": "nested",
@@ -81,18 +81,12 @@ FIELDMAP = {
         },
     },
     "plone.namedfile.field.NamedBlobImage": {
-        "processor": {
-            "attachment": {
-                "field": "{name}__data",
-                "target_field": "{name}__extracted",
-                "ignore_missing": True,
-            },
+        "pipeline": {
+            "source": "{name}__data",
+            "target": "{name}__extracted",
+            "processors": ATTACHMENT_PROCESSORS_DEFAULT,
             "type": ATTACHMENT_DEFINITION_FULL,
-            "expansion": {
-                "method": "fetch",
-                "field": "download",
-                "data_field": "{name}__data",
-            },
+            "expansion": {"method": "fetch", "field": "download"},
         },
         "type": {
             "type": "nested",
@@ -153,7 +147,25 @@ def iterate_schema(full_schema):
                 yield section_name, schema_name, field
 
 
-def create_or_update_mapping(full_schema, index_name):
+def _expand_dict(mapping: dict, **kw):
+    record = {}
+    for key, value in mapping.items():
+        if isinstance(value, str):
+            value = value.format(**kw)
+        elif isinstance(value, dict):
+            value = _expand_dict(value, **kw)
+        record[key] = value
+    return record
+
+
+def expanded_processors(processors: list, source: str, target: str):
+    result = []
+    for processor in processors:
+        result.append(_expand_dict(processor, source=source, target=target))
+    return result
+
+
+def create_or_update_mapping(full_schema: dict, index_name: str):
     es = get_ingest_client()
     if es is None:
         logger.warning("No ElasticSearch client available.")
@@ -192,22 +204,19 @@ def create_or_update_mapping(full_schema, index_name):
             continue
         seen.add(field["name"])
         logger.info("Map {0} to {1}".format(field["name"], definition))
-        if "processor" in definition:
+        if "pipeline" in definition:
             # complex defintion
-            # ingest through pipeline, store result
             properties[field["name"]] = definition["type"]
-            target_field = definition["processor"]["attachment"]["target_field"].format(
-                name=field["name"]
-            )
-            properties[target_field] = definition["processor"]["type"]
-            # from celery.contrib import rdb; rdb.set_trace()
+            # ingest through pipeline, store result
+            pipeline = definition["pipeline"]
+            source = pipeline["source"].format(name=field["name"])
+            target = pipeline["target"].format(name=field["name"])
+            properties[target] = {"type": "binary"}
+            processors = expanded_processors(pipeline["processors"], source, target)
+            properties[target] = pipeline["type"]
 
             # memorize this field as expansion field for later use in post_processors
-            EXPANSION_FIELDS[field["name"]] = definition["processor"]["expansion"]
-            data_field = EXPANSION_FIELDS[field["name"]]["data_field"].format(
-                name=field["name"]
-            )
-            EXPANSION_FIELDS[field["name"]]["data_field"] = data_field
+            EXPANSION_FIELDS[field["name"]] = dict(pipeline["expansion"], source=source)
         else:
             # simple defintion
             properties[field["name"]] = definition

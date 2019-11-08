@@ -17,7 +17,7 @@ def _extract_binary(content: dict, info: dict, key: str):
             data = fetch_binary(content[field_name][config["field"]])
         elif config["method"] == "field":
             data = content[field_name][config["field"]]
-        content[config["data_field"]] = base64.b64encode(data).decode("utf8")
+        content[config["source"]] = base64.b64encode(data).decode("utf8")
 
 
 POSTPROCESSORS["binary"] = _extract_binary
