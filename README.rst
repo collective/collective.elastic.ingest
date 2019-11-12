@@ -32,7 +32,8 @@ Define the configuration as environment variables::
     ELASTICSEARCH_INGEST_SERVER=localhost:9200
     ELASTICSEARCH_INGEST_USE_SSL=0
     ELASTICSEARCH_INDEX=0
-    PLONE_BASE_URL=http://localhost:8080/Plone
+    PLONE_SERVICE=http://localhost:8080
+    PLONE_PATH=Plone
     PLONE_USER=admin
     PLONE_PASSWORD=admin
 
