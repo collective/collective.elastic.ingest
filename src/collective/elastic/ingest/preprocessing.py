@@ -41,7 +41,6 @@ def _type_modification(content, full_schema, key):
 
 PREPROCESSORS["type_modification"] = _type_modification
 
-
 # removals
 KEYS_TO_REMOVE = ["items", "items_total", "parent", "@components"]
 
@@ -60,6 +59,20 @@ PREPROCESSORS["items_total"] = _remove_entry
 PREPROCESSORS["parent"] = _remove_entry
 PREPROCESSORS["version"] = _remove_entry
 PREPROCESSORS["versioning_enabled"] = _remove_entry
+
+
+def _empty_removal(content, full_schema, key):
+    """remove empty fields
+    """
+    to_remove = set()
+    for name, value in content.items():
+        if value is None or value == "" or value == [] or value == {}:
+            to_remove.add(name)
+    for name in to_remove:
+        del content[name]
+
+
+PREPROCESSORS["empty_removal"] = _empty_removal
 
 
 def preprocess(content, full_schema):

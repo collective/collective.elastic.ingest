@@ -7,6 +7,7 @@ from celery import Celery
 
 import logging
 import os
+import time
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,8 @@ app = Celery("collective.elastic.ingest", broker=os.environ.get("CELERY_BROKER")
 
 @app.task(name="collective.elastic.ingest.index")
 def index(path, timestamp, index_name):
+    # XXX needs check and retry instead sleep
+    time.sleep(1)
     try:
         content = fetch_content(path, timestamp)
     except Exception:
