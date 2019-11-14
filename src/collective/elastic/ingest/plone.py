@@ -36,9 +36,24 @@ def _schema_url():
 
 def fetch_content(path, timestamp):
     url = _full_url(path)
-    logger.info("fetch content from {0}".format(url))
-    resp = session.get(url)
-    return resp.json()
+    retries = 0
+    delay = 0.5
+    while retries < 5:
+        logger.info("fetch content from {0} retry {1}".format(url, retries))
+        resp = session.get(url)
+        result = resp.json()
+        if (
+            "@components" not in result
+            or result["@components"]["last_indexing_queued"] < timestamp
+        ):
+            logger.info("retry fetch {0}, wait {1}s".format(url, delay))
+            retries += 1
+            time.sleep(delay)
+            delay += delay
+            continue
+        return result
+
+    logger.warn("can not fetch content {0}".format(url, delay))
 
 
 def fetch_schema(refetch=False):

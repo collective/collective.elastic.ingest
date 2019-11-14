@@ -34,6 +34,16 @@ ATTACHMENT_PROCESSORS_DEFAULT = [
     {"remove": {"field": "{source}", "ignore_missing": True}},
 ]
 
+RELATION_DEFINITION_DEFAULT = {
+    "type": "nested",
+    "properties": {
+        "@id": {"type": "keyword"},
+        "@type": {"type": "keyword"},
+        "description": {"type": "text"},
+        "review_state": {"type": "keyword"},
+        "title": {"type": "text"},
+    },
+}
 
 # the fieldmap maps schema fields to elasticseach fields
 # key can be
@@ -41,10 +51,6 @@ ATTACHMENT_PROCESSORS_DEFAULT = [
 # 2. the "fully qualified fieldname" from "section_name/schema_name/field_name"
 #    example: types/Image/image or behaviors/plone.collection/query
 FIELDMAP = {
-    "behaviors/plone.categorization/language": {
-        "type": "nested",
-        "properties": {"title": {"type": "keyword"}, "token": {"type": "keyword"}},
-    },
     "plone.app.textfield.RichText": {
         "pipeline": {
             "source": "{name}__data",
@@ -53,7 +59,7 @@ FIELDMAP = {
             "type": ATTACHMENT_DEFINITION_FULL,
             "expansion": {"method": "field", "field": "data"},
         },
-        "type": {
+        "definition": {
             "type": "nested",
             "properties": {
                 "data": {"type": "text"},
@@ -70,7 +76,7 @@ FIELDMAP = {
             "type": ATTACHMENT_DEFINITION_FULL,
             "expansion": {"method": "fetch", "field": "download"},
         },
-        "type": {
+        "definition": {
             "type": "nested",
             "properties": {
                 "content-type": {"type": "keyword"},
@@ -88,7 +94,7 @@ FIELDMAP = {
             "type": ATTACHMENT_DEFINITION_FULL,
             "expansion": {"method": "fetch", "field": "download"},
         },
-        "type": {
+        "definition": {
             "type": "nested",
             "properties": {
                 "content-type": {"type": "keyword"},
@@ -109,25 +115,22 @@ FIELDMAP = {
         },
     },
     "plone.schema.jsonfield.JSONField": {"type": "text"},
-    # "z3c.relationfield.schema.RelationList": {
-    #     "type": "nested",
-    #     "properties": {
-    #         "@id": {"type": "keyword"},
-    #         "@type": {"type": "keyword"},
-    #         "description": {"type": "text"},
-    #         "review_state": {"type": "keyword"},
-    #         "title": {"type": "text"},
-    #     }
-    # },
+    "z3c.relationfield.schema.RelationList": RELATION_DEFINITION_DEFAULT,
+    "z3c.relationfield.schema.RelationChoice": RELATION_DEFINITION_DEFAULT,
     "zope.schema._bootstrapfields.Bool": {"type": "boolean"},
     "zope.schema._bootstrapfields.Int": {"type": "long"},
     "zope.schema._bootstrapfields.Text": {"type": "text"},
     "zope.schema._bootstrapfields.TextLine": {"type": "text"},
     "zope.schema._field.ASCIILine": {"type": "keyword"},
-    "zope.schema._field.Choice": {"type": "keyword"},
+    "zope.schema._field.Choice": {
+        "type": "nested",
+        "properties": {"token": "keyword", "title": "Text"},
+    },
     "zope.schema._field.Datetime": {"type": "date"},
     "zope.schema._field.Dict": {"type": "object"},
-    "zope.schema._field.List": {"type": "keyword"},
+    "zope.schema._field.List": {
+        "detection": {"default": {"type": "keyword"}, "method": "replace"}
+    },
     "zope.schema._field.Tuple": {"type": "keyword"},
     "zope.schema._field.URI": {"type": "text"},
 }
@@ -136,6 +139,8 @@ FIELDMAP = {
 EXPANSION_FIELDS = {}
 
 STATE = {"initial": True}
+
+DETECTOR_METHODS = {}
 
 
 def iterate_schema(full_schema):
@@ -165,6 +170,52 @@ def expanded_processors(processors, source, target):
     return result
 
 
+def map_field(field, properties, fqfieldname, seen):
+    definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+    if definition is None:
+        logger.warning(
+            "'{0}' field type nor '{1}' FQFN not in map, ignore.".format(
+                field["field"], fqfieldname
+            )
+        )
+        return
+    seen.add(field["name"])
+    logger.info("Map {0} to {1}".format(field["name"], definition))
+    if "type" in definition:
+        # simple defintion
+        properties[field["name"]] = definition
+        return
+    # complex definition
+    if "definition" in definition:
+        # direct definition
+        properties[field["name"]] = definition["definition"]
+    if "detection" in definition:
+        DETECTOR_METHODS[definition["detection"]["method"]](
+            field, properties, definition, fqfieldname, seen
+        )
+    if "pipeline" in definition:
+        # ingest through pipeline, store result
+        pipeline = definition["pipeline"]
+        source = pipeline["source"].format(name=field["name"])
+        target = pipeline["target"].format(name=field["name"])
+        properties[target] = pipeline["type"]
+
+        # memorize this field as expansion field for later use in post_processors
+        EXPANSION_FIELDS[field["name"]] = dict(pipeline["expansion"], source=source)
+
+
+def _replacement_detector(field, properties, definition, fqfieldname, seen):
+    replacement = field.get("value_type", None)
+    if replacement is None:
+        properties[field["name"]] = definition["detection"]["default"]
+        return
+    replacement["name"] = field["name"]
+    map_field(replacement, properties, fqfieldname, seen)
+
+
+DETECTOR_METHODS["replace"] = _replacement_detector
+
+
 def create_or_update_mapping(full_schema, index_name):
     es = get_ingest_client()
     if es is None:
@@ -185,7 +236,7 @@ def create_or_update_mapping(full_schema, index_name):
     seen = set()
     for section_name, schema_name, field in iterate_schema(full_schema):
         # try "section_name/schema_name/field[name]/type)"
-        value_type = field.get("value_type", field["field"])
+        value_type = field["field"]
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
         if field["name"] in seen:
             logger.info(
@@ -194,31 +245,7 @@ def create_or_update_mapping(full_schema, index_name):
                 )
             )
             continue
-        definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(value_type, None))
-        if definition is None:
-            logger.warning(
-                "'{0}' field type nor '{1}' FQFN not in map, ignore.".format(
-                    value_type, fqfieldname
-                )
-            )
-            continue
-        seen.add(field["name"])
-        logger.info("Map {0} to {1}".format(field["name"], definition))
-        if "pipeline" in definition:
-            # complex definition
-            properties[field["name"]] = definition["type"]
-            # ingest through pipeline, store result
-            pipeline = definition["pipeline"]
-            source = pipeline["source"].format(name=field["name"])
-            target = pipeline["target"].format(name=field["name"])
-            properties[target] = {"type": "binary"}
-            properties[target] = pipeline["type"]
-
-            # memorize this field as expansion field for later use in post_processors
-            EXPANSION_FIELDS[field["name"]] = dict(pipeline["expansion"], source=source)
-        else:
-            # simple defintion
-            properties[field["name"]] = definition
+        map_field(field, properties, fqfieldname, seen)
 
     STATE["initial"] = False
 

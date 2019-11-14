@@ -16,7 +16,7 @@ def _extract_binary(content: dict, info: dict, key: str):
         if config["method"] == "fetch":
             data = fetch_binary(content[field_name][config["field"]])
         elif config["method"] == "field":
-            data = content[field_name][config["field"]].encode('utf8')
+            data = content[field_name][config["field"]].encode("utf8")
         content[config["source"]] = base64.b64encode(data).decode("utf8")
 
 
