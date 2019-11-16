@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from collective.elastic.ingest import postprocessing
+from .ingest import postprocessing
 
 
 # ------------------------------------------------------------------------------

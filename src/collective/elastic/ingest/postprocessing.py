@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+from .plone import fetch_binary
 from collections import OrderedDict
-from collective.elastic.ingest.plone import fetch_binary
 
 import base64
+
 
 POSTPROCESSORS = OrderedDict()
 
 
-def _extract_binary(content: dict, info: dict, key: str):
+def _extract_binary(content, info, key):
     """
     """
     for field_name, config in info["expansion_fields"].items():
@@ -23,7 +24,7 @@ def _extract_binary(content: dict, info: dict, key: str):
 POSTPROCESSORS["binary"] = _extract_binary
 
 
-def postprocess(content: dict, info: dict):
+def postprocess(content, info):
     """run full postprocessing pipeline on content and schema
     """
     for key, postprocessor in POSTPROCESSORS.items():

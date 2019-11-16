@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from collective.elastic.ingest import preprocessing
+from .ingest import preprocessing
+
 
 # ------------------------------------------------------------------------------
 # helper

@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 PREPROCESSORS = OrderedDict()
 

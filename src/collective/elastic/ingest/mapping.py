@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-from collective.elastic.ingest.elastic import get_ingest_client
+from .elastic import get_ingest_client
+from .logging import logger
+from pprint import pformat
 
-import logging
 import operator
 
 
-logger = logging.getLogger(__name__)
-
 ATTACHMENT_DEFINITION_FULL = {
     "type": "nested",
+    "dynamic": False,
     "properties": {
         "author": {"type": "text"},
         "content": {"type": "text"},
@@ -37,6 +37,7 @@ ATTACHMENT_PROCESSORS_DEFAULT = [
 RELATION_DEFINITION_DEFAULT = {
     "type": "nested",
     "properties": {
+        "dynamic": False,
         "@id": {"type": "keyword"},
         "@type": {"type": "keyword"},
         "description": {"type": "text"},
@@ -61,6 +62,7 @@ FIELDMAP = {
         },
         "definition": {
             "type": "nested",
+            "dynamic": False,
             "properties": {
                 "data": {"type": "text"},
                 "content-type": {"type": "keyword"},
@@ -78,6 +80,7 @@ FIELDMAP = {
         },
         "definition": {
             "type": "nested",
+            "dynamic": False,
             "properties": {
                 "content-type": {"type": "keyword"},
                 "download": {"type": "text"},
@@ -96,6 +99,7 @@ FIELDMAP = {
         },
         "definition": {
             "type": "nested",
+            "dynamic": False,
             "properties": {
                 "content-type": {"type": "keyword"},
                 "download": {"type": "text"},
@@ -105,6 +109,7 @@ FIELDMAP = {
                 "width": {"type": "long"},
                 "scales": {
                     "type": "nested",
+                    "dynamic": False,
                     "properties": {
                         "download": {"type": "text"},
                         "height": {"type": "long"},
@@ -124,7 +129,8 @@ FIELDMAP = {
     "zope.schema._field.ASCIILine": {"type": "keyword"},
     "zope.schema._field.Choice": {
         "type": "nested",
-        "properties": {"token": "keyword", "title": "Text"},
+        "dynamic": False,
+        "properties": {"token": {"type": "keyword"}, "title": {"type": "text"}},
     },
     "zope.schema._field.Datetime": {"type": "date"},
     "zope.schema._field.Dict": {"type": "object"},
@@ -225,14 +231,14 @@ def create_or_update_mapping(full_schema, index_name):
     # get current mapping
     index_exists = es.indices.exists(index_name)
     if index_exists:
-        mapping = es.indices.get_mapping(index=index_name)
-        if "properties" not in mapping[index_name]["mappings"]:
-            mapping[index_name]["mappings"]["properties"] = {}
+        mapping = es.indices.get_mapping(index=index_name)[index_name]
+        if "properties" not in mapping["mappings"]:
+            mapping["mappings"]["properties"] = {}
     else:
         # ftr: here is the basic structure of a mapping
-        mapping = {index_name: {"mappings": {"properties": {}}, "settings": {}}}
+        mapping = {"mappings": {"properties": {}}, "settings": {}}
     # process mapping
-    properties = mapping[index_name]["mappings"]["properties"]
+    properties = mapping["mappings"]["properties"]
     seen = set()
     for section_name, schema_name, field in iterate_schema(full_schema):
         # try "section_name/schema_name/field[name]/type)"
@@ -249,16 +255,15 @@ def create_or_update_mapping(full_schema, index_name):
 
     STATE["initial"] = False
 
-    # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
-    from pprint import pformat
-
-    logger.warn(pformat(mapping))
     if index_exists:
         # xxx: here a check if the schema is different from the original could be fine
-        es.indices.put_mapping(index=index_name, body=mapping[index_name]["mappings"])
+        logger.info("update mapping\n{0}".format(pformat(mapping["mappings"])))
+        es.indices.put_mapping(index=index_name, body=mapping["mappings"])
     else:
+
+        # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
+        # xxx: to be removed or at least made configurable by env var
+        mapping["settings"]["blocks"] = {"read_only_allow_delete": False}
         # from celery.contrib import rdb; rdb.set_trace()
-        mapping[index_name].setdefault(
-            "settings", {"blocks": {"read_only_allow_delete": False}}
-        )
-        es.indices.create(index_name, body=mapping[index_name])
+        logger.info("create index with mapping\n{0}".format(pformat(mapping)))
+        es.indices.create(index_name, body=mapping)

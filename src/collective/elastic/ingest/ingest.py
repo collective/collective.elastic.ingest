@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
-from collective.elastic.ingest.elastic import get_ingest_client
-from collective.elastic.ingest.mapping import create_or_update_mapping
-from collective.elastic.ingest.mapping import FIELDMAP
-from collective.elastic.ingest.mapping import iterate_schema
-from collective.elastic.ingest.mapping import EXPANSION_FIELDS
-from collective.elastic.ingest.mapping import expanded_processors
-from collective.elastic.ingest.preprocessing import preprocess
-from collective.elastic.ingest.postprocessing import postprocess
+from .elastic import get_ingest_client
+from .logging import logger
+from .mapping import create_or_update_mapping
+from .mapping import expanded_processors
+from .mapping import EXPANSION_FIELDS
+from .mapping import FIELDMAP
+from .mapping import iterate_schema
+from .postprocessing import postprocess
+from .preprocessing import preprocess
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 STATES = {"pipelines_created": False}
 
@@ -31,6 +29,7 @@ def setup_ingest_pipelines(full_schema, index_name):
     for section_name, schema_name, field in iterate_schema(full_schema):
         value_type = field.get("value_type", field["field"])
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
+        logger.error(value_type)
         definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(value_type, None))
         if not definition or "pipeline" not in definition:
             continue
@@ -61,7 +60,9 @@ def ingest(content, full_schema, index_name):
     postprocess(content, info)
 
     # now, ingest
-    logger.debug(content)
+    from pprint import pformat
+
+    logger.warn(pformat(content))
     es = get_ingest_client()
     es_kwargs = dict(
         index=index_name,

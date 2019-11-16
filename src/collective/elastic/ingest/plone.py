@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
+from .logging import logger
 from cachecontrol import CacheControl
 
 import os
 import requests
 import time
-import logging
 
-logger = logging.getLogger(__name__)
 
 session = requests.Session()
 session = CacheControl(session)
@@ -41,9 +40,12 @@ def fetch_content(path, timestamp):
     while retries < 5:
         logger.info("fetch content from {0} retry {1}".format(url, retries))
         resp = session.get(url)
+        # xxx: check resp here
         result = resp.json()
         if (
-            "@components" not in result
+            not result
+            or "@components" not in result
+            or "last_indexing_queued" not in result["@components"]
             or result["@components"]["last_indexing_queued"] < timestamp
         ):
             logger.info("retry fetch {0}, wait {1}s".format(url, delay))
@@ -60,12 +62,14 @@ def fetch_schema(refetch=False):
     # from celery.contrib import rdb; rdb.set_trace()
     if refetch or time.time() + MAPPING_TIMEOUT_SEK > STATES["mapping_fetched"]:
         url = _schema_url()
-        logger.info("fetch content from {0}".format(url))
+        logger.info("fetch full schema from {0}".format(url))
         resp = session.get(url)
+        # xxx: check resp here
         return resp.json()
     return
 
 
 def fetch_binary(url):
     resp = session.get(url)
+    # xxx: check resp here
     return resp.content
