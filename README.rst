@@ -37,6 +37,10 @@ Define the configuration as environment variables::
     PLONE_USER=admin
     PLONE_PASSWORD=admin
 
+Optional (defaults used if not given)::
+
+    MAPPINGS_FILE=/full/path/to/mappings
+
 The run celery::
 
     celery worker -A collective.elastic.ingest.celery.app -l info

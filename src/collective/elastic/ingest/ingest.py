@@ -8,6 +8,7 @@ from .mapping import FIELDMAP
 from .mapping import iterate_schema
 from .postprocessing import postprocess
 from .preprocessing import preprocess
+from pprint import pformat
 
 
 STATES = {"pipelines_created": False}
@@ -27,10 +28,8 @@ def setup_ingest_pipelines(full_schema, index_name):
         "processors": [],
     }
     for section_name, schema_name, field in iterate_schema(full_schema):
-        value_type = field.get("value_type", field["field"])
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
-        logger.warn(value_type)
-        definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(value_type, None))
+        definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
         if not definition or "pipeline" not in definition:
             continue
         source = definition["pipeline"]["source"].format(name=field["name"])
@@ -56,13 +55,9 @@ def ingest(content, full_schema, index_name):
             setup_ingest_pipelines(full_schema, index_name)
             STATES["pipelines_created"] = True
     info = {"expansion_fields": EXPANSION_FIELDS}
-    logger.warn(str(info))
     postprocess(content, info)
 
-    # now, ingest
-    from pprint import pformat
-
-    logger.warn(pformat(content))
+    logger.debug(pformat(content))
     es = get_ingest_client()
     es_kwargs = dict(
         index=index_name,

@@ -3,143 +3,10 @@ from .elastic import get_ingest_client
 from .logging import logger
 from pprint import pformat
 
+import json
 import operator
+import os
 
-
-ATTACHMENT_DEFINITION_FULL = {
-    "type": "nested",
-    "dynamic": False,
-    "properties": {
-        "author": {"type": "text"},
-        "content": {"type": "text"},
-        "content_length": {"type": "long"},
-        "content_type": {"type": "keyword"},
-        "date": {"type": "date"},
-        "keywords": {"type": "keyword"},
-        "language": {"type": "keyword"},
-        "name": {"type": "text"},
-        "title": {"type": "text"},
-    },
-}
-ATTACHMENT_PROCESSORS_DEFAULT = [
-    # see https://www.elastic.co/guide/en/elasticsearch/plugins/master/using-ingest-attachment.html  # noqa
-    {
-        "attachment": {
-            "field": "{source}",
-            "target_field": "{target}",
-            "ignore_missing": True,
-        }
-    },
-    # https://stackoverflow.com/questions/46465523/how-disable-base64-storing-for-ingest-attachment-elasticsearch-plugin # noqa
-    {"remove": {"field": "{source}", "ignore_missing": True}},
-]
-
-RELATION_DEFINITION_DEFAULT = {
-    "type": "nested",
-    "dynamic": False,
-    "properties": {
-        "@id": {"type": "keyword"},
-        "@type": {"type": "keyword"},
-        "description": {"type": "text"},
-        "review_state": {"type": "keyword"},
-        "title": {"type": "text"},
-    },
-}
-
-# the fieldmap maps schema fields to elasticseach fields
-# key can be
-# 1. a dotted name of a schema field class
-# 2. the "fully qualified fieldname" from "section_name/schema_name/field_name"
-#    example: types/Image/image or behaviors/plone.collection/query
-FIELDMAP = {
-    "plone.app.textfield.RichText": {
-        "pipeline": {
-            "source": "{name}__data",
-            "target": "{name}__extracted",
-            "processors": ATTACHMENT_PROCESSORS_DEFAULT,
-            "type": ATTACHMENT_DEFINITION_FULL,
-            "expansion": {"method": "field", "field": "data"},
-        },
-        "definition": {
-            "type": "nested",
-            "dynamic": False,
-            "properties": {
-                "data": {"type": "text"},
-                "content-type": {"type": "keyword"},
-                "encoding": {"type": "keyword"},
-            },
-        },
-    },
-    "plone.namedfile.field.NamedBlobFile": {
-        "pipeline": {
-            "source": "{name}__data",
-            "target": "{name}__extracted",
-            "processors": ATTACHMENT_PROCESSORS_DEFAULT,
-            "type": ATTACHMENT_DEFINITION_FULL,
-            "expansion": {"method": "fetch", "field": "download"},
-        },
-        "definition": {
-            "type": "nested",
-            "dynamic": False,
-            "properties": {
-                "content-type": {"type": "keyword"},
-                "download": {"type": "text"},
-                "filename": {"type": "text"},
-                "size": {"type": "long"},
-            },
-        },
-    },
-    "plone.namedfile.field.NamedBlobImage": {
-        "pipeline": {
-            "source": "{name}__data",
-            "target": "{name}__extracted",
-            "processors": ATTACHMENT_PROCESSORS_DEFAULT,
-            "type": ATTACHMENT_DEFINITION_FULL,
-            "expansion": {"method": "fetch", "field": "download"},
-        },
-        "definition": {
-            "type": "nested",
-            "dynamic": False,
-            "properties": {
-                "content-type": {"type": "keyword"},
-                "download": {"type": "text"},
-                "filename": {"type": "text"},
-                "size": {"type": "long"},
-                "height": {"type": "long"},
-                "width": {"type": "long"},
-                "scales": {
-                    "type": "nested",
-                    "dynamic": False,
-                    "properties": {
-                        "download": {"type": "text"},
-                        "height": {"type": "long"},
-                        "width": {"type": "long"},
-                    },
-                },
-            },
-        },
-    },
-    "plone.schema.jsonfield.JSONField": {"type": "text"},
-    "z3c.relationfield.schema.RelationList": RELATION_DEFINITION_DEFAULT,
-    "z3c.relationfield.schema.RelationChoice": RELATION_DEFINITION_DEFAULT,
-    "zope.schema._bootstrapfields.Bool": {"type": "boolean"},
-    "zope.schema._bootstrapfields.Int": {"type": "long"},
-    "zope.schema._bootstrapfields.Text": {"type": "text"},
-    "zope.schema._bootstrapfields.TextLine": {"type": "text"},
-    "zope.schema._field.ASCIILine": {"type": "keyword"},
-    "zope.schema._field.Choice": {
-        "type": "nested",
-        "dynamic": False,
-        "properties": {"token": {"type": "keyword"}, "title": {"type": "text"}},
-    },
-    "zope.schema._field.Datetime": {"type": "date"},
-    "zope.schema._field.Dict": {"type": "object"},
-    "zope.schema._field.List": {
-        "detection": {"default": {"type": "keyword"}, "method": "replace"}
-    },
-    "zope.schema._field.Tuple": {"type": "keyword"},
-    "zope.schema._field.URI": {"type": "text"},
-}
 
 # to be filled as cache and renewed on create_or_update_mapping
 EXPANSION_FIELDS = {}
@@ -147,6 +14,14 @@ EXPANSION_FIELDS = {}
 STATE = {"initial": True}
 
 DETECTOR_METHODS = {}
+
+_mappings_file = os.environ.get(
+    "MAPPINGS_FILE",
+    os.path.join(os.path.dirname(__file__), "mappings.json"),
+)
+
+with open(_mappings_file, mode="r") as fp:
+    FIELDMAP = json.load(fp)
 
 
 def iterate_schema(full_schema):
@@ -180,13 +55,13 @@ def map_field(field, properties, fqfieldname, seen):
     definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
     if definition is None:
         logger.warning(
-            "'{0}' field type nor '{1}' FQFN not in map, ignore.".format(
+            "Ignore: '{0}' field type nor '{1}' FQFN in map.".format(
                 field["field"], fqfieldname
             )
         )
         return
     seen.add(field["name"])
-    logger.info("Map {0} to {1}".format(field["name"], definition))
+    logger.debug("Map {0} to {1}".format(field["name"], definition))
     if "type" in definition:
         # simple defintion
         properties[field["name"]] = definition
@@ -257,7 +132,8 @@ def create_or_update_mapping(full_schema, index_name):
 
     if index_exists:
         # xxx: here a check if the schema is different from the original could be fine
-        logger.info("update mapping\n{0}".format(pformat(mapping["mappings"])))
+        logger.info("update mapping")
+        logger.debug("mapping is:\n{0}".format(pformat(mapping["mappings"])))
         es.indices.put_mapping(index=index_name, body=mapping["mappings"])
     else:
 
@@ -265,5 +141,6 @@ def create_or_update_mapping(full_schema, index_name):
         # xxx: to be removed or at least made configurable by env var
         mapping["settings"]["blocks"] = {"read_only_allow_delete": False}
         # from celery.contrib import rdb; rdb.set_trace()
-        logger.info("create index with mapping\n{0}".format(pformat(mapping)))
+        logger.info("create index with mapping")
+        logger.debug("mapping is:\n{0}".format(pformat(mapping["mappings"])))
         es.indices.create(index_name, body=mapping)

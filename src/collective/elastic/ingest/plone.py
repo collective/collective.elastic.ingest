@@ -70,6 +70,7 @@ def fetch_schema(refetch=False):
 
 
 def fetch_binary(url):
+    logger.info("fetch binary data from {0}".format(url))
     resp = session.get(url)
     # xxx: check resp here
     return resp.content
