@@ -55,7 +55,7 @@ def fetch_content(path, timestamp):
             continue
         return result
 
-    logger.warn("can not fetch content {0}".format(url, delay))
+    logger.error("can not fetch content {0}".format(url, delay))
 
 
 def fetch_schema(refetch=False):
