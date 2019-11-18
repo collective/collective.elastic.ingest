@@ -29,7 +29,7 @@ def setup_ingest_pipelines(full_schema, index_name):
     for section_name, schema_name, field in iterate_schema(full_schema):
         value_type = field.get("value_type", field["field"])
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
-        logger.error(value_type)
+        logger.warn(value_type)
         definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(value_type, None))
         if not definition or "pipeline" not in definition:
             continue

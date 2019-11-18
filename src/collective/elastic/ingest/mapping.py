@@ -36,8 +36,8 @@ ATTACHMENT_PROCESSORS_DEFAULT = [
 
 RELATION_DEFINITION_DEFAULT = {
     "type": "nested",
+    "dynamic": False,
     "properties": {
-        "dynamic": False,
         "@id": {"type": "keyword"},
         "@type": {"type": "keyword"},
         "description": {"type": "text"},
