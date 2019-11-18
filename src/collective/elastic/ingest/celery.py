@@ -8,7 +8,22 @@ from celery import Celery
 
 import os
 
+# sentry integration
+sentry_dsn = os.environ.get("SENTRY_DSN", None)
+sentry_project = os.environ.get("SENTRY_PROJECT", None)
+if sentry_dsn is not None:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.celery import CeleryIntegration
+        sentry_sdk.init(sentry_dsn, integrations=[CeleryIntegration()])
+        logger.info("Enable sentry logging.")
+        if sentry_project is not None:
+            with sentry_sdk.configure_scope() as scope:
+                scope.set_tag("project", sentry_project)
+    except ImportError:
+        pass
 
+# configure tasks
 app = Celery("collective.elastic.ingest", broker=os.environ.get("CELERY_BROKER"))
 
 
