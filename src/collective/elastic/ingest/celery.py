@@ -16,12 +16,16 @@ if sentry_dsn is not None:
         import sentry_sdk
         from sentry_sdk.integrations.celery import CeleryIntegration
         sentry_sdk.init(sentry_dsn, integrations=[CeleryIntegration()])
-        logger.info("Enable sentry logging.")
+        logger.debug("Enable sentry logging.")
         if sentry_project is not None:
             with sentry_sdk.configure_scope() as scope:
                 scope.set_tag("project", sentry_project)
     except ImportError:
-        pass
+        logger.exception(
+            "sentry-logging configured, but package sentry_dsn not installed.\n"
+            "try: pip install sentry_dsn"
+        )
+        raise
 
 # configure tasks
 app = Celery("collective.elastic.ingest", broker=os.environ.get("CELERY_BROKER"))
