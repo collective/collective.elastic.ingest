@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from .ingest import ingest
 from .logging import logger
 from .plone import fetch_content
