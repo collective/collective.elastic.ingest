@@ -8,10 +8,17 @@ collective.elastic.ingest
 
 Celery-Tasks for ElasticSearch Integration for Plone content
 
-- configure celery from environment variables
-- configure elasticsearch from environment variables
-- task to index an content object
-- task to unindex an content object
+- auto-create ElasticSearch...
+    - index
+    - mapping from Plone schema using a flexible conversions file (JSON).
+    - ingest-attachment pipelines using (same as above) file.
+- task to
+    - index an content object with all data given
+    - unindex an content object
+- configure from environment variables:
+    - celery,
+    - elasticsearch,
+    - sentry logging (optional)
 
 
 Installation

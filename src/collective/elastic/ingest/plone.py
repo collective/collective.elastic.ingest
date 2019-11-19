@@ -12,8 +12,11 @@ session = CacheControl(session)
 session.headers.update({"Accept": "application/json"})
 session.auth = str(os.environ.get("PLONE_USER")), str(os.environ.get("PLONE_PASSWORD"))
 
-RETRY_BASE = 333  # ms (will be multiplied by 3 every interval)
-RETRY_MAX = 10000  # ms (ceiling time for retries)
+RETRIES_STATUS_MAX = 4
+RETRY_STATUS_BASE = 1  # seconds
+
+RETRIES_TIMESTAMP_MAX = 10
+RETRY_TIMESTAMP_BASE = 0.33333  # seconds
 
 STATES = {"mapping_fetched": 0}
 MAPPING_TIMEOUT_SEK = 3600
@@ -35,12 +38,29 @@ def _schema_url():
 
 def fetch_content(path, timestamp):
     url = _full_url(path)
-    retries = 0
-    delay = 0.5
-    while retries < 5:
-        logger.info("fetch content from {0} retry {1}".format(url, retries))
+    retries_timestamp = 0
+    delay_timestamp = RETRY_TIMESTAMP_BASE
+    retries_status = 0
+    delay_status = RETRY_STATUS_BASE
+    while True:
+        logger.info(
+            "fetch content from {0} trial {1}".format(
+                url, 1 + retries_timestamp + retries_status
+            )
+        )
         resp = session.get(url)
-        # xxx: check resp here
+        # xxx: move status retry to HTTPAdapter/ulrib3 retry
+        if resp.status_code != 200:
+            if retries_status > RETRIES_STATUS_MAX:
+                logger.info(
+                    "status {0} - retry #{1}, wait {2}s".format(
+                        resp.status_code, retries_status, delay_status
+                    )
+                )
+                break
+            time.sleep(delay_status)
+            delay_status += delay_status
+            retries_status += 1
         result = resp.json()
         if (
             not result
@@ -48,14 +68,20 @@ def fetch_content(path, timestamp):
             or "last_indexing_queued" not in result["@components"]
             or result["@components"]["last_indexing_queued"] < timestamp
         ):
-            logger.info("retry fetch {0}, wait {1}s".format(url, delay))
-            retries += 1
-            time.sleep(delay)
-            delay += delay
+            if retries_timestamp > RETRIES_TIMESTAMP_MAX:
+                break
+            logger.info(
+                "stimestamp retry - fetch #{0}, wait {1}s".format(
+                    retries_timestamp, delay_timestamp
+                )
+            )
+            retries_timestamp += 1
+            time.sleep(delay_timestamp)
+            delay_timestamp += delay_timestamp
             continue
         return result
 
-    logger.error("can not fetch content {0}".format(url, delay))
+    logger.error("can not fetch content")
 
 
 def fetch_schema(refetch=False):

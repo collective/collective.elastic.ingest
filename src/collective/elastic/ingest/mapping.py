@@ -16,8 +16,7 @@ STATE = {"initial": True}
 DETECTOR_METHODS = {}
 
 _mappings_file = os.environ.get(
-    "MAPPINGS_FILE",
-    os.path.join(os.path.dirname(__file__), "mappings.json"),
+    "MAPPINGS_FILE", os.path.join(os.path.dirname(__file__), "mappings.json")
 )
 
 with open(_mappings_file, mode="r") as fp:

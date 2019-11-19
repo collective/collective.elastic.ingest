@@ -16,6 +16,7 @@ if sentry_dsn is not None:
     try:
         import sentry_sdk
         from sentry_sdk.integrations.celery import CeleryIntegration
+
         sentry_sdk.init(sentry_dsn, integrations=[CeleryIntegration()])
         logger.debug("Enable sentry logging.")
         if sentry_project is not None:
