@@ -44,8 +44,8 @@ def fetch_content(path, timestamp):
     delay_status = RETRY_STATUS_BASE
     while True:
         logger.info(
-            "fetch content from {0} trial {1}".format(
-                url, 1 + retries_timestamp + retries_status
+            "fetch content ({0}) from {1} ".format(
+                1 + retries_timestamp + retries_status, url
             )
         )
         resp = session.get(url)
@@ -53,7 +53,7 @@ def fetch_content(path, timestamp):
         if resp.status_code != 200:
             if retries_status > RETRIES_STATUS_MAX:
                 logger.info(
-                    "status {0} - retry #{1}, wait {2}s".format(
+                    "-> status {0} - retry no.{1}, wait {2:0.3f}s".format(
                         resp.status_code, retries_status, delay_status
                     )
                 )
@@ -71,7 +71,7 @@ def fetch_content(path, timestamp):
             if retries_timestamp > RETRIES_TIMESTAMP_MAX:
                 break
             logger.info(
-                "stimestamp retry - fetch #{0}, wait {1}s".format(
+                "-> timestamp retry - fetch no.{0}, wait {1:0.3f}s".format(
                     retries_timestamp, delay_timestamp
                 )
             )
@@ -81,7 +81,7 @@ def fetch_content(path, timestamp):
             continue
         return result
 
-    logger.error("can not fetch content")
+    logger.error("-> can not fetch content")
 
 
 def fetch_schema(refetch=False):
