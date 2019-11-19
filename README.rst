@@ -12,8 +12,6 @@ Celery-Tasks for ElasticSearch Integration for Plone content
 - configure elasticsearch from environment variables
 - task to index an content object
 - task to unindex an content object
-- query status of a task
-- simple statistics about tasks-count: pending, done, errored
 
 
 Installation
@@ -81,6 +79,12 @@ Install for development:
 - development install ``./bin/env/pip install -e .``
 - add redis support``./bin/env/pip install redis``.
 
+Todo
+----
+
+- query status of a task
+- simple statistics about tasks-count: pending, done, errored
+- celery retry on failure, i.e. restart of ElasticSearch, Plone, ...
 
 License
 -------
