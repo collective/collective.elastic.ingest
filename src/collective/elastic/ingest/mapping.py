@@ -119,7 +119,7 @@ def create_or_update_mapping(full_schema, index_name):
         value_type = field["field"]
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
         if field["name"] in seen:
-            logger.info(
+            logger.debug(
                 "Skip dup field definition {0} with {1}. Already defined: {2}".format(
                     fqfieldname, value_type, properties[field["name"]]
                 )

@@ -38,9 +38,8 @@ def setup_ingest_pipelines(full_schema, index_name):
             definition["pipeline"]["processors"], source, target
         )
     if pipelines["processors"]:
-        logger.info(
-            "update ingest pipeline {0} with {1}".format(pipeline_name, pipelines)
-        )
+        logger.info("update ingest pipelines {0}".format(pipeline_name))
+        logger.debug("pipeline definitions:\n{0}".format(pipelines))
         es.ingest.put_pipeline(pipeline_name, pipelines)
     else:
         es.ingest.delete_pipeline(pipeline_name)

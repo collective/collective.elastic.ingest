@@ -37,7 +37,6 @@ Define the configuration as environment variables::
     CELERY_BROKER=redis://localhost:6379/0
     ELASTICSEARCH_INGEST_SERVER=localhost:9200
     ELASTICSEARCH_INGEST_USE_SSL=0
-    ELASTICSEARCH_INDEX=0
     PLONE_SERVICE=http://localhost:8080
     PLONE_PATH=Plone
     PLONE_USER=admin
