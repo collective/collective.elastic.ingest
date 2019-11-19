@@ -24,15 +24,6 @@ Install ``collective.elastic.ingest`` (redis-ready) using pip::
     pip install collective.elastic.ingest redis
 
 
-Install for package development:
-
-- clone source code repository,
-- enter repository directory
-- recommended: create a virtualenv or pyenv
-- ``pip install -e .``
-- ``pip install redis``.
-
-
 Starting
 --------
 
@@ -50,7 +41,7 @@ Define the configuration as environment variables::
 Optional (defaults used if not given)::
 
     MAPPINGS_FILE=/full/path/to/mappings
-    SENTRY_DSN=
+    SENTRY_DSN= (disabled by default)
 
 The run celery::
 
@@ -81,6 +72,14 @@ Concept & code by Jens W. Klein
 Contributors:
 
 - no others so far
+
+Install for development:
+
+- clone source code repository,
+- enter repository directory
+- recommended: create a virtualenv ``python -mvenv env``
+- development install ``./bin/env/pip install -e .``
+- add redis support``./bin/env/pip install redis``.
 
 
 License
