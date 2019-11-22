@@ -2,21 +2,9 @@
 from setuptools import find_packages
 from setuptools import setup
 
-
-long_description = "\n\n".join(
-    [
-        open("README.rst").read(),
-        open("CONTRIBUTORS.rst").read(),
-        open("CHANGES.rst").read(),
-    ]
-)
-
-
 setup(
     name="collective.elastic.ingest",
     version="1.0a1",
-    description="Queue runner for collective.elastic.plone",
-    long_description=long_description,
     project_urls={
         "PyPI": "https://pypi.python.org/pypi/collective.elastic.ingest",
         "Source": "https://github.com/collective/collective.elastic.ingest",
@@ -31,7 +19,7 @@ setup(
     install_requires=[
         "CacheControl",
         "celery",
-        "elasticsearch",
+        "elasticsearch>=7",
         "requests",
         "setuptools",
         "six",
