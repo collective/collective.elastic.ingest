@@ -83,7 +83,8 @@ Install for development:
 - enter repository directory
 - recommended: create a virtualenv ``python -mvenv env``
 - development install ``./bin/env/pip install -e .``
-- add redis support``./bin/env/pip install redis``.
+- add redis support ``./bin/env/pip install redis``.
+- load environment configuration ``source .env``.
 
 Todo
 ----
