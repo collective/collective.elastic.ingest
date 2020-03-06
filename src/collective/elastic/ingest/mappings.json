@@ -1,15 +1,12 @@
 {
-  "behaviors/plone.allowdiscussion/allow_discussion": [
-    {
-      "type": "boolean"
-    }
-  ],
+  "behaviors/plone.allowdiscussion/allow_discussion": {
+    "type": "boolean"
+  },
   "plone.app.textfield.RichText": {
     "pipeline": {
       "source": "{name}__data",
       "target": "{name}__extracted",
-      "processors": [
-        {
+      "processors": [{
           "attachment": {
             "field": "{source}",
             "target_field": "{target}",
@@ -81,8 +78,7 @@
     "pipeline": {
       "source": "{name}__data",
       "target": "{name}__extracted",
-      "processors": [
-        {
+      "processors": [{
           "attachment": {
             "field": "{source}",
             "target_field": "{target}",
@@ -157,8 +153,7 @@
     "pipeline": {
       "source": "{name}__data",
       "target": "{name}__extracted",
-      "processors": [
-        {
+      "processors": [{
           "attachment": {
             "field": "{source}",
             "target_field": "{target}",
@@ -328,13 +323,11 @@
   "zope.schema._field.Dict": {
     "type": "object"
   },
+  "zope.schema._field.Float": {
+    "type": "double"
+  },
   "zope.schema._field.List": {
-    "detection": {
-      "default": {
-        "type": "keyword"
-      },
-      "method": "replace"
-    }
+    "type": "keyword"
   },
   "zope.schema._field.Tuple": {
     "type": "keyword"
