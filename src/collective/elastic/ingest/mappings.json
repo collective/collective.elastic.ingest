@@ -2,6 +2,31 @@
   "behaviors/plone.allowdiscussion/allow_discussion": {
     "type": "boolean"
   },
+  "behaviors/plone.collection/customViewFields": {
+    "type": "nested",
+    "dynamic": false,
+    "properties": {
+      "token": {
+        "type": "keyword"
+      },
+      "title": {
+        "type": "text"
+      }
+    }
+  },
+  "behaviors/plone.collection/query": {
+    "type": "nested",
+    "dynamic": false,
+    "properties": {
+      "token": {
+        "type": "keyword"
+      },
+      "title": {
+        "type": "text"
+      }
+    }
+  },
+
   "plone.app.textfield.RichText": {
     "pipeline": {
       "source": "{name}__data",
