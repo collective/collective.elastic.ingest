@@ -110,7 +110,16 @@ def create_or_update_mapping(full_schema, index_name):
             mapping["mappings"]["properties"] = {}
     else:
         # ftr: here is the basic structure of a mapping
-        mapping = {"mappings": {"properties": {}}, "settings": {}}
+        mapping = {
+            "mappings": {"properties": {}},
+            "settings": {
+                # xxx: number should be made configurable
+                "index.mapping.nested_fields.limit": 100,
+                # xxx: to be removed or at least made configurable by env var
+                # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
+                "read_only_allow_delete": False,
+            },
+        }
     # process mapping
     properties = mapping["mappings"]["properties"]
     seen = set()
@@ -135,18 +144,13 @@ def create_or_update_mapping(full_schema, index_name):
         map_field(field, properties, fqfieldname, seen)
 
     STATE["initial"] = False
-    if not index_exists:
-        # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
-        # xxx: to be removed or at least made configurable by env var
-        mapping = {"settings":{}}
-        mapping["settings"]["index.mapping.nested_fields.limit"] = 100
-        mapping["settings"]["blocks"] = {"read_only_allow_delete": False}
-        # from celery.contrib import rdb; rdb.set_trace()
-        logger.info("create index with mapping")
-        logger.debug("mapping is:\n{0}".format(json.dumps(mapping)))
-        es.indices.create(index_name, body=mapping)
-    else:
+    if index_exists:
         # xxx: here a check if the schema is different from the original could be fine
         logger.info("update mapping")
         logger.debug("mapping is:\n{0}".format(json.dumps(mapping["mappings"])))
         es.indices.put_mapping(index=index_name, body=mapping["mappings"])
+    else:
+        # from celery.contrib import rdb; rdb.set_trace()
+        logger.info("create index with mapping")
+        logger.debug("mapping is:\n{0}".format(json.dumps(mapping)))
+        es.indices.create(index_name, body=mapping)
