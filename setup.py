@@ -2,6 +2,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
+
 setup(
     name="collective.elastic.ingest",
     version="1.0a1",
