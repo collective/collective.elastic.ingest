@@ -147,12 +147,20 @@ def create_or_update_mapping(full_schema, index_name):
 
     STATE["initial"] = False
     if index_exists:
-        if json.dumps(original_mapping) != json.dumps(mapping):
+        if json.dumps(original_mapping["mappings"], sort_keys=True) != json.dumps(
+            mapping["mappings"], sort_keys=True
+        ):
             logger.info("update mapping")
-            logger.debug("mapping is:\n{0}".format(json.dumps(mapping["mappings"])))
+            logger.debug(
+                "mapping is:\n{0}".format(
+                    json.dumps(mapping["mappings"], sort_keys=True, indent=2)
+                )
+            )
             es.indices.put_mapping(index=index_name, body=mapping["mappings"])
     else:
         # from celery.contrib import rdb; rdb.set_trace()
         logger.info("create index with mapping")
-        logger.debug("mapping is:\n{0}".format(json.dumps(mapping)))
+        logger.debug(
+            "mapping is:\n{0}".format(json.dumps(mapping, sort_keys=True, indent=2))
+        )
         es.indices.create(index_name, body=mapping)
