@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .elastic import get_ingest_client
 from .logging import logger
+from copy import deepcopy
 from pprint import pformat
 
 import json
@@ -105,7 +106,8 @@ def create_or_update_mapping(full_schema, index_name):
     # get current mapping
     index_exists = es.indices.exists(index_name)
     if index_exists:
-        mapping = es.indices.get_mapping(index=index_name)[index_name]
+        original_mapping = es.indices.get_mapping(index=index_name)[index_name]
+        mapping = deepcopy(original_mapping)
         if "properties" not in mapping["mappings"]:
             mapping["mappings"]["properties"] = {}
     else:
@@ -117,7 +119,7 @@ def create_or_update_mapping(full_schema, index_name):
                 "index.mapping.nested_fields.limit": 100,
                 # xxx: to be removed or at least made configurable by env var
                 # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
-                "read_only_allow_delete": False,
+                "index.blocks.read_only_allow_delete": False,
             },
         }
     # process mapping
@@ -145,10 +147,10 @@ def create_or_update_mapping(full_schema, index_name):
 
     STATE["initial"] = False
     if index_exists:
-        # xxx: here a check if the schema is different from the original could be fine
-        logger.info("update mapping")
-        logger.debug("mapping is:\n{0}".format(json.dumps(mapping["mappings"])))
-        es.indices.put_mapping(index=index_name, body=mapping["mappings"])
+        if json.dumps(original_mapping) != json.dumps(mapping):
+            logger.info("update mapping")
+            logger.debug("mapping is:\n{0}".format(json.dumps(mapping["mappings"])))
+            es.indices.put_mapping(index=index_name, body=mapping["mappings"])
     else:
         # from celery.contrib import rdb; rdb.set_trace()
         logger.info("create index with mapping")

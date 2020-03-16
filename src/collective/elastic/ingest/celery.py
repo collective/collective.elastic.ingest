@@ -9,6 +9,7 @@ from celery import Celery
 
 import os
 
+
 # sentry integration
 sentry_dsn = os.environ.get("SENTRY_DSN", None)
 sentry_project = os.environ.get("SENTRY_PROJECT", None)
