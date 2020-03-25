@@ -16,7 +16,8 @@
         "action": "rewrite",
         "configuration": {
             "source": "@components/rid",
-            "target": "rid"
+            "target": "rid",
+            "enforce": true
         }
     },
     {
