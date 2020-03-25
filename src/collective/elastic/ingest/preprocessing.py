@@ -1,64 +1,86 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 
+import json
+import os
 
-PREPROCESSORS = OrderedDict()
+_preprocessings_file = os.environ.get(
+    "PREPROCESSINGS_FILE", os.path.join(os.path.dirname(__file__), "preprocessings.json")
+)
+
+with open(_preprocessings_file, mode="r") as fp:
+    PREPROCESSOR_CONFIGS = json.load(fp)
+
+### MATCHERS
+MATCHING_FUNCTIONS = {}
+
+def match_always(content, full_schema, config):
+    return True
+
+MATCHING_FUNCTIONS['always'] = match_always
+
+def match_content_exists(content, full_schema, config):
+    path = config['path'].split('/')
+    current = content
+    for el in path:
+        current = current.get(el, None)
+        if current is None:
+            return False
+    return True
+
+MATCHING_FUNCTIONS['content_exists'] = match_content_exists
 
 
-def add_additional_field(full_schema, section_name, definition):
-    """helper to add additional fields to a full_schema as fetched from Plone
+### ACTIONS
+
+ACTION_FUNCTIONS = {}
+
+def action_additional_schema(content, full_schema, config):
+    """add additional fields to a full_schema as fetched from Plone
     """
     if full_schema is None:
+        # case: in subsequent calls theres no need to modify schema b/c of caching
         return
     if "additional" not in full_schema:
         full_schema["additional"] = {}
-    if section_name not in full_schema["additional"]:
-        full_schema["additional"][section_name] = []
-    full_schema["additional"][section_name].append(definition)
+    if 'preprocessed' not in full_schema["additional"]:
+        full_schema["additional"]['preprocessed'] = []
+    full_schema["additional"]['preprocessed'].append(config)
+
+ACTION_FUNCTIONS["additional_schema"] = action_additional_schema
+
+def _find_last_container_in_path(root, path):
+    if len(path) == 1:
+        return root, path[0]
+    if path[0] not in root:
+        return None, None
+    return _find_last_container_in_path(root[path[0]], path[1:])
+
+def action_rewrite(content, full_schema, config):
+    source_container, source_key = _find_last_container_in_path(content, config['source'].split('/'))
+    if source_container is None:
+        return
+    target_container, target_key = _find_last_container_in_path(content, config['target'].split('/'))
+    if target_container is None:
+        return
+    if source_key not in source_container:
+        return
+    target_container[target_key] = source_container[source_key]
+    del source_container[source_key]
+
+ACTION_FUNCTIONS["rewrite"] = action_rewrite
 
 
-def _rid_leverage(content, full_schema, key):
-    """take catalog_rif out of @components to the top-level of content
-    """
-    content["rid"] = content["@components"]["catalog_rid"]
-    definition = {"name": "rid", "field": "zope.schema._bootstrapfields.Int"}
-    add_additional_field(full_schema, "preprocessed", definition)
-
-
-PREPROCESSORS["rid_leverage"] = _rid_leverage
-
-
-def _type_modification(content, full_schema, key):
-    """take @Type and make it ES friendly
-    """
-    content["portal_type"] = content.pop("@type")
-    definition = {"name": "portal_type", "field": "zope.schema._field.ASCIILine"}
-    add_additional_field(full_schema, "preprocessed", definition)
-
-
-PREPROCESSORS["type_modification"] = _type_modification
-
-# removals
-KEYS_TO_REMOVE = ["items", "items_total", "parent", "@components"]
-
-
-def _remove_entry(content, full_schema, key):
+def action_remove(content, full_schema, config):
     """remove unused entry
     """
-    if key in content:
-        del content[key]
+    target, target_key = _find_last_container_in_path(content, config['target'].split('/'))
+    if target_key in target:
+        del target[key]
 
+ACTION_FUNCTIONS["remove"] = action_remove
 
-PREPROCESSORS["@components"] = _remove_entry
-PREPROCESSORS["@id"] = _remove_entry
-PREPROCESSORS["items"] = _remove_entry
-PREPROCESSORS["items_total"] = _remove_entry
-PREPROCESSORS["parent"] = _remove_entry
-PREPROCESSORS["version"] = _remove_entry
-PREPROCESSORS["versioning_enabled"] = _remove_entry
-
-
-def _empty_removal(content, full_schema, key):
+def action_empty_removal(content, full_schema, key):
     """remove empty fields
     """
     to_remove = set()
@@ -68,12 +90,15 @@ def _empty_removal(content, full_schema, key):
     for name in to_remove:
         del content[name]
 
-
-PREPROCESSORS["empty_removal"] = _empty_removal
+ACTION_FUNCTIONS["remove_empty"] = action_empty_removal
 
 
 def preprocess(content, full_schema):
     """run full preprocessing pipeline on content and schema
     """
-    for key, preprocessor in PREPROCESSORS.items():
-        preprocessor(content, full_schema, key)
+    for ppcfg in PREPROCESSOR_CONFIGS:
+        matcher = MATCHING_FUNCTIONS[ppcfg['match']['type']]
+        if not matcher(ppcfg['match']):
+            continue
+        action = ACTION_FUNCTIONS[ppcfg['action']]
+        action(content, full_schema, ppcfg.get('configuration', {}))
