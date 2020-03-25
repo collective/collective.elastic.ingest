@@ -43,15 +43,14 @@ def index(path, timestamp, index_name):
         # xxx: retry handling!
         logger.exception(msg)
         return msg
+    if content is None:
+        return
     try:
         schema = fetch_schema()
     except Exception:
-        # xxx: retry handling!
         msg = "Error while fetching schema from Plone"
         logger.exception(msg)
         return msg
-    except Exception:
-        logger.exception("")
     try:
         ingest(content, schema, index_name)
     except Exception:
