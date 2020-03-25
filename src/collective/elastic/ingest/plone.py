@@ -81,7 +81,7 @@ def fetch_content(path, timestamp):
             continue
         return result
 
-    logger.error("-> can not fetch content")
+    logger.error("-> can not fetch content {0}".format(url))
 
 
 def fetch_schema(refetch=False):
