@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .logging import logger
+
 import json
 import os
 
@@ -51,7 +52,7 @@ ACTION_FUNCTIONS["additional_schema"] = action_additional_schema
 def _find_last_container_in_path(root, path):
     if len(path) == 1:
         return root, path[0]
-    if path[0] not in root:
+    if path is None or root is None or path[0] not in root:
         return None, None
     return _find_last_container_in_path(root[path[0]], path[1:])
 
@@ -96,9 +97,7 @@ def preprocess(content, full_schema):
     """run full preprocessing pipeline on content and schema
     """
     for ppcfg in PREPROCESSOR_CONFIGS:
-        logger.info('Matcher:\n{0}'.format(ppcfg['match']))
-        logger.info('Action:\n{0}'.format(ppcfg['action']))
-        logger.info('Configuration:\n {0}'.format(ppcfg['action']))
+        logger.debug('Preprocessor configuration:\n{0}\n'.format(ppcfg))
         matcher = MATCHING_FUNCTIONS[ppcfg['match']['type']]
         if not matcher(content, full_schema, ppcfg['match']):
             continue
