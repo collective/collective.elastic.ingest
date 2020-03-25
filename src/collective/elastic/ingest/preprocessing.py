@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .logging import logger
 import json
 import os
 
@@ -95,6 +96,9 @@ def preprocess(content, full_schema):
     """run full preprocessing pipeline on content and schema
     """
     for ppcfg in PREPROCESSOR_CONFIGS:
+        logger.info('Matcher:\n{0}'.format(ppcfg['match']))
+        logger.info('Action:\n{0}'.format(ppcfg['action']))
+        logger.info('Configuration:\n {0}'.format(ppcfg['action']))
         matcher = MATCHING_FUNCTIONS[ppcfg['match']['type']]
         if not matcher(content, full_schema, ppcfg['match']):
             continue
