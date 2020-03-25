@@ -52,7 +52,7 @@ ACTION_FUNCTIONS["additional_schema"] = action_additional_schema
 def _find_last_container_in_path(root, path):
     if len(path) == 1:
         return root, path[0]
-    if path is None or root is None or path[0] not in root:
+    if path[0] not in root:
         return None, None
     return _find_last_container_in_path(root[path[0]], path[1:])
 
