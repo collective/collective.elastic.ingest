@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .ingest import postprocessing
+from . import postprocessing
 
 
 # ------------------------------------------------------------------------------
