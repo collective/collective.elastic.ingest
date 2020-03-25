@@ -96,7 +96,7 @@ def preprocess(content, full_schema):
     """
     for ppcfg in PREPROCESSOR_CONFIGS:
         matcher = MATCHING_FUNCTIONS[ppcfg['match']['type']]
-        if not matcher(ppcfg['match']):
+        if not matcher(content, full_schema, ppcfg['match']):
             continue
         action = ACTION_FUNCTIONS[ppcfg['action']]
         action(content, full_schema, ppcfg.get('configuration', {}))
