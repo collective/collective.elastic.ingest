@@ -74,7 +74,7 @@ def action_remove(content, full_schema, config):
     """
     target, target_key = _find_last_container_in_path(content, config['target'].split('/'))
     if target_key in target:
-        del target[key]
+        del target[target_key]
 
 ACTION_FUNCTIONS["remove"] = action_remove
 
