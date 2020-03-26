@@ -52,18 +52,25 @@ ACTION_FUNCTIONS["additional_schema"] = action_additional_schema
 def _find_last_container_in_path(root, path):
     if len(path) == 1:
         return root, path[0]
-    if path is None or root is None or path[0] not in root:
+    if path[0] not in root:
         return None, None
     return _find_last_container_in_path(root[path[0]], path[1:])
 
 def action_rewrite(content, full_schema, config):
+    enforce = config.get("enforce", False)
     source_container, source_key = _find_last_container_in_path(content, config['source'].split('/'))
     if source_container is None:
+        if enforce:
+            raise ValueError("Source container {0} not in content.".format(config['source']))
         return
     target_container, target_key = _find_last_container_in_path(content, config['target'].split('/'))
     if target_container is None:
+        if enforce:
+            raise ValueError("Target container {0} not in content.".format(config['source']))
         return
     if source_key not in source_container:
+        if enforce:
+            raise ValueError("Source {0} not in content.".format(config['source']))
         return
     target_container[target_key] = source_container[source_key]
     del source_container[source_key]
