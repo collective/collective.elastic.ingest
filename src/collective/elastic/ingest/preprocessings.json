@@ -1,5 +1,59 @@
 [
     {
+      "match": {
+        "type": "always"
+      },
+      "action": "remove",
+      "configuration": {
+        "target": "showFields"
+      }
+    },
+    {
+      "match": {
+        "type": "always"
+      },
+      "action": "remove",
+      "configuration": {
+        "target": "position"
+      }
+    },
+    {
+      "match": {
+        "type": "always"
+      },
+      "action": "remove",
+      "configuration": {
+        "target": "position_types"
+      }
+    },
+    {
+      "match": {
+        "type": "always"
+      },
+      "action": "remove",
+      "configuration": {
+        "target": "offer_type"
+      }
+    },
+    {
+      "match": {
+        "type": "always"
+      },
+      "action": "remove",
+      "configuration": {
+        "target": "organization_types"
+      }
+    },
+    {
+      "match": {
+        "type": "always"
+      },
+      "action": "remove",
+      "configuration": {
+        "target": "organization_levels"
+      }
+    },
+    {
         "match": {
             "type": "always"
         },
@@ -16,7 +70,8 @@
         "action": "rewrite",
         "configuration": {
             "source": "@components/rid",
-            "target": "rid"
+            "target": "rid",
+            "enforce": true
         }
     },
     {

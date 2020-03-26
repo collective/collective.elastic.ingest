@@ -5,7 +5,7 @@ import json
 import os
 
 _preprocessings_file = os.environ.get(
-    "PREPROCESSINGS_FILE", os.path.join(os.path.dirname(__file__), "preprocessing.json")
+    "PREPROCESSINGS_FILE", os.path.join(os.path.dirname(__file__), "preprocessings.json")
 )
 
 with open(_preprocessings_file, mode="r") as fp:
