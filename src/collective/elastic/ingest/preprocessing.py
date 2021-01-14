@@ -73,7 +73,6 @@ def action_rewrite(content, full_schema, config):
             raise ValueError("Source {0} not in content.".format(config['source']))
         return
     target_container[target_key] = source_container[source_key]
-    del source_container[source_key]
 
 ACTION_FUNCTIONS["rewrite"] = action_rewrite
 
