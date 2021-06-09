@@ -14,7 +14,7 @@
     },
     "action": "rewrite",
     "configuration": {
-      "source": "@components/rid",
+      "source": "@components/catalog_rid",
       "target": "rid",
       "enforce": true
     }
