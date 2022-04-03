@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .analysis import update_analysis
 from .elastic import get_ingest_client
 from .logging import logger
 from .mapping import create_or_update_mapping
@@ -29,7 +30,8 @@ def setup_ingest_pipelines(full_schema, index_name):
     }
     for section_name, schema_name, field in iterate_schema(full_schema):
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
-        definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+        definition = FIELDMAP.get(
+            fqfieldname, FIELDMAP.get(field["field"], None))
         if not definition or "pipeline" not in definition:
             continue
         source = definition["pipeline"]["source"].format(name=field["name"])
@@ -46,9 +48,13 @@ def setup_ingest_pipelines(full_schema, index_name):
 
 
 def ingest(content, full_schema, index_name):
+    print("ingest (site-package)")
     # preprocess content and schema
     preprocess(content, full_schema)
     if full_schema:
+        # first update_analysis then create_or_update_mapping:
+        # mapping can use analyzers from analysis.json
+        update_analysis(index_name)
         create_or_update_mapping(full_schema, index_name)
         if not STATES["pipelines_created"]:
             setup_ingest_pipelines(full_schema, index_name)

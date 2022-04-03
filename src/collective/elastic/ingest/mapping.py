@@ -2,7 +2,6 @@
 from .elastic import get_ingest_client
 from .logging import logger
 from copy import deepcopy
-from pprint import pformat
 
 import json
 import operator
@@ -28,7 +27,8 @@ def iterate_schema(full_schema):
     for section_name, section in sorted(
         full_schema.items(), key=operator.itemgetter(0)
     ):
-        for schema_name, schema in sorted(section.items(), key=operator.itemgetter(0)):
+        for schema_name, schema in sorted(section.items(),
+                                          key=operator.itemgetter(0)):
             for field in sorted(schema, key=operator.itemgetter("name")):
                 yield section_name, schema_name, field
 
@@ -81,8 +81,10 @@ def map_field(field, properties, fqfieldname, seen):
         target = pipeline["target"].format(name=field["name"])
         properties[target] = pipeline["type"]
 
-        # memorize this field as expansion field for later use in post_processors
-        EXPANSION_FIELDS[field["name"]] = dict(pipeline["expansion"], source=source)
+        # memorize this field
+        # as expansion field for later use in post_processors
+        EXPANSION_FIELDS[
+            field["name"]] = dict(pipeline["expansion"], source=source)
 
 
 def _replacement_detector(field, properties, definition, fqfieldname, seen):
@@ -131,7 +133,8 @@ def create_or_update_mapping(full_schema, index_name):
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
         if field["name"] in properties:
             logger.debug(
-                "Skip existing field definition {0} with {1}. Already defined: {2}".format(
+                "Skip existing field definition ",
+                "{0} with {1}. Already defined: {2}".format(
                     fqfieldname, value_type, properties[field["name"]]
                 )
             )
@@ -147,9 +150,10 @@ def create_or_update_mapping(full_schema, index_name):
 
     STATE["initial"] = False
     if index_exists:
-        if json.dumps(original_mapping["mappings"], sort_keys=True) != json.dumps(
-            mapping["mappings"], sort_keys=True
-        ):
+        if json.dumps(
+            original_mapping["mappings"], sort_keys=True) != json.dumps(
+                    mapping["mappings"], sort_keys=True
+                ):
             logger.info("update mapping")
             logger.debug(
                 "mapping is:\n{0}".format(
@@ -161,6 +165,7 @@ def create_or_update_mapping(full_schema, index_name):
         # from celery.contrib import rdb; rdb.set_trace()
         logger.info("create index with mapping")
         logger.debug(
-            "mapping is:\n{0}".format(json.dumps(mapping, sort_keys=True, indent=2))
+            "mapping is:\n{0}".format(
+                json.dumps(mapping, sort_keys=True, indent=2))
         )
         es.indices.create(index_name, body=mapping)

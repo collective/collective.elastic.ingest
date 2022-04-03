@@ -44,11 +44,12 @@ Define the configuration as environment variables::
 
 Optional (defaults used if not given)::
 
+    ANALYSIS_FILE=/full/path/to/analysis.json
     MAPPINGS_FILE=/full/path/to/mappings.json
     PREPROCESSINGS_FILE=/full/path/to/preprocessings.json
     SENTRY_DSN= (disabled by default)
 
-The run celery::
+Then run celery::
 
     celery worker -A collective.elastic.ingest.celery.app -l info
 
