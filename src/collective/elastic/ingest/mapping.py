@@ -6,6 +6,9 @@ from copy import deepcopy
 import json
 import operator
 import os
+import pprint
+
+pp = pprint.PrettyPrinter(indent=4)
 
 
 # to be filled as cache and renewed on create_or_update_mapping
@@ -21,6 +24,8 @@ _mappings_file = os.environ.get(
 
 with open(_mappings_file, mode="r") as fp:
     FIELDMAP = json.load(fp)
+print("FIELDMAP of custom mapping:")
+pp.pprint(FIELDMAP)
 
 
 def iterate_schema(full_schema):
@@ -53,6 +58,7 @@ def expanded_processors(processors, source, target):
 
 def map_field(field, properties, fqfieldname, seen):
     definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+    logger.debug(f"** map_field. field: {field}, fqfieldname: {fqfieldname}")
     if definition is None:
         logger.warning(
             "Ignore: '{0}' field type nor '{1}' FQFN in map.".format(
@@ -61,7 +67,7 @@ def map_field(field, properties, fqfieldname, seen):
         )
         return
     seen.add(field["name"])
-    logger.debug("Map {0} to {1}".format(field["name"], definition))
+    logger.debug("Map field name {0} to definition {1}".format(field["name"], definition))
     if "type" in definition:
         # simple defintion
         properties[field["name"]] = definition
@@ -133,7 +139,7 @@ def create_or_update_mapping(full_schema, index_name):
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
         if field["name"] in properties:
             logger.debug(
-                "Skip existing field definition ",
+                "Skip existing field definition "
                 "{0} with {1}. Already defined: {2}".format(
                     fqfieldname, value_type, properties[field["name"]]
                 )
@@ -154,16 +160,16 @@ def create_or_update_mapping(full_schema, index_name):
             original_mapping["mappings"], sort_keys=True) != json.dumps(
                     mapping["mappings"], sort_keys=True
                 ):
-            logger.info("update mapping")
+            logger.info("Update mapping.")
             logger.debug(
-                "mapping is:\n{0}".format(
+                "Mapping is:\n{0}".format(
                     json.dumps(mapping["mappings"], sort_keys=True, indent=2)
                 )
             )
             es.indices.put_mapping(index=index_name, body=mapping["mappings"])
     else:
         # from celery.contrib import rdb; rdb.set_trace()
-        logger.info("create index with mapping")
+        logger.info("Create index with mapping.")
         logger.debug(
             "mapping is:\n{0}".format(
                 json.dumps(mapping, sort_keys=True, indent=2))
