@@ -66,7 +66,7 @@ This is an advanced topic.
 You can find detailed information about text analysis in ElasticSearch documentation.
 We provide an example analysis configuration for a better search for german compounded words.
 
-Example: A document with the string 'Lehrstellenbörse' can be found by quering 'Lehrstelle' and also by quering 'Börse' with a decompounder with word list ' Lehrstelle, Börse'.
+Example: A document with the string 'Lehrstellenbörse' can be found by quering 'Lehrstelle' and also by quering 'Börse' with a decompounder with word list 'Lehrstelle, Börse' and an additional stemmer.
 
 Note: The file ``elasticsearch-lexicon.txt`` with the word list used by the decompounder of the sample analysis configuration in ``analysis.json.example`` has to be located in the configuration directory of your elasticsearch server.
 
@@ -74,8 +74,8 @@ The example analyzer configuration also applies a stemmer, which can handle flex
 Even fuzzy search, which can be used without any analysis configuration, has its limits in a nice but complex language like german.
 
 The analysis configuration is just a configuration of analyzers.
-In the provided example are two of them: `german_analyzer`and `german_exact`.
-The first is the one is to decompound words according the word list in `lexicon.txt`. A stemmer is added.
+In the provided example are two of them: ``german_analyzer``and ``german_exact``.
+The first is the one to decompound words according the word list in `lexicon.txt`. A stemmer is added.
 The second one is to allow also exact queries with a quoted search string. 
 These two analyzers are to be applied to fields. You can apply them in your mapping.
 Example::
@@ -92,6 +92,22 @@ Example::
         }
     },
 
+Check your configured analysis with::
+
+    POST {{elasticsearchserver}}/_analyze
+
+    {
+        "text": "Lehrstellenbörse",
+        "tokenizer": "standard",
+        "filter": [
+            "lowercase",
+            "custom_dictionary_decompounder",
+            "light_german_stemmer",
+            "unique"
+        ]
+    }
+
+The response deleviers the tokens for the analyzed text "Lehrstellenbörse".
 
 
 Source Code
