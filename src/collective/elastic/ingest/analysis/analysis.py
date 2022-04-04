@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """TODO
 - Recap if analysis settings should better be updated on Celery /Plone reboot, but not on every _doc update.
-- Read lexicon from lexicon.txt
 """
 from ..elastic import get_ingest_client
 from ..logging import logger
