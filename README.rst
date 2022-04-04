@@ -67,10 +67,31 @@ You can find detailed information about text analysis in ElasticSearch documenta
 We provide an example analysis configuration for a better search for german compounded words.
 
 Example: A document with the string 'Lehrstellenbörse' can be found by quering 'Lehrstelle' and also by quering 'Börse' with a decompounder with word list ' Lehrstelle, Börse'.
+
+Note: The file ``elasticsearch-lexicon.txt`` with the word list used by the decompounder of the sample analysis configuration in ``analysis.json.example`` has to be located in the configuration directory of your elasticsearch server.
+
 The example analyzer configuration also applies a stemmer, which can handle flexations of words, which is an important enhancement.
 Even fuzzy search, which can be used without any analysis configuration, has its limits in a nice but complex language like german.
 
-Note: The file ``elasticsearch-lexicon.txt`` with the word list used by the decompounder of the sample analysis configuration in ``analysis.json.example`` has to be located in the configuration directory of your elasticsearch server.
+The analysis configuration is just a configuration of analyzers.
+In the provided example are two of them: `german_analyzer`and `german_exact`.
+The first is the one is to decompound words according the word list in `lexicon.txt`. A stemmer is added.
+The second one is to allow also exact queries with a quoted search string. 
+These two analyzers are to be applied to fields. You can apply them in your mapping.
+Example::
+
+
+    "behaviors/plone.basic/title": {
+        "type": "text",
+        "analyzer": "german_analyzer",
+        "fields": {
+            "exact": {
+                "type": "text",
+                "analyzer": "german_exact_analyzer"
+            }
+        }
+    },
+
 
 
 Source Code
