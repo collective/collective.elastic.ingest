@@ -21,7 +21,7 @@
       "filter": {
         "igib_dictionary_decompounder": {
             "type": "dictionary_decompounder",
-            "word_list": ["lehrstelle", "börse"]
+            "word_list_path": "elasticsearch-lexicon.txt"
         },
         "light_german_stemmer": {
           "type": "stemmer",
