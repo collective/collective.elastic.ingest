@@ -58,8 +58,10 @@ Or with debug information::
     celery worker -A collective.elastic.ingest.celery.app -l debug
 
 
-Analysis
---------
+Text Analysis
+-------------
+
+Test analysis is optional. Skip this on a first installation.
 
 Search results can be enhanced with a tailored text analysis.
 This is an advanced topic.
@@ -67,8 +69,6 @@ You can find detailed information about text analysis in ElasticSearch documenta
 We provide an example analysis configuration for a better search for german compounded words.
 
 Example: A document with the string 'Lehrstellenbörse' can be found by quering 'Lehrstelle' and also by quering 'Börse' with a decompounder with word list 'Lehrstelle, Börse' and an additional stemmer.
-
-Note: The file ``elasticsearch-lexicon.txt`` with the word list used by the decompounder of the sample analysis configuration in ``analysis.json.example`` has to be located in the configuration directory of your elasticsearch server.
 
 The example analyzer configuration also applies a stemmer, which can handle flexations of words, which is an important enhancement.
 Even fuzzy search, which can be used without any analysis configuration, has its limits in a nice but complex language like german.
@@ -79,7 +79,6 @@ The first is the one to decompound words according the word list in `lexicon.txt
 The second one is to allow also exact queries with a quoted search string. 
 These two analyzers are to be applied to fields. You can apply them in your mapping.
 Example::
-
 
     "behaviors/plone.basic/title": {
         "type": "text",
@@ -107,7 +106,9 @@ Check your configured analysis with::
         ]
     }
 
-The response deleviers the tokens for the analyzed text "Lehrstellenbörse".
+The response delivers the tokens for the analyzed text "Lehrstellenbörse".
+
+Note: The file ``elasticsearch-lexicon.txt`` with the word list used by the decompounder of the sample analysis configuration in ``analysis.json.example`` has to be located in the configuration directory of your elasticsearch server.
 
 
 Source Code
