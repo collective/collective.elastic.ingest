@@ -18,7 +18,7 @@ def test_extract_binary__richtext():
         # skip fields
     }
 
-    postprocessing._extract_binary(content, {'expansion_fields': {}}, "extract")
+    postprocessing._extract_binary(content, {"expansion_fields": {}}, "extract")
     assert content == {"keep_me": "Bumblebee"}
 
 

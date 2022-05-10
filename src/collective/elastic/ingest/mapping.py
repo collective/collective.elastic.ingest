@@ -8,6 +8,7 @@ import operator
 import os
 import pprint
 
+
 pp = pprint.PrettyPrinter(indent=4)
 
 
@@ -24,16 +25,13 @@ _mappings_file = os.environ.get(
 
 with open(_mappings_file, mode="r") as fp:
     FIELDMAP = json.load(fp)
-print("FIELDMAP of custom mapping:")
-pp.pprint(FIELDMAP)
 
 
 def iterate_schema(full_schema):
     for section_name, section in sorted(
         full_schema.items(), key=operator.itemgetter(0)
     ):
-        for schema_name, schema in sorted(section.items(),
-                                          key=operator.itemgetter(0)):
+        for schema_name, schema in sorted(section.items(), key=operator.itemgetter(0)):
             for field in sorted(schema, key=operator.itemgetter("name")):
                 yield section_name, schema_name, field
 
@@ -67,7 +65,7 @@ def map_field(field, properties, fqfieldname, seen):
         )
         return
     seen.add(field["name"])
-    logger.debug("Map field name {0} to definition {1}".format(field["name"], definition))
+    logger.debug(f"Map field name {field['name']} to definition {definition}")
     if "type" in definition:
         # simple defintion
         properties[field["name"]] = definition
@@ -89,8 +87,7 @@ def map_field(field, properties, fqfieldname, seen):
 
         # memorize this field
         # as expansion field for later use in post_processors
-        EXPANSION_FIELDS[
-            field["name"]] = dict(pipeline["expansion"], source=source)
+        EXPANSION_FIELDS[field["name"]] = dict(pipeline["expansion"], source=source)
 
 
 def _replacement_detector(field, properties, definition, fqfieldname, seen):
@@ -148,7 +145,8 @@ def create_or_update_mapping(full_schema, index_name):
         if field["name"] in seen:
             logger.debug(
                 "Skip dup field definition {0} with {1}.".format(
-                    fqfieldname, value_type,
+                    fqfieldname,
+                    value_type,
                 )
             )
             continue
@@ -156,10 +154,9 @@ def create_or_update_mapping(full_schema, index_name):
 
     STATE["initial"] = False
     if index_exists:
-        if json.dumps(
-            original_mapping["mappings"], sort_keys=True) != json.dumps(
-                    mapping["mappings"], sort_keys=True
-                ):
+        if json.dumps(original_mapping["mappings"], sort_keys=True) != json.dumps(
+            mapping["mappings"], sort_keys=True
+        ):
             logger.info("Update mapping.")
             logger.debug(
                 "Mapping is:\n{0}".format(
@@ -170,8 +167,5 @@ def create_or_update_mapping(full_schema, index_name):
     else:
         # from celery.contrib import rdb; rdb.set_trace()
         logger.info("Create index with mapping.")
-        logger.debug(
-            "mapping is:\n{0}".format(
-                json.dumps(mapping, sort_keys=True, indent=2))
-        )
+        logger.debug(f"mapping is:\n{json.dumps(mapping, sort_keys=True, indent=2)}")
         es.indices.create(index_name, body=mapping)
