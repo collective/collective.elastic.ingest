@@ -44,13 +44,72 @@ Define the configuration as environment variables::
 
 Optional (defaults used if not given)::
 
+    ANALYSIS_FILE=/full/path/to/analysis.json
     MAPPINGS_FILE=/full/path/to/mappings.json
     PREPROCESSINGS_FILE=/full/path/to/preprocessings.json
     SENTRY_DSN= (disabled by default)
 
-The run celery::
+Then run celery::
 
     celery worker -A collective.elastic.ingest.celery.app -l info
+
+Or with debug information::
+
+    celery worker -A collective.elastic.ingest.celery.app -l debug
+
+
+Text Analysis
+-------------
+
+Test analysis is optional. Skip this on a first installation.
+
+Search results can be enhanced with a tailored text analysis.
+This is an advanced topic.
+You can find detailed information about text analysis in ElasticSearch documentation.
+We provide an example analysis configuration for a better search for german compounded words.
+
+Example: A document with the string 'Lehrstellenbörse' can be found by quering 'Lehrstelle' and also by quering 'Börse' with a ``decompounder`` with word list 'Lehrstelle, Börse' and an additional ``stemmer``.
+
+The example analyzer configuration also applies a ``stemmer``, which can handle flexations of words, which is an important enhancement.
+Even fuzzy search, which can be used without any analysis configuration, has its limits in a nice but complex language like german.
+
+The analysis configuration is just a configuration of analyzers.
+In the provided example are two of them: ``german_analyzer`` and ``german_exact``.
+The first is the one to decompound words according the word list in `lexicon.txt`. A ``stemmer`` is added.
+The second one is to allow also exact queries with a quoted search string. 
+These two analyzers are to be applied to fields. You can apply them in your mapping.
+Example::
+
+    "behaviors/plone.basic/title": {
+        "type": "text",
+        "analyzer": "german_analyzer",
+        "fields": {
+            "exact": {
+                "type": "text",
+                "analyzer": "german_exact_analyzer"
+            }
+        }
+    },
+
+Check your configured analysis with::
+
+    POST {{elasticsearchserver}}/_analyze
+
+    {
+        "text": "Lehrstellenbörse",
+        "tokenizer": "standard",
+        "filter": [
+            "lowercase",
+            "custom_dictionary_decompounder",
+            "light_german_stemmer",
+            "unique"
+        ]
+    }
+
+The response delivers the tokens for the analyzed text "Lehrstellenbörse".
+
+Note: The file ``elasticsearch-lexicon.txt`` with the word list used by the ``decompounder`` of the sample analysis configuration in ``analysis.json.example`` has to be located in the configuration directory of your elasticsearch server.
+
 
 Source Code
 -----------
@@ -74,11 +133,12 @@ Idea and testing by Peter Holzer
 
 Concept & code by Jens W. Klein
 
-Contributors:
+Text analysis code and configuration Katja Süss
 
-- no others so far
 
-Install for development:
+
+Install for development
+-----------------------
 
 - clone source code repository,
 - enter repository directory
@@ -86,6 +146,7 @@ Install for development:
 - development install ``./bin/env/pip install -e .``
 - add redis support ``./bin/env/pip install redis``.
 - load environment configuration ``source .env``.
+
 
 Todo
 ----

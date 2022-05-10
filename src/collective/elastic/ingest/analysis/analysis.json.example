@@ -1,0 +1,33 @@
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "german_analyzer": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "custom_dictionary_decompounder",
+            "light_german_stemmer",
+            "unique"
+          ]
+        },
+        "german_exact": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase"
+          ]
+        }
+      },
+      "filter": {
+        "custom_dictionary_decompounder": {
+            "type": "dictionary_decompounder",
+            "word_list_path": "elasticsearch-lexicon.txt"
+        },
+        "light_german_stemmer": {
+          "type": "stemmer",
+          "language": "light_german"
+        }
+      }
+    }
+  }
+}

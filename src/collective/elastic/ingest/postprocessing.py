@@ -9,8 +9,7 @@ POSTPROCESSORS = OrderedDict()
 
 
 def _extract_binary(content, info, key):
-    """
-    """
+    """ """
     for field_name, config in info["expansion_fields"].items():
         if field_name not in content:
             continue
@@ -25,7 +24,6 @@ POSTPROCESSORS["binary"] = _extract_binary
 
 
 def postprocess(content, info):
-    """run full postprocessing pipeline on content and schema
-    """
+    """run full postprocessing pipeline on content and schema"""
     for key, postprocessor in POSTPROCESSORS.items():
         postprocessor(content, info, key)

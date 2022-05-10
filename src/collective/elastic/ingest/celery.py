@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
 from .ingest import ingest
 from .logging import logger
 from .plone import fetch_content
@@ -15,8 +16,9 @@ sentry_dsn = os.environ.get("SENTRY_DSN", None)
 sentry_project = os.environ.get("SENTRY_PROJECT", None)
 if sentry_dsn is not None:
     try:
-        import sentry_sdk
         from sentry_sdk.integrations.celery import CeleryIntegration
+
+        import sentry_sdk
 
         sentry_sdk.init(sentry_dsn, integrations=[CeleryIntegration()])
         logger.debug("Enable sentry logging.")

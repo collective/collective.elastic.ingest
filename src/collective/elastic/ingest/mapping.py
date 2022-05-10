@@ -2,11 +2,14 @@
 from .elastic import get_ingest_client
 from .logging import logger
 from copy import deepcopy
-from pprint import pformat
 
 import json
 import operator
 import os
+import pprint
+
+
+pp = pprint.PrettyPrinter(indent=4)
 
 
 # to be filled as cache and renewed on create_or_update_mapping
@@ -53,6 +56,7 @@ def expanded_processors(processors, source, target):
 
 def map_field(field, properties, fqfieldname, seen):
     definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+    logger.debug(f"** map_field. field: {field}, fqfieldname: {fqfieldname}")
     if definition is None:
         logger.warning(
             "Ignore: '{0}' field type nor '{1}' FQFN in map.".format(
@@ -61,7 +65,7 @@ def map_field(field, properties, fqfieldname, seen):
         )
         return
     seen.add(field["name"])
-    logger.debug("Map {0} to {1}".format(field["name"], definition))
+    logger.debug(f"Map field name {field['name']} to definition {definition}")
     if "type" in definition:
         # simple defintion
         properties[field["name"]] = definition
@@ -81,7 +85,8 @@ def map_field(field, properties, fqfieldname, seen):
         target = pipeline["target"].format(name=field["name"])
         properties[target] = pipeline["type"]
 
-        # memorize this field as expansion field for later use in post_processors
+        # memorize this field
+        # as expansion field for later use in post_processors
         EXPANSION_FIELDS[field["name"]] = dict(pipeline["expansion"], source=source)
 
 
@@ -131,7 +136,8 @@ def create_or_update_mapping(full_schema, index_name):
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
         if field["name"] in properties:
             logger.debug(
-                "Skip existing field definition {0} with {1}. Already defined: {2}".format(
+                "Skip existing field definition "
+                "{0} with {1}. Already defined: {2}".format(
                     fqfieldname, value_type, properties[field["name"]]
                 )
             )
@@ -139,7 +145,8 @@ def create_or_update_mapping(full_schema, index_name):
         if field["name"] in seen:
             logger.debug(
                 "Skip dup field definition {0} with {1}.".format(
-                    fqfieldname, value_type,
+                    fqfieldname,
+                    value_type,
                 )
             )
             continue
@@ -150,17 +157,15 @@ def create_or_update_mapping(full_schema, index_name):
         if json.dumps(original_mapping["mappings"], sort_keys=True) != json.dumps(
             mapping["mappings"], sort_keys=True
         ):
-            logger.info("update mapping")
+            logger.info("Update mapping.")
             logger.debug(
-                "mapping is:\n{0}".format(
+                "Mapping is:\n{0}".format(
                     json.dumps(mapping["mappings"], sort_keys=True, indent=2)
                 )
             )
             es.indices.put_mapping(index=index_name, body=mapping["mappings"])
     else:
         # from celery.contrib import rdb; rdb.set_trace()
-        logger.info("create index with mapping")
-        logger.debug(
-            "mapping is:\n{0}".format(json.dumps(mapping, sort_keys=True, indent=2))
-        )
+        logger.info("Create index with mapping.")
+        logger.debug(f"mapping is:\n{json.dumps(mapping, sort_keys=True, indent=2)}")
         es.indices.create(index_name, body=mapping)
