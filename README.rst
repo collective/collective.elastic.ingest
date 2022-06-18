@@ -28,6 +28,11 @@ Install ``collective.elastic.ingest`` (redis-ready) using pip::
 
     pip install collective.elastic.ingest redis
 
+`collective.elastic.ingest` requires `elasticsearch`. Specifiy the version according your `Elasticsearch` app version.
+For example:
+
+    pip install 'elasticsearch~=7.0'
+
 
 Starting
 --------
