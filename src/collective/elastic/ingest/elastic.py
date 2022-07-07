@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 from elasticsearch import Elasticsearch
 
+try:
+    from importlib.metadata import version
+except ImportError:
+    from importlib_metadata import version
+
 import os
+
+version_elasticsearch = version("elasticsearch")
 
 
 def get_ingest_client():
@@ -12,8 +19,9 @@ def get_ingest_client():
     addresses = [x for x in raw_addr.split(",") if x.strip()]
     if not addresses:
         addresses.append("127.0.0.1:9200")
-    return Elasticsearch(
-        addresses,
-        use_ssl=use_ssl,
-        # here some more params need to be configured.
-    )
+    if int(version_elasticsearch[0]) <= 7:
+        return Elasticsearch(
+            addresses,
+            use_ssl=use_ssl,
+        )
+    return Elasticsearch(addresses)
