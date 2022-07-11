@@ -3,6 +3,8 @@ from elasticsearch import Elasticsearch
 
 import os
 
+from collective.elastic.ingest import ELASTICSEARCH_7
+
 
 def get_ingest_client():
     """return elasticsearch client for.ingest"""
@@ -12,8 +14,9 @@ def get_ingest_client():
     addresses = [x for x in raw_addr.split(",") if x.strip()]
     if not addresses:
         addresses.append("127.0.0.1:9200")
-    return Elasticsearch(
-        addresses,
-        use_ssl=use_ssl,
-        # here some more params need to be configured.
-    )
+    if ELASTICSEARCH_7:
+        return Elasticsearch(
+            addresses,
+            use_ssl=use_ssl,
+        )
+    return Elasticsearch(addresses)

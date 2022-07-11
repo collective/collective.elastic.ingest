@@ -2,6 +2,7 @@
 from .elastic import get_ingest_client
 from .logging import logger
 from copy import deepcopy
+from collective.elastic.ingest import ELASTICSEARCH_7
 
 import json
 import operator
@@ -109,7 +110,10 @@ def create_or_update_mapping(full_schema, index_name):
         return
 
     # get current mapping
-    index_exists = es.indices.exists(index_name)
+    if ELASTICSEARCH_7:
+        index_exists = es.indices.exists(index_name)
+    else:
+        index_exists = es.indices.exists(index=index_name)
     if index_exists:
         original_mapping = es.indices.get_mapping(index=index_name)[index_name]
         mapping = deepcopy(original_mapping)
@@ -163,9 +167,18 @@ def create_or_update_mapping(full_schema, index_name):
                     json.dumps(mapping["mappings"], sort_keys=True, indent=2)
                 )
             )
-            es.indices.put_mapping(index=index_name, body=mapping["mappings"])
+            if ELASTICSEARCH_7:
+                es.indices.put_mapping(index=index_name, body=mapping["mappings"])
+            else:
+                es.indices.put_mapping(
+                    index=[index_name],
+                    body=mapping["mappings"],
+                )
     else:
         # from celery.contrib import rdb; rdb.set_trace()
         logger.info("Create index with mapping.")
         logger.debug(f"mapping is:\n{json.dumps(mapping, sort_keys=True, indent=2)}")
-        es.indices.create(index_name, body=mapping)
+        if ELASTICSEARCH_7:
+            es.indices.create(index_name, body=mapping)
+        else:
+            es.indices.create(index=index_name, mappings=mapping["mappings"])

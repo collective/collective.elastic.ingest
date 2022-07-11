@@ -10,6 +10,7 @@ from .mapping import iterate_schema
 from .postprocessing import postprocess
 from .preprocessing import preprocess
 from pprint import pformat
+from collective.elastic.ingest import ELASTICSEARCH_7
 
 
 STATES = {"pipelines_created": False}
@@ -41,7 +42,10 @@ def setup_ingest_pipelines(full_schema, index_name):
     if pipelines["processors"]:
         logger.info("update ingest pipelines {0}".format(pipeline_name))
         logger.debug("pipeline definitions:\n{0}".format(pipelines))
-        es.ingest.put_pipeline(pipeline_name, pipelines)
+        if ELASTICSEARCH_7:
+            es.ingest.put_pipeline(pipeline_name, pipelines)
+        else:
+            es.ingest.put_pipeline(id=pipeline_name, processors=pipelines["processors"])
     else:
         es.ingest.delete_pipeline(pipeline_name)
 
