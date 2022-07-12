@@ -112,7 +112,7 @@ def _replacement_detector(field, properties, definition, fqfieldname, seen):
     replacement["name"] = field["name"]
     update_expansion_fields(
         field, fqfieldname
-    )  # TODO needed here. was part of map_field?
+    )  # TODO Needed here? Was part of map_field.
     map_field(replacement, properties, fqfieldname, seen)
 
 
