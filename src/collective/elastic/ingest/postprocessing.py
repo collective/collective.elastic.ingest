@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .plone import fetch_binary
 from collections import OrderedDict
+from .logging import logger
 
 import base64
 
@@ -25,5 +26,6 @@ POSTPROCESSORS["binary"] = _extract_binary
 
 def postprocess(content, info):
     """run full postprocessing pipeline on content and schema"""
+    logger.debug(f"postprocess with {info}")
     for key, postprocessor in POSTPROCESSORS.items():
         postprocessor(content, info, key)

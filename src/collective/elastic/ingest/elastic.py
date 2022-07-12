@@ -3,7 +3,8 @@ from elasticsearch import Elasticsearch
 
 import os
 
-from collective.elastic.ingest import ELASTICSEARCH_7
+from .logging import logger
+from collective.elastic.ingest import version_elasticsearch, ELASTICSEARCH_7
 
 
 def get_ingest_client():
@@ -14,6 +15,7 @@ def get_ingest_client():
     addresses = [x for x in raw_addr.split(",") if x.strip()]
     if not addresses:
         addresses.append("127.0.0.1:9200")
+    logger.info("elasticsearch version {} installed".format(version_elasticsearch))
     if ELASTICSEARCH_7:
         return Elasticsearch(
             addresses,

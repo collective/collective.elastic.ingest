@@ -57,7 +57,6 @@ def expanded_processors(processors, source, target):
 
 def map_field(field, properties, fqfieldname, seen):
     definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
-    logger.debug(f"** map_field. field: {field}, fqfieldname: {fqfieldname}")
     if definition is None:
         logger.warning(
             "Ignore: '{0}' field type nor '{1}' FQFN in map.".format(
@@ -82,9 +81,23 @@ def map_field(field, properties, fqfieldname, seen):
     if "pipeline" in definition:
         # ingest through pipeline, store result
         pipeline = definition["pipeline"]
-        source = pipeline["source"].format(name=field["name"])
         target = pipeline["target"].format(name=field["name"])
         properties[target] = pipeline["type"]
+
+
+def update_expansion_fields(field, fqfieldname):
+    definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+    if definition is None:
+        logger.warning(
+            "Ignore: '{0}' field type nor '{1}' FQFN in map.".format(
+                field["field"], fqfieldname
+            )
+        )
+        return
+    if "pipeline" in definition:
+        # ingest through pipeline, store result
+        pipeline = definition["pipeline"]
+        source = pipeline["source"].format(name=field["name"])
 
         # memorize this field
         # as expansion field for later use in post_processors
@@ -97,6 +110,9 @@ def _replacement_detector(field, properties, definition, fqfieldname, seen):
         properties[field["name"]] = definition["detection"]["default"]
         return
     replacement["name"] = field["name"]
+    update_expansion_fields(
+        field, fqfieldname
+    )  # TODO Needed here? Was part of map_field.
     map_field(replacement, properties, fqfieldname, seen)
 
 
@@ -138,6 +154,7 @@ def create_or_update_mapping(full_schema, index_name):
         # try "section_name/schema_name/field[name]/type)"
         value_type = field["field"]
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
+        update_expansion_fields(field, fqfieldname)
         if field["name"] in properties:
             logger.debug(
                 "Skip existing field definition "
@@ -174,6 +191,8 @@ def create_or_update_mapping(full_schema, index_name):
                     index=[index_name],
                     body=mapping["mappings"],
                 )
+        else:
+            logger.debug("No update necessary. Mapping is unchanged.")
     else:
         # from celery.contrib import rdb; rdb.set_trace()
         logger.info("Create index with mapping.")
