@@ -115,7 +115,7 @@ Note: The file ``elasticsearch-lexicon.txt`` with the word list used by the ``de
 Source Code
 -----------
 
-The sources are in a GIT DVCS with its main branches at `github <http://github.com/collective/collective.elastic.ingest>`_.
+The sources are in a GIT DVCS with its main branches at `github <https://github.com/collective/collective.elastic.ingest>`_.
 There you can report issue too.
 
 We'd be happy to see many forks and pull-requests to make this addon even better.
@@ -128,7 +128,7 @@ We also offer commercial support if any training, coaching, integration or adapt
 Contributions
 -------------
 
-Initial implementation was made possible by `Evangelisch-reformierte Landeskirche des Kantons Zürich <http://zhref.ch/>`_.
+Initial implementation was made possible by `Evangelisch-reformierte Landeskirche des Kantons Zürich <https://zhref.ch/>`_.
 
 Idea and testing by Peter Holzer
 
