@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-1.0a1 (unreleased)
-------------------
+1.0 (2022-11-08)
+----------------
 
 - Update to elasticsearch-py 8.x
   [ksuess]

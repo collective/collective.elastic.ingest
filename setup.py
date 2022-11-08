@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name="collective.elastic.ingest",
-    version="1.0a1",
+    version="1.0",
     project_urls={
         "PyPI": "https://pypi.python.org/pypi/collective.elastic.ingest",
         "Source": "https://github.com/collective/collective.elastic.ingest",
