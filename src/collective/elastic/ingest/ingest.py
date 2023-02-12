@@ -9,6 +9,8 @@ from .mapping import FIELDMAP
 from .mapping import iterate_schema
 from .postprocessing import postprocess
 from .preprocessing import preprocess
+from .section import enrichWithSection
+from .security import enrichWithSecurityInfo
 from pprint import pformat
 from collective.elastic.ingest import ELASTICSEARCH_7
 
@@ -51,7 +53,12 @@ def setup_ingest_pipelines(full_schema, index_name):
 
 
 def ingest(content, full_schema, index_name):
-    # preprocess content and schema
+    """Preprocess content and schema."""
+
+    logger.debug(f"Process content: {pformat(content)}")
+
+    enrichWithSection(content)
+    enrichWithSecurityInfo(content)
     preprocess(content, full_schema)
     if full_schema:
         # first update_analysis, then create_or_update_mapping:
