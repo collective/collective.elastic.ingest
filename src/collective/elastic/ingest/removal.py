@@ -15,7 +15,7 @@ def remove(uid, index_name):
         logger.warning("No ElasticSearch client available.")
         return
     try:
-        es.delete(index=index_name, doc_type="content", id=uid)
+        es.delete(index=index_name, id=uid)
     except Exception:
         logger.exception(
             "unindexing of {0} on index {1} failed".format(uid, index_name)

@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-from .analysis import update_analysis
-from .elastic import get_ingest_client
-from .logging import logger
-from .mapping import create_or_update_mapping
-from .mapping import expanded_processors
-from .mapping import EXPANSION_FIELDS
-from .mapping import FIELDMAP
-from .mapping import iterate_schema
-from .postprocessing import postprocess
-from .preprocessing import preprocess
+from ..analysis import update_analysis
+from ..elastic import get_ingest_client
+from ..logging import logger
+from ..mapping import create_or_update_mapping
+from ..mapping import expanded_processors
+from ..mapping import EXPANSION_FIELDS
+from ..mapping import FIELDMAP
+from ..mapping import iterate_schema
+from ..postprocessing import postprocess
+from ..preprocessing import preprocess
 from .section import enrichWithSection
 from .security import enrichWithSecurityInfo
+from .vocabularyfields import stripVocabularyTermTitles
 from pprint import pformat
 from collective.elastic.ingest import ELASTICSEARCH_7
 
@@ -57,6 +58,7 @@ def ingest(content, full_schema, index_name):
 
     logger.debug(f"Process content: {pformat(content)}")
 
+    stripVocabularyTermTitles(content)
     enrichWithSection(content)
     enrichWithSecurityInfo(content)
     preprocess(content, full_schema)

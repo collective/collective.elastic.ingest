@@ -1,4 +1,4 @@
-from .logging import logger
+from ..logging import logger
 
 import os
 
