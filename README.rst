@@ -9,7 +9,7 @@ Celery-Tasks for ElasticSearch Integration for Plone content
     - mapping from Plone schema using a flexible conversions file (JSON).
     - ingest-attachment pipelines using (same as above) file.
 - task to
-    - index an content object with all data given
+    - index a content object with all data given plus allowedRolesAndUsers and section (primary path)
     - unindex an content object
 - configure from environment variables:
     - celery,
