@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.1 (unreleased)
+1.1 (2023-03-03)
 ----------------
 
 - Index allowedRolesAndUsers and section (primary path) [ksuess]
