@@ -5,7 +5,7 @@ Changelog
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Index allowedRolesAndUsers and section (primary path) [ksuess]
 
 
 1.0 (2022-11-08)
