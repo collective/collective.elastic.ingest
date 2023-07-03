@@ -1,4 +1,25 @@
-[{
+[
+  {
+    "match": {
+      "type": "always"
+    },
+    "action": "remove",
+    "configuration": {
+      "target": "blocks"
+    }
+  },
+  {
+    "match": {
+      "type": "always"
+    },
+    "action": "remove",
+    "configuration": {
+      "target": "blocks_layout"
+    }
+  },
+
+
+  {
     "match": {
       "type": "always"
     },
@@ -19,6 +40,7 @@
       "enforce": true
     }
   },
+
   {
     "match": {
       "type": "always"
@@ -39,22 +61,14 @@
       "target": "portal_type"
     }
   },
+  
   {
     "match": {
       "type": "always"
     },
     "action": "remove",
     "configuration": {
-      "target": "@component"
-    }
-  },
-  {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove",
-    "configuration": {
-      "target": "@id"
+      "target": "@components"
     }
   },
   {
@@ -81,7 +95,16 @@
     },
     "action": "remove",
     "configuration": {
-      "target": "parents"
+      "target": "previous_item"
+    }
+  },
+  {
+    "match": {
+      "type": "always"
+    },
+    "action": "remove",
+    "configuration": {
+      "target": "next_item"
     }
   },
   {
