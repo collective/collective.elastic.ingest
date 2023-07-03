@@ -52,11 +52,11 @@ Optional (defaults used if not given)::
 
 Then run celery::
 
-    celery worker -A collective.elastic.ingest.celery.app -l info
+    celery -A collective.elastic.ingest.celery.app worker -l info
 
 Or with debug information::
 
-    celery worker -A collective.elastic.ingest.celery.app -l debug
+    celery -A collective.elastic.ingest.celery.app worker -l debug
 
 
 Text Analysis
