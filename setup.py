@@ -11,7 +11,7 @@ long_description = '\n\n'.join([
 
 setup(
     name="collective.elastic.ingest",
-    version="1.2.dev0",
+    version="1.2",
     project_urls={
         "PyPI": "https://pypi.python.org/pypi/collective.elastic.ingest",
         "Source": "https://github.com/collective/collective.elastic.ingest",

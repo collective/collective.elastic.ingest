@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2 (unreleased)
+1.2 (2023-07-03)
 ----------------
 
 - Update example of preprocessing.json [ksuess]
