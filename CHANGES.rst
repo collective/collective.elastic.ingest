@@ -5,7 +5,9 @@ Changelog
 1.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Update example of preprocessing.json [ksuess]
+- Update README.rst: instruction on how to start celery [ksuess]
+- Add fallback section [ksuess]
 
 
 1.1 (2023-03-03)
