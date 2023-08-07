@@ -5,7 +5,9 @@ Changelog
 1.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Breaking: API expander expands on request to expand, else not.
+  Check your preprocessings.json to not handle rid. It's handled in preprocessing.py per default.
+  [ksuess]
 
 
 1.2 (2023-07-03)
