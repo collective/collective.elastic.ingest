@@ -2,7 +2,7 @@
 collective.elastic.ingest
 =========================
 
-Celery-Tasks for ElasticSearch Integration for Plone content
+Celery-Tasks for ElasticSearch or OpenSearch integration for Plone content
 
 - auto-create ElasticSearch...
     - index
@@ -42,6 +42,11 @@ Define the configuration as environment variables::
     PLONE_PATH=Plone
     PLONE_USER=admin
     PLONE_PASSWORD=admin
+
+or for OpenSearch::
+
+    export OPENSEARCH_INGEST_SERVER=localhost:9200
+    export OPENSEARCH_INGEST_USE_SSL=1
 
 Optional (defaults used if not given)::
 
