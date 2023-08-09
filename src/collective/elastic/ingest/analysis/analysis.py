@@ -7,6 +7,8 @@ import os
 
 from collective.elastic.ingest import ELASTICSEARCH_7
 
+OPENSEARCH = True if os.environ.get("OPENSEARCH_INGEST_SERVER") else False
+
 _analysis_file = os.environ.get(
     "ANALYSIS_FILE", os.path.join(os.path.dirname(__file__), "analysis.json")
 )
@@ -47,7 +49,18 @@ def update_analysis(index_name):
                 f"Create index '{index_name}' with analysis settings "
                 f"from '{_analysis_file}', but without mapping."
             )
-            if ELASTICSEARCH_7:
+            if OPENSEARCH:
+                index_body = {
+                    'settings': {
+                        'index': {
+                            'number_of_shards': 4
+                        }
+                    }
+                }
+                # TODO analysis_settings
+                # https://opensearch.org/docs/latest/analyzers/index-analyzers/
+                es.indices.create(index=index_name, body=index_body)
+            elif ELASTICSEARCH_7:
                 es.indices.create(index_name, body=ANALYSISMAP)
             else:
                 es.indices.create(index=index_name, settings=analysis_settings)
