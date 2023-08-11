@@ -43,10 +43,11 @@ Define the configuration as environment variables::
     PLONE_USER=admin
     PLONE_PASSWORD=admin
 
-or for OpenSearch::
+Request OpenSearch::
 
-    export OPENSEARCH_INGEST_SERVER=localhost:9200
-    export OPENSEARCH_INGEST_USE_SSL=1
+    OPENSEARCH=1
+    ELASTICSEARCH_INGEST_LOGIN=admin
+    ELASTICSEARCH_INGEST_PASSWORD=admin
 
 Optional (defaults used if not given)::
 
