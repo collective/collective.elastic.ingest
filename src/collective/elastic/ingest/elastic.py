@@ -5,37 +5,31 @@ from opensearchpy import OpenSearch
 import os
 
 from .logging import logger
-from collective.elastic.ingest import version_elasticsearch, ELASTICSEARCH_7
+from collective.elastic.ingest import \
+    version_elasticsearch, ELASTICSEARCH_7
+
+OPENSEARCH = True if os.environ.get("OPENSEARCH") else False
 
 
-def get_ingest_client():
+def get_ingest_client(elasticsearch_server_baseurl=None):
     """return elasticsearch client for.ingest"""
-    OPENSEARCH_INGEST_SERVER = os.environ.get("OPENSEARCH_INGEST_SERVER")
-    logger.debug(f"** OPENSEARCH_INGEST_SERVER {OPENSEARCH_INGEST_SERVER}")
 
-    raw_addr = os.environ.get(
-        "OPENSEARCH_INGEST_SERVER",
-        os.environ.get("ELASTICSEARCH_INGEST_SERVER", "http://localhost:9200"))
-    use_ssl = os.environ.get(
-        "OPENSEARCH_INGEST_USE_SSL",
-        os.environ.get("ELASTICSEARCH_INGEST_USE_SSL", "0"))
+    raw_addr = elasticsearch_server_baseurl or os.environ.get(
+        "ELASTICSEARCH_INGEST_SERVER", "http://localhost:9200")
+    use_ssl = os.environ.get("ELASTICSEARCH_INGEST_USE_SSL", "0")
     use_ssl = bool(int(use_ssl))
     addresses = [x for x in raw_addr.split(",") if x.strip()]
     if not addresses:
         addresses.append("127.0.0.1:9200")
-    if OPENSEARCH_INGEST_SERVER:
+    if OPENSEARCH:
         """
          TODO Documentation about when to use more than one
          ElasticSearch or OpenSearch cluster
         """
         (host, port) = addresses[0].rsplit(":", 1)
-        logger.debug(f"host {host}")
-        logger.debug(f"port {port}")
         auth = (
-            os.environ.get("OPENSEARCH_INGEST_LOGIN", 'admin'),
-            os.environ.get("OPENSEARCH_INGEST_PASSWORD", 'admin'))
-        logger.debug(f"auth {auth}")
-        logger.debug(f"use_ssl {use_ssl}")
+            os.environ.get("ELASTICSEARCH_INGEST_LOGIN", 'admin'),
+            os.environ.get("ELASTICSEARCH_INGEST_PASSWORD", 'admin'))
         client = OpenSearch(
             hosts=[{'host': host, 'port': port}],
             http_auth=auth,
