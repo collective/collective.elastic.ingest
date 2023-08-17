@@ -46,6 +46,7 @@ setup(
         "CacheControl",
         "celery",
         "elasticsearch>=7",
+        "opensearch-py",
         "requests",
         "setuptools",
         "six",

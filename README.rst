@@ -2,7 +2,7 @@
 collective.elastic.ingest
 =========================
 
-Celery-Tasks for ElasticSearch Integration for Plone content
+Celery-Tasks for ElasticSearch or OpenSearch integration for Plone content
 
 - auto-create ElasticSearch...
     - index
@@ -42,6 +42,12 @@ Define the configuration as environment variables::
     PLONE_PATH=Plone
     PLONE_USER=admin
     PLONE_PASSWORD=admin
+
+Request OpenSearch::
+
+    OPENSEARCH=1
+    ELASTICSEARCH_INGEST_LOGIN=admin
+    ELASTICSEARCH_INGEST_PASSWORD=admin
 
 Optional (defaults used if not given)::
 
