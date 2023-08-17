@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.4 (unreleased)
+1.4 (2023-08-17)
 ----------------
 
 - Allow custom text analysis for blocks_plaintext. [ksuess]
