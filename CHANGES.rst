@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.3 (unreleased)
+1.3 (2023-08-17)
 ----------------
 
 - Support OpenSearch. [ksuess]
