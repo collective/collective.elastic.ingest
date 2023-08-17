@@ -5,6 +5,7 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Support OpenSearch. [ksuess]
 - Fetch content expandend. Breaking: API expander expands on request to expand, else not.
   Check your preprocessings.json to not handle rid. It's handled in preprocessing.py per default.
   [ksuess]
