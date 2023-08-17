@@ -5,7 +5,7 @@ Changelog
 1.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Allow custom text analysis for blocks_plaintext. [ksuess]
 
 
 1.3 (2023-08-17)
