@@ -172,6 +172,10 @@ def create_or_update_mapping(full_schema, index_name):
             )
             continue
         map_field(field, properties, fqfieldname, seen)
+    
+    # Mapping for blocks_plaintext (not a schema field, but received from api expansion "collectiveelastic")
+    map_field(dict(name="blocks_plaintext", field="blocks_plaintext"), properties, "blocks_plaintext", seen)
+
 
     STATE["initial"] = False
     if index_exists:
