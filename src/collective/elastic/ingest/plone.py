@@ -10,7 +10,8 @@ import time
 session = requests.Session()
 session = CacheControl(session)
 session.headers.update({"Accept": "application/json"})
-session.auth = str(os.environ.get("PLONE_USER")), str(os.environ.get("PLONE_PASSWORD"))
+session.auth = \
+    str(os.environ.get("PLONE_USER")), str(os.environ.get("PLONE_PASSWORD"))
 
 RETRIES_STATUS_MAX = 4
 RETRY_STATUS_BASE = 1  # seconds
@@ -37,7 +38,7 @@ def _schema_url():
 
 
 def fetch_content(path, timestamp):
-    url = _full_url(path)
+    url = f'{_full_url(path)}?expand=collectiveelastic'
     retries_timestamp = 0
     delay_timestamp = RETRY_TIMESTAMP_BASE
     retries_status = 0
@@ -65,8 +66,9 @@ def fetch_content(path, timestamp):
         if (
             not result
             or "@components" not in result
-            or "last_indexing_queued" not in result["@components"]
-            or result["@components"]["last_indexing_queued"] < timestamp
+            or "collectiveelastic" not in result["@components"]
+            or result["@components"]["collectiveelastic"]
+                ["last_indexing_queued"] < timestamp
         ):
             if retries_timestamp > RETRIES_TIMESTAMP_MAX:
                 break
@@ -86,7 +88,8 @@ def fetch_content(path, timestamp):
 
 def fetch_schema(refetch=False):
     # from celery.contrib import rdb; rdb.set_trace()
-    if refetch or time.time() + MAPPING_TIMEOUT_SEK > STATES["mapping_fetched"]:
+    if refetch \
+            or time.time() + MAPPING_TIMEOUT_SEK > STATES["mapping_fetched"]:
         url = _schema_url()
         logger.info("fetch full schema from {0}".format(url))
         resp = session.get(url)

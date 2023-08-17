@@ -33,7 +33,9 @@ if sentry_dsn is not None:
         raise
 
 # configure tasks
-app = Celery("collective.elastic.ingest", broker=os.environ.get("CELERY_BROKER"))
+app = Celery(
+    "collective.elastic.ingest",
+    broker=os.environ.get("CELERY_BROKER"))
 
 
 @app.task(name="collective.elastic.ingest.index")

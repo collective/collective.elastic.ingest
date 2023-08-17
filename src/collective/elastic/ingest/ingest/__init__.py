@@ -9,6 +9,8 @@ from ..mapping import FIELDMAP
 from ..mapping import iterate_schema
 from ..postprocessing import postprocess
 from ..preprocessing import preprocess
+from .blocks import enrichWithBlocksPlainText
+from .rid import enrichWithRid
 from .section import enrichWithSection
 from .security import enrichWithSecurityInfo
 from .vocabularyfields import stripVocabularyTermTitles
@@ -58,9 +60,11 @@ def ingest(content, full_schema, index_name):
 
     logger.debug(f"Process content: {pformat(content)}")
 
-    stripVocabularyTermTitles(content)
-    enrichWithSection(content)
     enrichWithSecurityInfo(content)
+    enrichWithRid(content)
+    enrichWithSection(content)
+    enrichWithBlocksPlainText(content)
+    stripVocabularyTermTitles(content)
     preprocess(content, full_schema)
     if full_schema:
         # first update_analysis, then create_or_update_mapping:
