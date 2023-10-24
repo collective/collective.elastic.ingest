@@ -16,9 +16,7 @@ from .security import enrichWithSecurityInfo
 from .vocabularyfields import stripVocabularyTermTitles
 from pprint import pformat
 from collective.elastic.ingest import ELASTICSEARCH_7
-from collective.elastic.ingest import OPENSEARCH_2
-
-import os
+from collective.elastic.ingest import OPENSEARCH, OPENSEARCH_2
 
 
 STATES = {"pipelines_created": False}
@@ -30,7 +28,6 @@ def _es_pipeline_name(index_name):
 
 
 def setup_ingest_pipelines(full_schema, index_name):
-    OPENSEARCH = True if os.environ.get("OPENSEARCH") else False
     es = get_ingest_client()
     pipeline_name = _es_pipeline_name(index_name)
     pipelines = {

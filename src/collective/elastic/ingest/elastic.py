@@ -6,9 +6,7 @@ import os
 
 from .logging import logger
 from collective.elastic.ingest import \
-    version_elasticsearch, ELASTICSEARCH_7
-
-OPENSEARCH = True if os.environ.get("OPENSEARCH") else False
+    version_elasticsearch, ELASTICSEARCH_7, OPENSEARCH
 
 
 def get_ingest_client(elasticsearch_server_baseurl=None):
