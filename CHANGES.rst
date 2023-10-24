@@ -6,6 +6,9 @@ Changelog
 ------------------
 
 - Fix OpenSearch / ElasticSearch switch. [ksuess]
+- Update example mapping for nested field "NamedBlobFile": 
+  "include_in_parent": true, allows to search with non-nested query.
+  [ksuess]
 
 
 1.4 (2023-08-17)
