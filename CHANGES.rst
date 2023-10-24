@@ -5,7 +5,7 @@ Changelog
 1.4.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix OpenSearch / ElasticSearch switch. [ksuess]
 
 
 1.4 (2023-08-17)
