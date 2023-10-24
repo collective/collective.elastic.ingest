@@ -8,7 +8,7 @@ from .logging import logger
 from collective.elastic.ingest import \
     version_elasticsearch, ELASTICSEARCH_7
 
-OPENSEARCH = True if os.environ.get("OPENSEARCH") else False
+OPENSEARCH = True if os.environ.get("OPENSEARCH") == "1" else False
 
 
 def get_ingest_client(elasticsearch_server_baseurl=None):
