@@ -6,7 +6,7 @@ Changelog
 ------------------
 
 - Fix OpenSearch / ElasticSearch switch. [ksuess]
-- Update example mapping for nested field "NamedBlobFile": 
+- Update example mapping for nested field "NamedBlobFile":
   "include_in_parent": true, allows to search with non-nested query.
   [ksuess]
 
@@ -21,8 +21,8 @@ Changelog
 ----------------
 
 - Support OpenSearch. [ksuess]
-- Fetch content expandend. Breaking: API expander expands on request to expand, else not.
-  Check your preprocessings.json to not handle rid. It's handled in preprocessing.py per default.
+- Fetch content expanded. Breaking: API expander expands on request to expand, else not.
+  Check your `preprocessings.json` to not handle rid. It's handled in preprocessing.py per default.
   [ksuess]
 
 
@@ -46,10 +46,10 @@ Changelog
 - Update to elasticsearch-py 8.x
   [ksuess]
 
-- Add optional configuration of text analysis (stemmer, decompunder, etc)
+- Add optional configuration of text analysis (stemmer, decompounder, etc)
   [ksuess]
 
-- Keep source on rewrite 
+- Keep source on rewrite
   [ksuess]
 
 - Initial release.
