@@ -49,6 +49,5 @@ setup(
         "opensearch-py",
         "requests",
         "setuptools",
-        "six",
     ],
 )
