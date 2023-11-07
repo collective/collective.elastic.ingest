@@ -74,7 +74,7 @@ Skip this on a first installation.
 
 Search results can be enhanced with a tailored text analysis.
 The simple fuzzy search, which can be used without any analysis configuration, has its limits.
-This is event more true in complex languages like German.
+This is even more true in complex languages like German.
 
 This is an advanced topic.
 
