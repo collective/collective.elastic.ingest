@@ -2,9 +2,10 @@
 collective.elastic.ingest
 =========================
 
-Celery-Tasks for ElasticSearch or OpenSearch integration for Plone content
+Ingestion service queue runner between Plone RestAPI and ElasticSearch or OpenSearch.
+Provides Celery-tasks to asynchronous index Plone content.
 
-- auto-create ElasticSearch...
+- auto-create Open-/ElasticSearch...
     - index
     - mapping from Plone schema using a flexible conversions file (JSON).
     - ingest-attachment pipelines using (same as above) file.
