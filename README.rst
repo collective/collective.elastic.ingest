@@ -78,7 +78,7 @@ This is even more true in complex languages like German.
 
 This is an advanced topic.
 
-You can find detailed information about text analysis in ElasticSearch documentation.
+You can find detailed information about `text analysis in the ElasticSearch documentation <https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html>`_.
 We provide an example analysis configuration for a better search for German compounded words.
 
 Example: A document with the string 'Lehrstellenbörse' can be found by querying 'Lehrstelle'.
