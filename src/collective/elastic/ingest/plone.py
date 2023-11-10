@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .logging import logger
 from cachecontrol import CacheControl
 
@@ -44,7 +43,7 @@ def fetch_content(path, timestamp):
     delay_status = RETRY_STATUS_BASE
     while True:
         logger.info(
-            "fetch content ({0}) from {1} ".format(
+            "fetch content ({}) from {} ".format(
                 1 + retries_timestamp + retries_status, url
             )
         )
@@ -53,7 +52,7 @@ def fetch_content(path, timestamp):
         if resp.status_code != 200:
             if retries_status > RETRIES_STATUS_MAX:
                 logger.info(
-                    "-> status {0} - retry no.{1}, wait {2:0.3f}s".format(
+                    "-> status {} - retry no.{}, wait {:0.3f}s".format(
                         resp.status_code, retries_status, delay_status
                     )
                 )
@@ -72,7 +71,7 @@ def fetch_content(path, timestamp):
             if retries_timestamp > RETRIES_TIMESTAMP_MAX:
                 break
             logger.info(
-                "-> timestamp retry - fetch no.{0}, wait {1:0.3f}s".format(
+                "-> timestamp retry - fetch no.{}, wait {:0.3f}s".format(
                     retries_timestamp, delay_timestamp
                 )
             )
@@ -82,14 +81,14 @@ def fetch_content(path, timestamp):
             continue
         return result
 
-    logger.error("-> can not fetch content {0}".format(url))
+    logger.error("-> can not fetch content {}".format(url))
 
 
 def fetch_schema(refetch=False):
     # from celery.contrib import rdb; rdb.set_trace()
     if refetch or time.time() + MAPPING_TIMEOUT_SEK > STATES["mapping_fetched"]:
         url = _schema_url()
-        logger.info("fetch full schema from {0}".format(url))
+        logger.info("fetch full schema from {}".format(url))
         resp = session.get(url)
         # xxx: check resp here
         return resp.json()
@@ -97,7 +96,7 @@ def fetch_schema(refetch=False):
 
 
 def fetch_binary(url):
-    logger.info("fetch binary data from {0}".format(url))
+    logger.info("fetch binary data from {}".format(url))
     resp = session.get(url)
     # xxx: check resp here
     return resp.content
