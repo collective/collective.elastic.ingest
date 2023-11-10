@@ -41,27 +41,27 @@ Configuration is done via environment variables and JSON files.
 
 Environment variables are:
 
-ELASTICSEARCH_INGEST_SERVER
+INGEST_SERVER
     The URL of the ElasticSearch or OpenSearch server.
 
     Default: localhost:9200
 
-ELASTICSEARCH_INGEST_USE_SSL
-    Wether to use a secure connection or not.
+INGEST_USE_SSL
+    Whether to use a secure connection or not.
 
     Default: 0
 
-OPENSEARCH
-    Wether to use OpenSearch or ElasticSearch.
+INGEST_OPENSEARCH
+    Whether to use OpenSearch or ElasticSearch.
 
     Default: 1
 
-ELASTICSEARCH_INGEST_LOGIN
+INGEST_LOGIN
     Username for the ElasticSearch 8+ or OpenSearch server.
 
     Default: admin
 
-ELASTICSEARCH_INGEST_PASSWORD
+INGEST_PASSWORD
     Password for the ElasticSearch 8+ or OpenSearch server.
 
     Default: admin
@@ -139,8 +139,7 @@ A docker-compose file ``docker-compose.yml`` to start an OpenSearch server is pr
 
 Precondition:
 - Docker and docker-compose are installed.
-- Max virtual memory map needs increase to run this: `sudo sysctl -w vm.max_map_count=262144`
-  (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
+- Max virtual memory map needs increase to run this: `sudo sysctl -w vm.max_map_count=262144` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
 
 Enter the directory ``examples`` and start the server with ``docker-compose up``.
 Now you have an OpenSearch server running on ``http://localhost:9200`` and an OpenSearch Dashboard running on ``http://localhost:5601`` (user/pass: admin/admin).
@@ -245,20 +244,6 @@ We appreciate any contribution and if a release is needed to be done on pypi, pl
 We also offer commercial support if any training, coaching, integration or adaptions are needed.
 
 
--------------
-Contributions
--------------
-
-Initial implementation was made possible by `Evangelisch-reformierte Landeskirche des Kantons Zürich <https://zhref.ch/>`_.
-
-Idea and testing by Peter Holzer
-
-Concept & code by Jens W. Klein
-
-Text analysis code and configuration by Katja Süss
-
-
-
 ----------------------------
 Installation for development
 ----------------------------
@@ -266,17 +251,9 @@ Installation for development
 - clone source code repository,
 - enter repository directory
 - recommended: create a virtualenv ``python -mvenv env``
-- development install ``./bin/env/pip install -e .[redis,opensearch]``
+- development install ``./bin/env/pip install -e .[test,redis,opensearch]``
 - load environment configuration ``source examples/.env``.
 
-
-----
-Todo
-----
-
-- query status of a task
-- simple statistics about tasks-count: pending, done, errored
-- celery retry on failure, i.e. restart of ElasticSearch, Plone, ...
 
 -------
 License

@@ -15,6 +15,8 @@ Changelog
   [jensens]
 - Add docker-compose file to start OpensSearch to example directory and move `.env` to example too.
   [jensens]
+- rename `ELASTIC_*` environemnt variables to have an consistent naming scheme, see README for details. [jensens]
+- Add tox, Github Actions, CI and CD. [jensens]
 
 
 

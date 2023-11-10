@@ -1,3 +1,4 @@
+from . import ELASTICSEARCH_7
 from .elastic import get_ingest_client
 from .logging import logger
 from copy import deepcopy
@@ -6,6 +7,7 @@ import json
 import operator
 import os
 import pprint
+import typing
 
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -16,7 +18,7 @@ EXPANSION_FIELDS = {}
 
 STATE = {"initial": True}
 
-DETECTOR_METHODS = {}
+DETECTOR_METHODS: dict[str, typing.Callable] = {}
 
 _mappings_file = os.environ.get(
     "MAPPINGS_FILE", os.path.join(os.path.dirname(__file__), "mappings.json")
@@ -65,7 +67,7 @@ def map_field(field, properties, fqfieldname, seen):
     seen.add(field["name"])
     logger.debug(f"Map field name {field['name']} to definition {definition}")
     if "type" in definition:
-        # simple defintion
+        # simple definition
         properties[field["name"]] = definition
         return
     # complex definition

@@ -1,5 +1,3 @@
-from ..logging import logger
-
 import os
 
 

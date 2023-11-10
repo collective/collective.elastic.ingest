@@ -1,0 +1,90 @@
+[project]
+name = "collective.elastic.ingest"
+version = "2.0.0dev0"
+description = "Ingestion service queue runner between Plone RestAPI and ElasticSearch or OpenSearch."
+keywords = ["elasticsearch", "opensearch", "plone", "celery", "search", "indexer"]
+readme = "README.rst"
+
+authors = [
+    {name = "Jens Klein", email = "jk@kleinundpartner.at"},
+    {name = "Katja Süss"},
+    {name = "Peter Holzer"},
+]
+requires-python = ">=3.8"
+license = { text = "GPL 2.0" }
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Plone",
+    "Framework :: Plone :: Addon",
+    "Framework :: Plone :: 5.2",
+    "Framework :: Plone :: 6.0",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+    "Development Status :: 5 - Production/Stable",
+]
+dependencies = [
+    "CacheControl",
+    "celery",
+    "requests",
+    "setuptools",
+]
+
+[project.urls]
+PyPI = "https://pypi.python.org/pypi/collective.elastic.ingest"
+Changelog = "https://github.com/collective/collective.elastic.ingest/blob/main/CHANGES.rst"
+Source = "https://github.com/collective/collective.elastic.ingest"
+Issues = "https://github.com/collective/collective.elastic.ingest/issues"
+
+[project.optional-dependencies]
+redis = ["celery[redis]"]
+rabbitmq = ["celery[librabbitmq]"]
+opensearch = ["opensearch-py"]
+elasticsearch = ["elasticsearch>=8.0"]
+test = [
+    "pytest",
+    "requests-mock",
+    "pdbpp",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "src",
+]
+
+[tool.isort]
+profile = "plone"
+
+[tool.black]
+include = "src"
+
+[tool.codespell]
+ignore-words-list = "discreet,"
+skip = './examples/*,./venv/*'
+
+[tool.check-manifest]
+ignore = [
+    ".editorconfig",
+    ".pre-commit-config.yaml",
+    "tox.ini",
+    "mypy.ini",
+    ".flake8",
+    "mx.ini",
+
+]
+
+[zest.releaser]
+create-wheel = true

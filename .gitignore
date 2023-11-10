@@ -22,6 +22,7 @@ output.xml
 pip-selfcheck.json
 report.html
 .vscode/
+.tox
 .python-version
 reports/
 # excludes

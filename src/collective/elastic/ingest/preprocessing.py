@@ -12,7 +12,7 @@ _preprocessings_file = os.environ.get(
 with open(_preprocessings_file) as fp:
     PREPROCESSOR_CONFIGS = json.load(fp)
 
-### MATCHERS
+# MATCHERS
 MATCHING_FUNCTIONS = {}
 
 
@@ -36,7 +36,7 @@ def match_content_exists(content, full_schema, config):
 MATCHING_FUNCTIONS["content_exists"] = match_content_exists
 
 
-### ACTIONS
+# ACTIONS
 
 ACTION_FUNCTIONS = {}
 
@@ -44,7 +44,7 @@ ACTION_FUNCTIONS = {}
 def action_additional_schema(content, full_schema, config):
     """add additional fields to a full_schema as fetched from Plone"""
     if full_schema is None:
-        # case: in subsequent calls theres no need to modify schema b/c of caching
+        # case: in subsequent calls there is no need to modify schema b/c of caching
         return
     if "additional" not in full_schema:
         full_schema["additional"] = {}

@@ -1,5 +1,5 @@
 try:
-    import collective.elastic.plone  # noqa: W291
+    import collective.elastic.plone  # noqa: W291,F401
     import logging
 
     logger = logging.getLogger("collective.elastic.ingest")

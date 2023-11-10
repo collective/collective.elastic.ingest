@@ -1,5 +1,5 @@
-from ..elastic import get_ingest_client
-from ..logging import logger
+from .elastic import get_ingest_client
+from .logging import logger
 from collective.elastic.ingest import ELASTICSEARCH_7
 from collective.elastic.ingest import OPENSEARCH
 from collective.elastic.ingest import OPENSEARCH_2
