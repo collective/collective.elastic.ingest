@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from . import ELASTICSEARCH_7
 from .elastic import get_ingest_client
 from .logging import logger
 from copy import deepcopy
@@ -24,7 +22,7 @@ _mappings_file = os.environ.get(
     "MAPPINGS_FILE", os.path.join(os.path.dirname(__file__), "mappings.json")
 )
 
-with open(_mappings_file, mode="r") as fp:
+with open(_mappings_file) as fp:
     FIELDMAP = json.load(fp)
 
 
@@ -59,7 +57,7 @@ def map_field(field, properties, fqfieldname, seen):
     definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
     if definition is None:
         logger.warning(
-            "Ignore: '{0}' field type nor '{1}' FQFN in map.".format(
+            "Ignore: '{}' field type nor '{}' FQFN in map.".format(
                 field["field"], fqfieldname
             )
         )
@@ -89,7 +87,7 @@ def update_expansion_fields(field, fqfieldname):
     definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
     if definition is None:
         logger.warning(
-            "Ignore: '{0}' field type nor '{1}' FQFN in map.".format(
+            "Ignore: '{}' field type nor '{}' FQFN in map.".format(
                 field["field"], fqfieldname
             )
         )
@@ -158,14 +156,14 @@ def create_or_update_mapping(full_schema, index_name):
         if field["name"] in properties:
             logger.debug(
                 "Skip existing field definition "
-                "{0} with {1}. Already defined: {2}".format(
+                "{} with {}. Already defined: {}".format(
                     fqfieldname, value_type, properties[field["name"]]
                 )
             )
             continue
         if field["name"] in seen:
             logger.debug(
-                "Skip dup field definition {0} with {1}.".format(
+                "Skip dup field definition {} with {}.".format(
                     fqfieldname,
                     value_type,
                 )
@@ -188,7 +186,7 @@ def create_or_update_mapping(full_schema, index_name):
         ):
             logger.info("Update mapping.")
             logger.debug(
-                "Mapping is:\n{0}".format(
+                "Mapping is:\n{}".format(
                     json.dumps(mapping["mappings"], sort_keys=True, indent=2)
                 )
             )
