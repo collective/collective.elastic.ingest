@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from ..elastic import get_ingest_client
 from ..logging import logger
 from collective.elastic.ingest import ELASTICSEARCH_7
@@ -9,19 +8,19 @@ import json
 import os
 
 
-_analysis_file = os.environ.get(
-    "ANALYSIS_FILE", None)
-)
+_analysis_file = os.environ.get("ANALYSIS_FILE", None)
+
 
 ANALYSISMAP = None
 if _analysis_file:
     try:
-        with open(_analysis_file, mode="r") as fp:
+        with open(_analysis_file) as fp:
             ANALYSISMAP = json.load(fp)
     except FileNotFoundError:
         logger.warning(f"Analysis file '{_analysis_file}' not found.")
 else:
     logger.info("No analysis file configured.")
+
 
 def update_analysis(index_name):
     """Provide elasticsearch with analyzers to be used in mapping.
