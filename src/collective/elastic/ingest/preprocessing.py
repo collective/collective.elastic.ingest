@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .logging import logger
 
 import json
@@ -10,7 +9,7 @@ _preprocessings_file = os.environ.get(
     os.path.join(os.path.dirname(__file__), "preprocessings.json"),
 )
 
-with open(_preprocessings_file, mode="r") as fp:
+with open(_preprocessings_file) as fp:
     PREPROCESSOR_CONFIGS = json.load(fp)
 
 ### MATCHERS
@@ -73,7 +72,7 @@ def action_rewrite(content, full_schema, config):
     if source_container is None:
         if enforce:
             raise ValueError(
-                "Source container {0} not in content.".format(config["source"])
+                "Source container {} not in content.".format(config["source"])
             )
         return
     target_container, target_key = _find_last_container_in_path(
@@ -82,12 +81,12 @@ def action_rewrite(content, full_schema, config):
     if target_container is None:
         if enforce:
             raise ValueError(
-                "Target container {0} not in content.".format(config["source"])
+                "Target container {} not in content.".format(config["source"])
             )
         return
     if source_key not in source_container:
         if enforce:
-            raise ValueError("Source {0} not in content.".format(config["source"]))
+            raise ValueError("Source {} not in content.".format(config["source"]))
         return
     target_container[target_key] = source_container[source_key]
 
@@ -123,7 +122,7 @@ ACTION_FUNCTIONS["remove_empty"] = action_empty_removal
 def preprocess(content, full_schema):
     """run full preprocessing pipeline on content and schema"""
     for ppcfg in PREPROCESSOR_CONFIGS:
-        logger.debug("Preprocessor configuration:\n{0}\n".format(ppcfg))
+        logger.debug("Preprocessor configuration:\n{}\n".format(ppcfg))
         matcher = MATCHING_FUNCTIONS[ppcfg["match"]["type"]]
         if not matcher(content, full_schema, ppcfg["match"]):
             continue

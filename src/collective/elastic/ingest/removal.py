@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from .elastic import get_ingest_client
 
 import logging
@@ -17,6 +14,4 @@ def remove(uid, index_name):
     try:
         es.delete(index=index_name, id=uid)
     except Exception:
-        logger.exception(
-            "unindexing of {0} on index {1} failed".format(uid, index_name)
-        )
+        logger.exception("unindexing of {} on index {} failed".format(uid, index_name))
