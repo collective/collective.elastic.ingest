@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from ..analysis import update_analysis
 from ..elastic import get_ingest_client
 from ..logging import logger
@@ -25,7 +24,7 @@ PIPELINE_PREFIX = "attachment_ingest"
 
 
 def _es_pipeline_name(index_name):
-    return "{0}_{1}".format(PIPELINE_PREFIX, index_name)
+    return "{}_{}".format(PIPELINE_PREFIX, index_name)
 
 
 def setup_ingest_pipelines(full_schema, index_name):
