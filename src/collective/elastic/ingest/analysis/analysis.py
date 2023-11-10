@@ -10,15 +10,18 @@ import os
 
 
 _analysis_file = os.environ.get(
-    "ANALYSIS_FILE", os.path.join(os.path.dirname(__file__), "analysis.json")
+    "ANALYSIS_FILE", None)
 )
 
-try:
-    with open(_analysis_file, mode="r") as fp:
-        ANALYSISMAP = json.load(fp)
-except FileNotFoundError:
-    ANALYSISMAP = None
-
+ANALYSISMAP = None
+if _analysis_file:
+    try:
+        with open(_analysis_file, mode="r") as fp:
+            ANALYSISMAP = json.load(fp)
+    except FileNotFoundError:
+        logger.warning(f"Analysis file '{_analysis_file}' not found.")
+else:
+    logger.info("No analysis file configured.")
 
 def update_analysis(index_name):
     """Provide elasticsearch with analyzers to be used in mapping.

@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.4.1 (unreleased)
+2.0.0 (unreleased)
 ------------------
 
 - Fix OpenSearch / ElasticSearch switch. [ksuess]
@@ -11,6 +11,11 @@ Changelog
   [ksuess]
 - code-style: black & isort [jensens]
 - Add support for Plone ClassicUI based sites (no Volto blocks available) [jensens]
+- Move mappings.json, analysis.json.example with its lexicon out of code into examples directory and pimped docs on how to use all this.
+  [jensens]
+- Add docker-compose file to start OpensSearch to example directory and move `.env` to example too.
+  [jensens]
+
 
 
 1.4 (2023-08-17)

@@ -6,18 +6,12 @@
 *.swp
 # dirs
 bin/
-buildout-cache/
-develop-eggs/
-eggs/
+venv/
 htmlcov/
 include/
 lib/
 local/
-node_modules/
-parts/
-src/*
 dist/*
-test.plone_addon/
 var/
 # files
 .installed.cfg

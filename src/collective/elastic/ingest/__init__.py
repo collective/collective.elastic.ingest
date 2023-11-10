@@ -3,7 +3,7 @@ from importlib.metadata import version
 import os
 
 
-OPENSEARCH = True if os.environ.get("OPENSEARCH") == "1" else False
+OPENSEARCH = os.environ.get("OPENSEARCH") == "1"
 
 version_elasticsearch = version("elasticsearch")
 ELASTICSEARCH_7 = int(version_elasticsearch[0]) <= 7

@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
+from . import ELASTICSEARCH_7
+from . import OPENSEARCH
+from . import version_elasticsearch
 from .logging import logger
-from collective.elastic.ingest import ELASTICSEARCH_7
-from collective.elastic.ingest import OPENSEARCH
-from collective.elastic.ingest import version_elasticsearch
-from elasticsearch import Elasticsearch
-from opensearchpy import OpenSearch
 
 import os
+
+if OPENSEARCH:
+    from opensearchpy import OpenSearch
+else:
+    from elasticsearch import Elasticsearch
+
 
 
 def get_ingest_client(elasticsearch_server_baseurl=None):
@@ -21,17 +25,16 @@ def get_ingest_client(elasticsearch_server_baseurl=None):
     if not addresses:
         addresses.append("127.0.0.1:9200")
     if OPENSEARCH:
-        """
-        TODO Documentation about when to use more than one
-        ElasticSearch or OpenSearch cluster
-        """
-        (host, port) = addresses[0].rsplit(":", 1)
+        hosts = []
+        for address in addresses:
+            host, port = address.rsplit(":", 1)
+            hosts.append({"host": host, "port": port})
         auth = (
             os.environ.get("ELASTICSEARCH_INGEST_LOGIN", "admin"),
             os.environ.get("ELASTICSEARCH_INGEST_PASSWORD", "admin"),
         )
         client = OpenSearch(
-            hosts=[{"host": host, "port": port}],
+            hosts=hosts,
             http_auth=auth,
             use_ssl=use_ssl,
             verify_certs=False,

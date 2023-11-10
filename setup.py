@@ -48,9 +48,14 @@ setup(
     install_requires=[
         "CacheControl",
         "celery",
-        "elasticsearch>=7",
-        "opensearch-py",
         "requests",
         "setuptools",
     ],
+    extras_require={
+        "redis": ["celery[redis]"],
+        "rabbitmq": ["celery[librabbitmq]"],
+        "opensearch": ["opensearch-py"],
+        "elasticsearch7": ["elasticsearch~=7.0"],
+        "elasticsearch8": ["elasticsearch~=8.0"],
+    },
 )

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
+from . import ELASTICSEARCH_7
 from .elastic import get_ingest_client
 from .logging import logger
-from collective.elastic.ingest import ELASTICSEARCH_7
 from copy import deepcopy
 
 import json
