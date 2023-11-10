@@ -2,11 +2,14 @@
 from setuptools import find_packages
 from setuptools import setup
 
-long_description = '\n\n'.join([
-    open('README.rst').read(),
-    open('CHANGES.rst').read(),
-    open('CONTRIBUTORS.rst').read(),
-])
+
+long_description = "\n\n".join(
+    [
+        open("README.rst").read(),
+        open("CHANGES.rst").read(),
+        open("CONTRIBUTORS.rst").read(),
+    ]
+)
 
 
 setup(
@@ -35,7 +38,7 @@ setup(
         "Operating System :: OS Independent",
         "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
     ],
-    keywords='Python Plone',
+    keywords="Python Plone",
     packages=find_packages("src"),
     namespace_packages=["collective", "collective.elastic"],
     package_dir={"": "src"},
