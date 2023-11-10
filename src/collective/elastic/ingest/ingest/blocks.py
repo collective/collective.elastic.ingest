@@ -1,5 +1,5 @@
 def enrichWithBlocksPlainText(content):
-    content["blocks_plaintext"] = content["@components"]["collectiveelastic"][
-        "blocks_plaintext"
-    ]
+    cce = content["@components"]["collectiveelastic"]
+    if "blocks_plaintext" in cce:
+        content["blocks_plaintext"] = cce["blocks_plaintext"]
     return content

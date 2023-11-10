@@ -10,6 +10,7 @@ Changelog
   "include_in_parent": true, allows to search with non-nested query.
   [ksuess]
 - code-style: black & isort [jensens]
+- Add support for Plone ClassicUI based sites (no Volto blocks available) [jensens]
 
 
 1.4 (2023-08-17)
