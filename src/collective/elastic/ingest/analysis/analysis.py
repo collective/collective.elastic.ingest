@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from ..elastic import get_ingest_client
 from ..logging import logger
-
-from collective.elastic.ingest import ELASTICSEARCH_7, OPENSEARCH, OPENSEARCH_2
+from collective.elastic.ingest import ELASTICSEARCH_7
+from collective.elastic.ingest import OPENSEARCH
+from collective.elastic.ingest import OPENSEARCH_2
 
 import json
 import os
@@ -48,8 +49,7 @@ def update_analysis(index_name):
                 f"Create index '{index_name}' with analysis settings "
                 f"from '{_analysis_file}', but without mapping."
             )
-            if not OPENSEARCH and ELASTICSEARCH_7  \
-                    or OPENSEARCH and OPENSEARCH_2:
+            if not OPENSEARCH and ELASTICSEARCH_7 or OPENSEARCH and OPENSEARCH_2:
                 es.indices.create(index_name, body=ANALYSISMAP)
             else:
                 es.indices.create(index=index_name, settings=analysis_settings)

@@ -14,9 +14,10 @@ from .rid import enrichWithRid
 from .section import enrichWithSection
 from .security import enrichWithSecurityInfo
 from .vocabularyfields import stripVocabularyTermTitles
-from pprint import pformat
 from collective.elastic.ingest import ELASTICSEARCH_7
-from collective.elastic.ingest import OPENSEARCH, OPENSEARCH_2
+from collective.elastic.ingest import OPENSEARCH
+from collective.elastic.ingest import OPENSEARCH_2
+from pprint import pformat
 
 
 STATES = {"pipelines_created": False}
@@ -36,8 +37,7 @@ def setup_ingest_pipelines(full_schema, index_name):
     }
     for section_name, schema_name, field in iterate_schema(full_schema):
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
-        definition = FIELDMAP.get(
-            fqfieldname, FIELDMAP.get(field["field"], None))
+        definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
         if not definition or "pipeline" not in definition:
             continue
         source = definition["pipeline"]["source"].format(name=field["name"])
@@ -51,10 +51,7 @@ def setup_ingest_pipelines(full_schema, index_name):
         if not OPENSEARCH and ELASTICSEARCH_7 or OPENSEARCH and OPENSEARCH_2:
             es.ingest.put_pipeline(pipeline_name, pipelines)
         else:
-            es.ingest.put_pipeline(
-                id=pipeline_name,
-                processors=pipelines["processors"]
-            )
+            es.ingest.put_pipeline(id=pipeline_name, processors=pipelines["processors"])
     else:
         es.ingest.delete_pipeline(pipeline_name)
 

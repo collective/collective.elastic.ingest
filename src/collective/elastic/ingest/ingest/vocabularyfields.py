@@ -5,7 +5,6 @@ def stripVocabularyTermTitles(content):
     """If field with vocabulary: Convert field value to token or list of tokens."""
     for fieldname in content.keys():
         if type(content[fieldname]) == dict:
-
             if sorted(list(content[fieldname].keys())) == ["title", "token"]:
                 content[fieldname] = content[fieldname]["token"]
 

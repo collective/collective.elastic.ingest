@@ -12,5 +12,5 @@ def enrichWithSection(content):
     ).strip("/")
     content_url = content["@id"]
     path = content_url.replace(base, "")
-    content["section"] = path.split("/")[1] if len(path.split("/"))>1 else "__root__"
+    content["section"] = path.split("/")[1] if len(path.split("/")) > 1 else "__root__"
     return content
