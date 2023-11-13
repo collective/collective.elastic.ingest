@@ -144,9 +144,11 @@ Precondition:
 Enter the directory ``examples`` and start the server with ``docker-compose up``.
 Now you have an OpenSearch server running on ``http://localhost:9200`` and an OpenSearch Dashboard running on ``http://localhost:5601`` (user/pass: admin/admin).
 
-An `.env` file is provided with the environment variables ready to use with the docker-compose file.
+Open another terminal.
 
-Run ``source .env`` to load the environment variables.
+An `.env` file is provided with the environment variables ready to use with the docker-compose file.
+Run ``source examples/.env`` to load the environment variables.
+
 Then start the celery worker with ``celery -A collective.elastic.ingest.celery.app worker -l debug``.
 In another terminal window `run a Plone backend <https://6.docs.plone.org/install/index.html>`_ at ``http://localhost:8080/Plone`` with the add-on `collective.elastic.plone` installed.
 There, create an item or modify an existing one.
