@@ -135,21 +135,34 @@ Example configuration files are provided in the ``/examples`` directory.
 OpenSearch with Docker Compose
 ------------------------------
 
-A docker-compose file ``docker-compose.yml`` to start an OpenSearch server is provided.
+A docker-compose file ``docker-compose.yml`` and a ``Dockerfile`` to start an OpenSearch server is provided.
 
 Precondition:
+
 - Docker and docker-compose are installed.
 - Max virtual memory map needs increase to run this: `sudo sysctl -w vm.max_map_count=262144` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
 
-Enter the directory ``examples`` and start the server with ``docker-compose up``.
+Steps to start the example OpenSearch Server with the ``ingest-attachment`` plugin installed:
+
+- enter the directory ``cd examples``
+- build the docker image with
+
+  ```bash
+  docker buildx use default
+  docker buildx build --tag opensearch-ingest-attachment:latest Dockerfile
+  ```
+- start the server with ``docker-compose up``.
+
 Now you have an OpenSearch server running on ``http://localhost:9200`` and an OpenSearch Dashboard running on ``http://localhost:5601`` (user/pass: admin/admin).
+The OpenSearch server has the ``ingest-attachment`` plugin installed.
+The plugin enables OpenSearch to extract text from binary files like PDFs.
 
 Open another terminal.
 
 An `.env` file is provided with the environment variables ready to use with the docker-compose file.
 Run ``source examples/.env`` to load the environment variables.
-
 Then start the celery worker with ``celery -A collective.elastic.ingest.celery.app worker -l debug``.
+
 In another terminal window `run a Plone backend <https://6.docs.plone.org/install/index.html>`_ at ``http://localhost:8080/Plone`` with the add-on `collective.elastic.plone` installed.
 There, create an item or modify an existing one.
 You should see the indexing task in the celery worker terminal window.
