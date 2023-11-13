@@ -148,7 +148,8 @@ An `.env` file is provided with the environment variables ready to use with the 
 
 Run ``source .env`` to load the environment variables.
 Then start the celery worker with ``celery -A collective.elastic.ingest.celery.app worker -l debug``.
-In another terminal window run a Plone at ``http://localhost:8080/Plone`` and create an item or modify an existing one.
+In another terminal window `run a Plone backend <https://6.docs.plone.org/install/index.html>`_ at ``http://localhost:8080/Plone`` with the add-on `collective.elastic.plone` installed.
+There, create an item or modify an existing one.
 You should see the indexing task in the celery worker terminal window.
 
 
