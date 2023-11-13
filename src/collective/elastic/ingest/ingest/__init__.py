@@ -28,6 +28,7 @@ def _es_pipeline_name(index_name):
 
 
 def setup_ingest_pipelines(full_schema, index_name):
+    logger.debug("setup ingest piplines")
     es = get_ingest_client()
     pipeline_name = _es_pipeline_name(index_name)
     pipelines = {
@@ -47,11 +48,12 @@ def setup_ingest_pipelines(full_schema, index_name):
     if pipelines["processors"]:
         logger.info(f"update ingest pipelines {pipeline_name}")
         logger.debug(f"pipeline definitions:\n{pipelines}")
-        if not OPENSEARCH and ELASTICSEARCH_7 or OPENSEARCH and OPENSEARCH_2:
+        if (not OPENSEARCH and ELASTICSEARCH_7) or (OPENSEARCH and OPENSEARCH_2):
             es.ingest.put_pipeline(pipeline_name, pipelines)
         else:
             es.ingest.put_pipeline(id=pipeline_name, processors=pipelines["processors"])
     else:
+        logger.info(f"delete ingest pipelines {pipeline_name}")
         es.ingest.delete_pipeline(pipeline_name)
 
 
