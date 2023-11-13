@@ -1,3 +1,4 @@
 graft src/collective
+graft examples
 include *.rst
 global-exclude *.pyc

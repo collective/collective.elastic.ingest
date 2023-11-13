@@ -1,5 +1,4 @@
 from . import ELASTICSEARCH_7
-from . import OPENSEARCH
 from .elastic import get_ingest_client
 from .logging import logger
 from copy import deepcopy
