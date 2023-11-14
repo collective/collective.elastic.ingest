@@ -20,9 +20,9 @@ STATE = {"initial": True}
 
 DETECTOR_METHODS: dict[str, typing.Callable] = {}
 
-_mappings_file = os.environ.get(
-    "MAPPINGS_FILE", os.path.join(os.path.dirname(__file__), "mappings.json")
-)
+_mappings_file = os.environ.get("MAPPINGS_FILE", None)
+if not _mappings_file:
+    raise ValueError("No mappings file configured.")
 
 with open(_mappings_file) as fp:
     FIELDMAP = json.load(fp)
