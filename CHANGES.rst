@@ -17,6 +17,7 @@ Changelog
   [jensens]
 - rename `ELASTIC_*` environemnt variables to have an consistent naming scheme, see README for details. [jensens]
 - Add tox, Github Actions, CI and CD. [jensens]
+- Refactor field-map loading to not happen on startup. [jensens]
 
 
 

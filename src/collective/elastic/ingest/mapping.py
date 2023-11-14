@@ -16,16 +16,22 @@ pp = pprint.PrettyPrinter(indent=4)
 # to be filled as cache and renewed on create_or_update_mapping
 EXPANSION_FIELDS = {}
 
-STATE = {"initial": True}
+STATE = {
+    "initial": True,
+    "fieldmap": None,
+}
 
 DETECTOR_METHODS: dict[str, typing.Callable] = {}
 
-_mappings_file = os.environ.get("MAPPINGS_FILE", None)
-if not _mappings_file:
-    raise ValueError("No mappings file configured.")
 
-with open(_mappings_file) as fp:
-    FIELDMAP = json.load(fp)
+def get_field_map() -> dict:
+    if STATE["fieldmap"] is None:
+        _mappings_file = os.environ.get("MAPPINGS_FILE", None)
+        if not _mappings_file:
+            raise ValueError("No mappings file configured.")
+        with open(_mappings_file) as fp:
+            STATE["fieldmap"] = json.load(fp)
+    return STATE["fieldmap"]
 
 
 def iterate_schema(full_schema):
@@ -56,7 +62,8 @@ def expanded_processors(processors, source, target):
 
 
 def map_field(field, properties, fqfieldname, seen):
-    definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+    fieldmap = get_field_map()
+    definition = fieldmap.get(fqfieldname, fieldmap.get(field["field"], None))
     if definition is None:
         logger.warning(
             "Ignore: '{}' field type nor '{}' FQFN in map.".format(
@@ -86,7 +93,8 @@ def map_field(field, properties, fqfieldname, seen):
 
 
 def update_expansion_fields(field, fqfieldname):
-    definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+    fieldmap = get_field_map()
+    definition = fieldmap.get(fqfieldname, fieldmap.get(field["field"], None))
     if definition is None:
         logger.warning(
             "Ignore: '{}' field type nor '{}' FQFN in map.".format(

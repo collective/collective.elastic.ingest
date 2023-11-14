@@ -4,7 +4,7 @@ from ..logging import logger
 from ..mapping import create_or_update_mapping
 from ..mapping import expanded_processors
 from ..mapping import EXPANSION_FIELDS
-from ..mapping import FIELDMAP
+from ..mapping import get_field_map
 from ..mapping import iterate_schema
 from ..postprocessing import postprocess
 from ..preprocessing import preprocess
@@ -37,7 +37,8 @@ def setup_ingest_pipelines(full_schema, index_name):
     }
     for section_name, schema_name, field in iterate_schema(full_schema):
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
-        definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+        fieldmap = get_field_map()
+        definition = fieldmap.get(fqfieldname, fieldmap.get(field["field"], None))
         if not definition or "pipeline" not in definition:
             continue
         source = definition["pipeline"]["source"].format(name=field["name"])
