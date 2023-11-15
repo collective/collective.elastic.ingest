@@ -119,12 +119,14 @@ Starting
 
 Run celery worker::
 
-    celery -A collective.elastic.ingest.celery.app worker -l info
+    celery -A collective.elastic.ingest.celery.app worker -c 1 -l info
 
 Or with debug information::
 
-    celery -A collective.elastic.ingest.celery.app worker -l debug
+    celery -A collective.elastic.ingest.celery.app worker -c 1 -l debug
 
+The number is the concurrency of the worker.
+For production use, it should be set to the number of Plone backends available for indexing load.
 
 --------
 Examples
