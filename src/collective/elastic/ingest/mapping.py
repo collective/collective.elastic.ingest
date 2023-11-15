@@ -18,19 +18,20 @@ EXPANSION_FIELDS = {}
 
 STATE = {
     "initial": True,
-    "fieldmap": None,
+    "fieldmap": {},
 }
 
 DETECTOR_METHODS: dict[str, typing.Callable] = {}
 
 
 def get_field_map() -> dict:
-    if STATE["fieldmap"] is None:
+    if STATE["fieldmap"] == {}:
         _mappings_file = os.environ.get("MAPPINGS_FILE", None)
         if not _mappings_file:
             raise ValueError("No mappings file configured.")
         with open(_mappings_file) as fp:
             STATE["fieldmap"] = json.load(fp)
+    assert isinstance(STATE["fieldmap"], dict)
     return STATE["fieldmap"]
 
 
