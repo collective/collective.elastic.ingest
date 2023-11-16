@@ -1,9 +1,5 @@
 from .elastic import get_ingest_client
-
-import logging
-
-
-logger = logging.getLogger(__name__)
+from .logging import logger
 
 
 def remove(uid, index_name):

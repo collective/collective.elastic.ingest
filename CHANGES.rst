@@ -15,10 +15,10 @@ Changelog
   [jensens]
 - Add docker-compose file to start OpensSearch to example directory and move `.env` to example too.
   [jensens]
-- rename `ELASTIC_*` environemnt variables to have an consistent naming scheme, see README for details. [jensens]
+- rename `ELASTIC_*` environment variables to have an consistent naming scheme, see README for details. [jensens]
 - Add tox, Github Actions, CI and CD. [jensens]
 - Refactor field-map loading to not happen on startup. [jensens]
-
+- Remove Support for OpensSearch 1.x and ElasticSearch < 8 [jensens]
 
 
 1.4 (2023-08-17)

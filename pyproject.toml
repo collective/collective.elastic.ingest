@@ -44,7 +44,7 @@ Issues = "https://github.com/collective/collective.elastic.ingest/issues"
 [project.optional-dependencies]
 redis = ["celery[redis]"]
 rabbitmq = ["celery[librabbitmq]"]
-opensearch = ["opensearch-py"]
+opensearch = ["opensearch-py>=2"]
 elasticsearch = ["elasticsearch>=8.0"]
 test = [
     "pytest",

@@ -2,7 +2,7 @@
 collective.elastic.ingest
 =========================
 
-Ingestion service queue runner between Plone RestAPI and ElasticSearch or OpenSearch.
+Ingestion service queue runner between Plone RestAPI and ElasticSearch 8+ or OpenSearch 2+.
 Provides Celery-tasks to asynchronous index Plone content.
 
 - auto-create Open-/ElasticSearch...
@@ -29,7 +29,7 @@ Install ``collective.elastic.ingest`` ready to use with redis and opensearch::
 
 Depending on the queue server and index server used, the extra requirements vary:
 
-- index server: ``opensearch``,  ``elasticsearch7``, or ``elasticsearch8``.
+- index server: ``opensearch``,  ``elasticsearch``.
 - queue server: ``redis`` or ``rabbitmq``.
 
 

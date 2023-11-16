@@ -1,3 +1,4 @@
+from .. import OPENSEARCH
 from ..analysis import update_analysis
 from ..elastic import get_ingest_client
 from ..logging import logger
@@ -13,9 +14,6 @@ from .rid import enrichWithRid
 from .section import enrichWithSection
 from .security import enrichWithSecurityInfo
 from .vocabularyfields import stripVocabularyTermTitles
-from collective.elastic.ingest import ELASTICSEARCH_7
-from collective.elastic.ingest import OPENSEARCH
-from collective.elastic.ingest import OPENSEARCH_2
 from pprint import pformat
 
 
@@ -49,8 +47,8 @@ def setup_ingest_pipelines(full_schema, index_name):
     if pipelines["processors"]:
         logger.info(f"update ingest pipelines {pipeline_name}")
         logger.debug(f"pipeline definitions:\n{pipelines}")
-        if (not OPENSEARCH and ELASTICSEARCH_7) or (OPENSEARCH and OPENSEARCH_2):
-            es.ingest.put_pipeline(pipeline_name, pipelines)
+        if OPENSEARCH:
+            es.ingest.put_pipeline(id=pipeline_name, body=pipelines)
         else:
             es.ingest.put_pipeline(id=pipeline_name, processors=pipelines["processors"])
     else:
