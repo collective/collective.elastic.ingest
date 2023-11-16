@@ -17,6 +17,8 @@ Provides Celery-tasks to asynchronous index Plone content.
     - elasticsearch or opensearch
     - sentry logging (optional)
 
+.. contents:: Table of Contents
+
 ------------
 Installation
 ------------
