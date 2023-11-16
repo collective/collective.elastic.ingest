@@ -9,7 +9,7 @@ RUN <<EOT
     pip install "collective.elastic.ingest[opensearch,elasticsearch,redis,rabbitmq]==$PACKAGE_VERSION"
 EOT
 
-ENV MAPPINGS_FILE=/configurations/mappings.json \
+ENV MAPPINGS_FILE=/configuration/mappings.json \
     CELERY_CONCURRENCY=1 \
     CELERY_LOGLEVEL=info
 
