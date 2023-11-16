@@ -10,8 +10,7 @@ import os
 
 # sentry integration
 sentry_dsn = os.environ.get("SENTRY_DSN", None)
-sentry_project = os.environ.get("SENTRY_PROJECT", None)
-if sentry_dsn is not None:
+if sentry_dsn:
     try:
         from sentry_sdk.integrations.celery import CeleryIntegration
 
@@ -19,6 +18,7 @@ if sentry_dsn is not None:
 
         sentry_sdk.init(sentry_dsn, integrations=[CeleryIntegration()])
         logger.debug("Enable sentry logging.")
+        sentry_project = os.environ.get("SENTRY_PROJECT", None)
         if sentry_project is not None:
             with sentry_sdk.configure_scope() as scope:
                 scope.set_tag("project", sentry_project)
