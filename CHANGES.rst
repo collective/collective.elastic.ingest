@@ -19,7 +19,9 @@ Changelog
 - Add tox, Github Actions, CI and CD. [jensens]
 - Refactor field-map loading to not happen on startup. [jensens]
 - Remove Support for OpenSearch 1.x and ElasticSearch < 8 [jensens]
-- rename .elastic.get_ingest_client to .client.get_client [jensens]
+- Rename .elastic.get_ingest_client to .client.get_client [jensens]
+- Do not initialize a new client for each operation, but use a thread local cached one.
+  This speeds up indexing a lot. [jensens]
 
 
 1.4 (2023-08-17)

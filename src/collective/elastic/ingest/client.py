@@ -2,6 +2,7 @@ from . import OPENSEARCH
 from .logging import logger
 
 import os
+import threading
 
 
 if OPENSEARCH:
@@ -9,12 +10,17 @@ if OPENSEARCH:
 else:
     from elasticsearch import Elasticsearch
 
+_local_storage = threading.local()
 
 def get_client(index_server_baseurl: str = ""):
     """index client for query or ingest
 
     either OpenSearch or Elasticsearch client, depending on OPENSEARCH env var
     """
+
+    client = getattr(_local_storage, "client", None)
+    if client is not None:
+        return _local_storage.client
 
     raw_addr = index_server_baseurl or os.environ.get("INDEX_SERVER", "")
     use_ssl = bool(int(os.environ.get("INDEX_USE_SSL", "0")))
@@ -50,4 +56,5 @@ def get_client(index_server_baseurl: str = ""):
             basic_auth=auth,
             verify_certs=False,
         )
+    setattr(_local_storage, "client", client)
     return client
