@@ -51,8 +51,3 @@ def get_client(index_server_baseurl: str = ""):
             verify_certs=False,
         )
     return client
-
-
-def get_ingest_client(elasticsearch_server_baseurl=None):
-    logger.warn("get_client is deprecated, use get_search_client instead")
-    return get_client(elasticsearch_server_baseurl)
