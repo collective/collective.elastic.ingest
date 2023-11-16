@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM python:3.12-slim
 
-ARG IMAGE_VERSION
 ARG PACKAGE_VERSION
 
 RUN <<EOT
