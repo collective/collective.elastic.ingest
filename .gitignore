@@ -10,7 +10,7 @@ venv/
 htmlcov/
 include/
 lib/
-local/
+./local/
 dist/*
 var/
 # files
