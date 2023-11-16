@@ -171,28 +171,27 @@ Precondition:
 
 - Docker and docker-compose are installed.
 - Max virtual memory map needs increase to run this: `sudo sysctl -w vm.max_map_count=262144` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
+- enter the directory ``cd examples/docker``
 
 Steps to start the example OpenSearch Server with the ``ingest-attachment`` plugin installed:
 
-- enter the directory ``cd examples/docker``
 - locally build the custom OpenSearch Docker image enriched with the plugin using:
 
   ```bash
   docker buildx use default
   docker buildx build --tag opensearch-ingest-attachment:latest Dockerfile
   ```
-- start the server with ``docker-compose up``.
+- start the cluster with ``docker-compose up``.
 
 Now you have an OpenSearch server running on ``http://localhost:9200`` and an OpenSearch Dashboard running on ``http://localhost:5601`` (user/pass: admin/admin).
 The OpenSearch server has the ``ingest-attachment`` plugin installed.
 The plugin enables OpenSearch to extract text from binary files like PDFs.
 
-Additional the ingest worker runs and is ready to index content from a Plone backend.
-Open another terminal.
+A Redis server is running on ``localhost:6379``.
 
-An `.env` file is provided with the environment variables ready to use with the docker-compose file.
-Run ``source examples/.env`` to load the environment variables.
-Then start the celery worker with ``celery -A collective.elastic.ingest.celery.app worker -l debug``.
+Additional the ingest worker runs and is ready to index content from a Plone backend.
+
+Open another terminal.
 
 In another terminal window `run a Plone backend <https://6.docs.plone.org/install/index.html>`_ at ``http://localhost:8080/Plone`` with the add-on `collective.elastic.plone` installed.
 There, create an item or modify an existing one.
@@ -208,6 +207,8 @@ A very basic mappings file ``examples/docker/local/mappings.json`` is provided.
 To use it set `MAPPINGS_FILE=examples/mappings-basic.json` and then start the celery worker.
 An environemnt file ``examples/docker/local/.env`` is provided with the environment variables ready to use for local startup.
 
+Run ``source examples/.env`` to load the environment variables.
+Then start the celery worker with ``celery -A collective.elastic.ingest.celery.app worker -l debug``.
 
 Complex Mapping With German Text Analysis
 -----------------------------------------
