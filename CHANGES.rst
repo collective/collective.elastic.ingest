@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-2.0.0 (unreleased)
-------------------
+2.0.0b1 (unreleased)
+--------------------
 
 - Fix OpenSearch / ElasticSearch switch. [ksuess]
 - Update example mapping for nested field "NamedBlobFile":

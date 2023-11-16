@@ -12,6 +12,7 @@ else:
 
 _local_storage = threading.local()
 
+
 def get_client(index_server_baseurl: str = ""):
     """index client for query or ingest
 
