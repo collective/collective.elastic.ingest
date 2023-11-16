@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .logging import logger
 from .plone import fetch_binary
 from collections import OrderedDict

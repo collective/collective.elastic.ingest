@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
-from .elastic import get_ingest_client
+from .client import get_client
 from .logging import logger
-from collective.elastic.ingest import ELASTICSEARCH_7
 from copy import deepcopy
 
 import json
 import operator
 import os
 import pprint
+import typing
 
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -16,16 +15,23 @@ pp = pprint.PrettyPrinter(indent=4)
 # to be filled as cache and renewed on create_or_update_mapping
 EXPANSION_FIELDS = {}
 
-STATE = {"initial": True}
+STATE = {
+    "initial": True,
+    "fieldmap": {},
+}
 
-DETECTOR_METHODS = {}
+DETECTOR_METHODS: dict[str, typing.Callable] = {}
 
-_mappings_file = os.environ.get(
-    "MAPPINGS_FILE", os.path.join(os.path.dirname(__file__), "mappings.json")
-)
 
-with open(_mappings_file, mode="r") as fp:
-    FIELDMAP = json.load(fp)
+def get_field_map() -> dict:
+    if STATE["fieldmap"] == {}:
+        _mappings_file = os.environ.get("MAPPINGS_FILE", None)
+        if not _mappings_file:
+            raise ValueError("No mappings file configured.")
+        with open(_mappings_file) as fp:
+            STATE["fieldmap"] = json.load(fp)
+    assert isinstance(STATE["fieldmap"], dict)
+    return STATE["fieldmap"]
 
 
 def iterate_schema(full_schema):
@@ -56,10 +62,11 @@ def expanded_processors(processors, source, target):
 
 
 def map_field(field, properties, fqfieldname, seen):
-    definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+    fieldmap = get_field_map()
+    definition = fieldmap.get(fqfieldname, fieldmap.get(field["field"], None))
     if definition is None:
         logger.warning(
-            "Ignore: '{0}' field type nor '{1}' FQFN in map.".format(
+            "Ignore: '{}' field type nor '{}' FQFN in map.".format(
                 field["field"], fqfieldname
             )
         )
@@ -67,7 +74,7 @@ def map_field(field, properties, fqfieldname, seen):
     seen.add(field["name"])
     logger.debug(f"Map field name {field['name']} to definition {definition}")
     if "type" in definition:
-        # simple defintion
+        # simple definition
         properties[field["name"]] = definition
         return
     # complex definition
@@ -86,10 +93,11 @@ def map_field(field, properties, fqfieldname, seen):
 
 
 def update_expansion_fields(field, fqfieldname):
-    definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+    fieldmap = get_field_map()
+    definition = fieldmap.get(fqfieldname, fieldmap.get(field["field"], None))
     if definition is None:
         logger.warning(
-            "Ignore: '{0}' field type nor '{1}' FQFN in map.".format(
+            "Ignore: '{}' field type nor '{}' FQFN in map.".format(
                 field["field"], fqfieldname
             )
         )
@@ -120,18 +128,15 @@ DETECTOR_METHODS["replace"] = _replacement_detector
 
 
 def create_or_update_mapping(full_schema, index_name):
-    es = get_ingest_client()
-    if es is None:
-        logger.warning("No ElasticSearch client available.")
+    client = get_client()
+    if client is None:
+        logger.warning("No index client available.")
         return
 
     # get current mapping
-    if ELASTICSEARCH_7:
-        index_exists = es.indices.exists(index_name)
-    else:
-        index_exists = es.indices.exists(index=index_name)
+    index_exists = client.indices.exists(index=index_name)
     if index_exists:
-        original_mapping = es.indices.get_mapping(index=index_name)[index_name]
+        original_mapping = client.indices.get_mapping(index=index_name)[index_name]
         mapping = deepcopy(original_mapping)
         if "properties" not in mapping["mappings"]:
             mapping["mappings"]["properties"] = {}
@@ -158,14 +163,14 @@ def create_or_update_mapping(full_schema, index_name):
         if field["name"] in properties:
             logger.debug(
                 "Skip existing field definition "
-                "{0} with {1}. Already defined: {2}".format(
+                "{} with {}. Already defined: {}".format(
                     fqfieldname, value_type, properties[field["name"]]
                 )
             )
             continue
         if field["name"] in seen:
             logger.debug(
-                "Skip dup field definition {0} with {1}.".format(
+                "Skip dup field definition {} with {}.".format(
                     fqfieldname,
                     value_type,
                 )
@@ -188,24 +193,17 @@ def create_or_update_mapping(full_schema, index_name):
         ):
             logger.info("Update mapping.")
             logger.debug(
-                "Mapping is:\n{0}".format(
+                "Mapping is:\n{}".format(
                     json.dumps(mapping["mappings"], sort_keys=True, indent=2)
                 )
             )
-            if ELASTICSEARCH_7:
-                es.indices.put_mapping(index=index_name, body=mapping["mappings"])
-            else:
-                es.indices.put_mapping(
-                    index=[index_name],
-                    body=mapping["mappings"],
-                )
+            client.indices.put_mapping(
+                index=[index_name],
+                body=mapping["mappings"],
+            )
         else:
             logger.debug("No update necessary. Mapping is unchanged.")
     else:
-        # from celery.contrib import rdb; rdb.set_trace()
         logger.info("Create index with mapping.")
         logger.debug(f"mapping is:\n{json.dumps(mapping, sort_keys=True, indent=2)}")
-        if ELASTICSEARCH_7:
-            es.indices.create(index_name, body=mapping)
-        else:
-            es.indices.create(index=index_name, mappings=mapping["mappings"])
+        client.indices.create(index=index_name, mappings=mapping["mappings"])

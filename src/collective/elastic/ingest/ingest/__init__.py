@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
+from .. import OPENSEARCH
 from ..analysis import update_analysis
-from ..elastic import get_ingest_client
+from ..client import get_client
 from ..logging import logger
 from ..mapping import create_or_update_mapping
 from ..mapping import expanded_processors
 from ..mapping import EXPANSION_FIELDS
-from ..mapping import FIELDMAP
+from ..mapping import get_field_map
 from ..mapping import iterate_schema
 from ..postprocessing import postprocess
 from ..preprocessing import preprocess
@@ -14,9 +14,6 @@ from .rid import enrichWithRid
 from .section import enrichWithSection
 from .security import enrichWithSecurityInfo
 from .vocabularyfields import stripVocabularyTermTitles
-from collective.elastic.ingest import ELASTICSEARCH_7
-from collective.elastic.ingest import OPENSEARCH
-from collective.elastic.ingest import OPENSEARCH_2
 from pprint import pformat
 
 
@@ -25,11 +22,12 @@ PIPELINE_PREFIX = "attachment_ingest"
 
 
 def _es_pipeline_name(index_name):
-    return "{0}_{1}".format(PIPELINE_PREFIX, index_name)
+    return "{}_{}".format(PIPELINE_PREFIX, index_name)
 
 
 def setup_ingest_pipelines(full_schema, index_name):
-    es = get_ingest_client()
+    logger.debug("setup ingest piplines")
+    client = get_client()
     pipeline_name = _es_pipeline_name(index_name)
     pipelines = {
         "description": "Extract Plone Binary attachment information",
@@ -37,7 +35,8 @@ def setup_ingest_pipelines(full_schema, index_name):
     }
     for section_name, schema_name, field in iterate_schema(full_schema):
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
-        definition = FIELDMAP.get(fqfieldname, FIELDMAP.get(field["field"], None))
+        fieldmap = get_field_map()
+        definition = fieldmap.get(fqfieldname, fieldmap.get(field["field"], None))
         if not definition or "pipeline" not in definition:
             continue
         source = definition["pipeline"]["source"].format(name=field["name"])
@@ -48,12 +47,15 @@ def setup_ingest_pipelines(full_schema, index_name):
     if pipelines["processors"]:
         logger.info(f"update ingest pipelines {pipeline_name}")
         logger.debug(f"pipeline definitions:\n{pipelines}")
-        if not OPENSEARCH and ELASTICSEARCH_7 or OPENSEARCH and OPENSEARCH_2:
-            es.ingest.put_pipeline(pipeline_name, pipelines)
+        if OPENSEARCH:
+            client.ingest.put_pipeline(id=pipeline_name, body=pipelines)
         else:
-            es.ingest.put_pipeline(id=pipeline_name, processors=pipelines["processors"])
+            client.ingest.put_pipeline(
+                id=pipeline_name, processors=pipelines["processors"]
+            )
     else:
-        es.ingest.delete_pipeline(pipeline_name)
+        logger.info(f"delete ingest pipelines {pipeline_name}")
+        client.ingest.delete_pipeline(pipeline_name)
 
 
 def ingest(content, full_schema, index_name):
@@ -79,11 +81,11 @@ def ingest(content, full_schema, index_name):
     postprocess(content, info)
 
     logger.info(f"Index content: {pformat(content)}")
-    es = get_ingest_client()
-    es_kwargs = dict(
+    client = get_client()
+    kwargs = dict(
         index=index_name,
         id=content["UID"],
         pipeline=_es_pipeline_name(index_name),
         body=content,
     )
-    es.index(**es_kwargs)
+    client.index(**kwargs)

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from .ingest import ingest
 from .logging import logger
 from .plone import fetch_content
@@ -60,7 +57,7 @@ def index(path, timestamp, index_name):
         msg = "Error while writing data to ElasticSearch"
         logger.exception(msg)
         return msg
-    return "indexed {0} on timestamp {1}".format(path, timestamp)
+    return "indexed {} on timestamp {}".format(path, timestamp)
 
 
 @app.task(name="collective.elastic.ingest.unindex")
@@ -72,4 +69,4 @@ def unindex(uid, index_name):
         msg = "Error while removing data from ElasticSearch"
         logger.exception(msg)
         return msg
-    return "unindexed {0}".format(uid)
+    return "unindexed {}".format(uid)

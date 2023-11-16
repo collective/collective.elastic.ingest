@@ -2,71 +2,209 @@
 collective.elastic.ingest
 =========================
 
-Ingestion service queue runner between Plone RestAPI and ElasticSearch or OpenSearch.
+Ingestion service queue runner between Plone RestAPI and ElasticSearch 8+ or OpenSearch 2+.
 Provides Celery-tasks to asynchronous index Plone content.
 
 - auto-create Open-/ElasticSearch...
     - index
-    - mapping from Plone schema using a flexible conversions file (JSON).
+    - mapping from Plone schema using a flexible conversions file (JSON),
     - ingest-attachment pipelines using (same as above) file.
 - task to
     - index a content object with all data given plus allowedRolesAndUsers and section (primary path)
     - unindex an content object
 - configure from environment variables:
     - celery,
-    - elasticsearch,
+    - elasticsearch or opensearch
     - sentry logging (optional)
 
-
+------------
 Installation
 ------------
 
-Install ``collective.elastic.ingest`` (redis-ready) using pip::
+We recommended to use a Python virtual environment, create one with ``python3 -m venv venv``, and activate it in the current terminal session with ``source venv/bin/activate``.
 
-    pip install collective.elastic.ingest redis
+Install ``collective.elastic.ingest`` ready to use with redis and opensearch::
 
-``collective.elastic.ingest`` requires ``elasticsearch``.
-Specify the version according your ElasticSearch app version.
-For example::
+    pip install collective.elastic.ingest[redis,opensearch]
 
-    pip install 'elasticsearch~=7.0'
+Depending on the queue server and index server used, the extra requirements vary:
+
+- index server: ``opensearch``,  ``elasticsearch``.
+- queue server: ``redis`` or ``rabbitmq``.
 
 
+-------------
+Configuration
+-------------
+
+Configuration is done via environment variables and JSON files.
+
+Environment variables are:
+
+INDEX_SERVER
+    The URL of the ElasticSearch or OpenSearch server.
+
+    Default: localhost:9200
+
+INDEX_USE_SSL
+    Whether to use a secure connection or not.
+
+    Default: 0
+
+INDEX_OPENSEARCH
+    Whether to use OpenSearch or ElasticSearch.
+
+    Default: 1
+
+INDEX_LOGIN
+    Username for the ElasticSearch 8+ or OpenSearch server.
+
+    Default: admin
+
+INDEX_PASSWORD
+    Password for the ElasticSearch 8+ or OpenSearch server.
+
+    Default: admin
+
+CELERY_BROKER
+    The broker URL for Celery.
+    See `docs.celeryq.dev <https://docs.celeryq.dev/>`_ for details.
+
+    Default: `redis://localhost:6379/0`
+
+
+PLONE_SERVICE
+    Base URL of the Plone Server
+
+    Default: http://localhost:8080
+
+PLONE_PATH
+    Path to the site to index at the Plone Server
+
+    Default: `Plone`
+
+PLONE_USER
+    Username for the Plone Server, needs to have at least Site Administrator role.
+
+    Default: admin
+
+PLONE_PASSWORD
+    Password for the Plone Server.
+
+    Default: admin
+
+MAPPINGS_FILE
+    Absolute path to the mappings configuration file.
+    Configures field mappings from Plone schema to ElasticSearch.
+
+    No default, must be given.
+
+PREPROCESSINGS_FILE
+    Configures preprocessing of field values before indexing.
+
+    Default: Uses a defaults file of this package.
+
+ANALYSIS_FILE
+    (optional) Absolute path to the analysis configuration file.
+
+SENTRY_DSN
+    (optional) Sentry DSN for error reporting.
+
+    Default: disabled
+
+
+--------
 Starting
 --------
 
-Define the configuration as environment variables::
+Run celery worker::
 
-    CELERY_BROKER=redis://localhost:6379/0
-    ELASTICSEARCH_INGEST_SERVER=localhost:9200
-    ELASTICSEARCH_INGEST_USE_SSL=0
-    PLONE_SERVICE=http://localhost:8080
-    PLONE_PATH=Plone
-    PLONE_USER=admin
-    PLONE_PASSWORD=admin
-
-Request OpenSearch::
-
-    OPENSEARCH=1
-    ELASTICSEARCH_INGEST_LOGIN=admin
-    ELASTICSEARCH_INGEST_PASSWORD=admin
-
-Optional (defaults used if not given)::
-
-    ANALYSIS_FILE=/full/path/to/analysis.json
-    MAPPINGS_FILE=/full/path/to/mappings.json
-    PREPROCESSINGS_FILE=/full/path/to/preprocessings.json
-    SENTRY_DSN= (disabled by default)
-
-Then run celery::
-
-    celery -A collective.elastic.ingest.celery.app worker -l info
+    celery -A collective.elastic.ingest.celery.app worker -c 1 -l info
 
 Or with debug information::
 
-    celery -A collective.elastic.ingest.celery.app worker -l debug
+    celery -A collective.elastic.ingest.celery.app worker -c 1 -l debug
+
+The number is the concurrency of the worker.
+For production use, it should be set to the number of Plone backends available for indexing load.
+
+---------
+OCI Image
+---------
+
+For use in Docker, Podman, Kubernetes, ..., an OCI image is provided at ...
+
+The environment variables above are used as configuration.
+
+Additional the following environment variables are used:
+
+CELERY_CONCURENCY
+    The number of concurrent tasks to run.
+
+    Default: 1
+
+CELERY_LOGLEVEL
+    The log level for celery.
+
+    Default: info
 
 
+--------
+Examples
+--------
+
+Example configuration files are provided in the ``/examples`` directory.
+
+OpenSearch with Docker Compose
+------------------------------
+
+A docker-compose file ``docker-compose.yml`` and a ``Dockerfile`` to start an OpenSearch server is provided.
+
+Precondition:
+
+- Docker and docker-compose are installed.
+- Max virtual memory map needs increase to run this: `sudo sysctl -w vm.max_map_count=262144` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
+
+Steps to start the example OpenSearch Server with the ``ingest-attachment`` plugin installed:
+
+- enter the directory ``cd examples``
+- build the docker image with
+
+  ```bash
+  docker buildx use default
+  docker buildx build --tag opensearch-ingest-attachment:latest Dockerfile
+  ```
+- start the server with ``docker-compose up``.
+
+Now you have an OpenSearch server running on ``http://localhost:9200`` and an OpenSearch Dashboard running on ``http://localhost:5601`` (user/pass: admin/admin).
+The OpenSearch server has the ``ingest-attachment`` plugin installed.
+The plugin enables OpenSearch to extract text from binary files like PDFs.
+
+Open another terminal.
+
+An `.env` file is provided with the environment variables ready to use with the docker-compose file.
+Run ``source examples/.env`` to load the environment variables.
+Then start the celery worker with ``celery -A collective.elastic.ingest.celery.app worker -l debug``.
+
+In another terminal window `run a Plone backend <https://6.docs.plone.org/install/index.html>`_ at ``http://localhost:8080/Plone`` with the add-on `collective.elastic.plone` installed.
+There, create an item or modify an existing one.
+You should see the indexing task in the celery worker terminal window.
+
+
+Basic Mappings
+--------------
+
+A very basic mappings file ``mappings-basic.json`` is provided.
+To use it set `MAPPINGS_FILE=examples/mappings-basic.json` and then start the celery worker.
+
+Complex Mapping With German Text Analysis
+-----------------------------------------
+
+A complex mappings file with german text analysis configured, ``mappings-german-analysis.json`` is provided.
+It comes together with the matching analysis configuration file ``analysis-german.json`` and a stub lexicon file ``elasticsearch-lexicon-german.txt``.
+Read the next section for more information about text analysis.
+
+-------------
 Text Analysis
 -------------
 
@@ -131,6 +269,7 @@ The response delivers the tokens for the analyzed text 'Lehrstellenbörse'.
 Note: The file ``elasticsearch-lexicon.txt`` with the word list used by the ``decompounder`` of the sample analysis configuration in ``analysis.json.example`` has to be located in the configuration directory of your elasticsearch server.
 
 
+-----------
 Source Code
 -----------
 
@@ -144,37 +283,18 @@ We appreciate any contribution and if a release is needed to be done on pypi, pl
 We also offer commercial support if any training, coaching, integration or adaptions are needed.
 
 
-Contributions
--------------
-
-Initial implementation was made possible by `Evangelisch-reformierte Landeskirche des Kantons Zürich <https://zhref.ch/>`_.
-
-Idea and testing by Peter Holzer
-
-Concept & code by Jens W. Klein
-
-Text analysis code and configuration Katja Süss
-
-
-
+----------------------------
 Installation for development
 ----------------------------
 
 - clone source code repository,
 - enter repository directory
 - recommended: create a virtualenv ``python -mvenv env``
-- development install ``./bin/env/pip install -e .``
-- add redis support ``./bin/env/pip install redis``.
-- load environment configuration ``source .env``.
+- development install ``./bin/env/pip install -e .[test,redis,opensearch]``
+- load environment configuration ``source examples/.env``.
 
 
-Todo
-----
-
-- query status of a task
-- simple statistics about tasks-count: pending, done, errored
-- celery retry on failure, i.e. restart of ElasticSearch, Plone, ...
-
+-------
 License
 -------
 

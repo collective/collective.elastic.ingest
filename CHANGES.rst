@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-1.4.1 (unreleased)
-------------------
+2.0.0b1 (unreleased)
+--------------------
 
 - Fix OpenSearch / ElasticSearch switch. [ksuess]
 - Update example mapping for nested field "NamedBlobFile":
@@ -11,6 +11,17 @@ Changelog
   [ksuess]
 - code-style: black & isort [jensens]
 - Add support for Plone ClassicUI based sites (no Volto blocks available) [jensens]
+- Move mappings.json, analysis.json.example with its lexicon out of code into examples directory and pimped docs on how to use all this.
+  [jensens]
+- Add docker-compose file to start OpensSearch to example directory and move `.env` to example too.
+  [jensens]
+- rename `ELASTIC_*` environment variables to have an consistent naming scheme, see README for details. [jensens]
+- Add tox, Github Actions, CI and CD. [jensens]
+- Refactor field-map loading to not happen on startup. [jensens]
+- Remove Support for OpenSearch 1.x and ElasticSearch < 8 [jensens]
+- Rename .elastic.get_ingest_client to .client.get_client [jensens]
+- Do not initialize a new client for each operation, but use a thread local cached one.
+  This speeds up indexing a lot. [jensens]
 
 
 1.4 (2023-08-17)

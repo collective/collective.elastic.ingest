@@ -3,10 +3,17 @@ from importlib.metadata import version
 import os
 
 
-OPENSEARCH = True if os.environ.get("OPENSEARCH") == "1" else False
+OPENSEARCH = os.environ.get("INDEX_OPENSEARCH") == "1"
 
-version_elasticsearch = version("elasticsearch")
-ELASTICSEARCH_7 = int(version_elasticsearch[0]) <= 7
-
-version_opensearchpy = version("opensearch-py")
-OPENSEARCH_2 = int(version_opensearchpy[0]) <= 2
+if OPENSEARCH:
+    version_opensearchpy = version("opensearch-py")
+    if int(version_opensearchpy[0]) < 2:
+        raise ValueError(
+            "opensearch-py 1.x is not supported, use version 1.x of the collective.elastic.ingest package."
+        )
+else:
+    version_elasticsearch = version("elasticsearch")
+    if int(version_elasticsearch[0]) < 7:
+        raise ValueError(
+            "elasticsearch < 7 is not supported, use Version 1.x of the collective.elastic.ingest package."
+        )
