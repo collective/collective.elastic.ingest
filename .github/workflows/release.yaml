@@ -44,6 +44,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/collective/collective.elastic.ingest
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to GitHub Container Registry
@@ -58,6 +63,5 @@ jobs:
           context: "{{defaultContext}}:container"
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ghcr.io/collective/collective.elastic.ingest:latest
-            ghcr.io/collective/collective.elastic.ingest:${{ github.ref_name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
