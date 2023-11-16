@@ -278,8 +278,8 @@ There you can report issues too.
 
 We'd be happy to see many forks and pull-requests to make this addon even better.
 
-Maintainers are `Jens Klein <mailto:jk@kleinundpartner.at>`_, `Peter Holzer <mailto:peter.holzer@agitator.com>`_ and the BlueDynamics Alliance developer team.
-We appreciate any contribution and if a release is needed to be done on pypi, please just contact one of us.
+Maintainers are `Jens Klein <mailto:jk@kleinundpartner.at>`_, `Katja Suess <https://github.com/rohberg`_ and the BlueDynamics Alliance developer team.
+We appreciate any contribution and if a release is needed to be done on PyPI, please just contact one of us.
 We also offer commercial support if any training, coaching, integration or adaptions are needed.
 
 
@@ -289,7 +289,7 @@ Installation for development
 
 - clone source code repository,
 - enter repository directory
-- recommended: create a virtualenv ``python -mvenv env``
+- recommended: create a Virtualenv ``python -mvenv env``
 - development install ``./bin/env/pip install -e .[test,redis,opensearch]``
 - load environment configuration ``source examples/.env``.
 
