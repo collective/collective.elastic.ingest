@@ -138,7 +138,7 @@ The environment variables above are used as configuration.
 
 Additional the following environment variables are used:
 
-CELERY_CONCURENCY
+CELERY_CONCURRENCY
     The number of concurrent tasks to run.
 
     Default: 1
