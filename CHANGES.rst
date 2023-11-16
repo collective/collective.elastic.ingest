@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.0.0b1 (2023-11-16)
+2.0.0b2 (2023-11-16)
 --------------------
 
 - Fix OpenSearch / ElasticSearch switch. [ksuess]
