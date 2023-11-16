@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.0.0b5 (2023-11-16)
+2.0.0b6 (2023-11-16)
 --------------------
 
 - Fix OpenSearch / ElasticSearch switch. [ksuess]
@@ -22,6 +22,7 @@ Changelog
 - Rename .elastic.get_ingest_client to .client.get_client [jensens]
 - Do not initialize a new client for each operation, but use a thread local cached one.
   This speeds up indexing a lot. [jensens]
+- Fix Sentry integration to not trigger if env var is empty string. [jensens]
 
 
 1.4 (2023-08-17)
