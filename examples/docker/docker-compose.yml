@@ -5,16 +5,32 @@ services:
 
   ingest:
     image: ghcr.io/collective/collective.elastic.ingest:latest
+    environment:
+      MAPPINGS_FILE: ${MAPPINGS_FILE}
+      ANALYIS_FILE: ${ANALYIS_FILE}
+      PREPROCESSING_FILE: ${PREPROCESSING_FILE}
+      INDEX_SERVER: ${INDEX_SERVER?unset}
+      INDEX_USE_SSL: ${INDEX_USE_SSL?unset}
+      INDEX_OPENSEARCH: ${INDEX_OPENSEARCH?unset}
+      INDEX_LOGIN: ${INDEX_LOGIN?unset}
+      INDEX_PASSWORD: ${INDEX_PASSWORD?unset}
+      CELERY_BROKER: ${CELERY_BROKER?unset}
+      CELERY_CONCURRENCY: ${CELERY_CONCURRENCY}
+      CELEREY_LOG_LEVEL: ${CELERY_LOG_LEVEL}
+      PLONE_SERVICE: ${PLONE_SERVICE?unset}
+      PLONE_PATH: ${PLONE_PATH?unset}
+      PLONE_USER: ${PLONE_USER?unset}
+      PLONE_PASSWORD: ${PLONE_PASSWORD?unset}
+      SENTRY_DSN: ${SENTRY_DSN}
     volumes:
       - ingest-configuration:/configuration
     networks:
-      - default
       - opensearch-net
 
   redis:
     image: 'redis:latest'
     networks:
-      - backend
+      - opensearch-net
     ports:
       - 6379:6379
 
@@ -55,13 +71,11 @@ services:
 volumes:
   opensearch-data:
   ingest-configuration:
+    driver: local
     driver_opts:
       type: none
       device: ./configuration
       o: bind
 networks:
   opensearch-net:
-  default:
-    external: true
-    name: container_network
 
