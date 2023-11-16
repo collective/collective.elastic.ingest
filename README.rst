@@ -134,7 +134,7 @@ For production use, it should be set to the number of Plone backends available f
 OCI Image
 ---------
 
-For use in Docker, Podman, Kubernetes, ..., an OCI image is provided at ...
+For use in Docker, Podman, Kubernetes, ..., an OCI image is provided at the `Github Container Registry <https://github.com/collective/collective.elastic.ingest/pkgs/container/collective.elastic.ingest>`_.
 
 The environment variables above are used as configuration.
 
@@ -150,17 +150,22 @@ CELERY_LOGLEVEL
 
     Default: info
 
+The `MAPPINGS_FILE` variable defaults to `/configuration/mappings.json`.
+By default no file is present.
+When a mount is provided to `/configuration`, the mappings file can be placed there.
 
 --------
 Examples
 --------
 
-Example configuration files are provided in the ``/examples`` directory.
+Example configuration files are provided in the `./examples <https://github.com/collective/collective.elastic.ingest/tree/main/examples>`_ directory.
 
 OpenSearch with Docker Compose
 ------------------------------
 
-A docker-compose file ``docker-compose.yml`` and a ``Dockerfile`` to start an OpenSearch server is provided.
+Location: ``examples/docker/*``
+
+A docker-compose file ``docker-compose.yml`` and a ``Dockerfile`` to start an Ingest, Redis and an OpenSearch server with dashboard is provided.
 
 Precondition:
 
@@ -169,8 +174,8 @@ Precondition:
 
 Steps to start the example OpenSearch Server with the ``ingest-attachment`` plugin installed:
 
-- enter the directory ``cd examples``
-- build the docker image with
+- enter the directory ``cd examples/docker``
+- locally build the custom OpenSearch Docker image enriched with the plugin using:
 
   ```bash
   docker buildx use default
@@ -182,6 +187,7 @@ Now you have an OpenSearch server running on ``http://localhost:9200`` and an Op
 The OpenSearch server has the ``ingest-attachment`` plugin installed.
 The plugin enables OpenSearch to extract text from binary files like PDFs.
 
+Additional the ingest worker runs and is ready to index content from a Plone backend.
 Open another terminal.
 
 An `.env` file is provided with the environment variables ready to use with the docker-compose file.
@@ -193,14 +199,20 @@ There, create an item or modify an existing one.
 You should see the indexing task in the celery worker terminal window.
 
 
-Basic Mappings
---------------
+Local/ Development
+------------------
 
-A very basic mappings file ``mappings-basic.json`` is provided.
+Location: ``examples/docker/local/*``
+
+A very basic mappings file ``examples/docker/local/mappings.json`` is provided.
 To use it set `MAPPINGS_FILE=examples/mappings-basic.json` and then start the celery worker.
+An environemnt file ``examples/docker/local/.env`` is provided with the environment variables ready to use for local startup.
+
 
 Complex Mapping With German Text Analysis
 -----------------------------------------
+
+Location: ``examples/docker/analysis/*``
 
 A complex mappings file with german text analysis configured, ``mappings-german-analysis.json`` is provided.
 It comes together with the matching analysis configuration file ``analysis-german.json`` and a stub lexicon file ``elasticsearch-lexicon-german.txt``.
