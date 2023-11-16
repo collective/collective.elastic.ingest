@@ -60,4 +60,4 @@ jobs:
           push: true
           tags: |
             ghcr.io/collective/collective.elastic.ingest:latest
-            ghcr.io/collective/collective.elastic.ingest:${GITHUB_REF_NAME}
+            ghcr.io/collective/collective.elastic.ingest:${{ github.ref_name }}
