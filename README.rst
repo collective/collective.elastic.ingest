@@ -41,27 +41,27 @@ Configuration is done via environment variables and JSON files.
 
 Environment variables are:
 
-INGEST_SERVER
+INDEX_SERVER
     The URL of the ElasticSearch or OpenSearch server.
 
     Default: localhost:9200
 
-INGEST_USE_SSL
+INDEX_USE_SSL
     Whether to use a secure connection or not.
 
     Default: 0
 
-INGEST_OPENSEARCH
+INDEX_OPENSEARCH
     Whether to use OpenSearch or ElasticSearch.
 
     Default: 1
 
-INGEST_LOGIN
+INDEX_LOGIN
     Username for the ElasticSearch 8+ or OpenSearch server.
 
     Default: admin
 
-INGEST_PASSWORD
+INDEX_PASSWORD
     Password for the ElasticSearch 8+ or OpenSearch server.
 
     Default: admin

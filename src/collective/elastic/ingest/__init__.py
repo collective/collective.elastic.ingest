@@ -3,7 +3,7 @@ from importlib.metadata import version
 import os
 
 
-OPENSEARCH = os.environ.get("INGEST_OPENSEARCH") == "1"
+OPENSEARCH = os.environ.get("INDEX_OPENSEARCH") == "1"
 
 if OPENSEARCH:
     version_opensearchpy = version("opensearch-py")
