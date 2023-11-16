@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.0.0b3 (2023-11-16)
+2.0.0b4 (unreleased)
 --------------------
 
 - Fix OpenSearch / ElasticSearch switch. [ksuess]

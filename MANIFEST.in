@@ -1,5 +1,6 @@
 graft src/collective
 graft examples
 include *.rst
+include *.md
 exclude container/*
 global-exclude *.pyc
