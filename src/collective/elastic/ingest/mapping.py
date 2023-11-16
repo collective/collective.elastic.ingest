@@ -1,3 +1,4 @@
+from . import OPENSEARCH
 from .client import get_client
 from .logging import logger
 from copy import deepcopy
@@ -34,7 +35,9 @@ def get_field_map() -> dict:
     return STATE["fieldmap"]
 
 
-def iterate_schema(full_schema):
+def iterate_schema(
+    full_schema: dict[str, dict[str, dict[str, dict]]],
+) -> typing.Generator[tuple, None, None]:
     for section_name, section in sorted(
         full_schema.items(), key=operator.itemgetter(0)
     ):
@@ -127,7 +130,7 @@ def _replacement_detector(field, properties, definition, fqfieldname, seen):
 DETECTOR_METHODS["replace"] = _replacement_detector
 
 
-def create_or_update_mapping(full_schema, index_name):
+def create_or_update_mapping(full_schema, index_name: str) -> None:
     client = get_client()
     if client is None:
         logger.warning("No index client available.")
@@ -154,7 +157,7 @@ def create_or_update_mapping(full_schema, index_name):
         }
     # process mapping
     properties = mapping["mappings"]["properties"]
-    seen = set()
+    seen: set[str] = set()
     for section_name, schema_name, field in iterate_schema(full_schema):
         # try "section_name/schema_name/field[name]/type)"
         value_type = field["field"]
@@ -188,22 +191,49 @@ def create_or_update_mapping(full_schema, index_name):
 
     STATE["initial"] = False
     if index_exists:
-        if json.dumps(original_mapping["mappings"], sort_keys=True) != json.dumps(
+        if json.dumps(original_mapping["mappings"], sort_keys=True) == json.dumps(
             mapping["mappings"], sort_keys=True
         ):
-            logger.info("Update mapping.")
-            logger.debug(
-                "Mapping is:\n{}".format(
-                    json.dumps(mapping["mappings"], sort_keys=True, indent=2)
-                )
+            logger.debug("No update necessary. Mapping is unchanged.")
+            return
+
+        logger.info("Update mapping.")
+        logger.debug(
+            "Mapping is:\n{}".format(
+                json.dumps(mapping["mappings"], sort_keys=True, indent=2)
             )
+        )
+        if OPENSEARCH:
+            # both, settings and mappings, at once
             client.indices.put_mapping(
                 index=[index_name],
-                body=mapping["mappings"],
+                body=mapping,
             )
         else:
-            logger.debug("No update necessary. Mapping is unchanged.")
+            # first settings, then mappings
+            client.indices.put_settings(
+                mapping["settings"],
+                index=index_name,
+            )
+            client.indices.put_mapping(
+                index=index_name,
+                mapping=mapping["mappings"],
+            )
+        return
+
+    logger.info("Create index with mapping.")
+    logger.debug(f"mapping is:\n{json.dumps(mapping, sort_keys=True, indent=2)}")
+    if OPENSEARCH:
+        # both, settings and mappings, at once
+        client.indices.create(index=index_name, body=mapping)
     else:
-        logger.info("Create index with mapping.")
-        logger.debug(f"mapping is:\n{json.dumps(mapping, sort_keys=True, indent=2)}")
-        client.indices.create(index=index_name, mappings=mapping["mappings"])
+        # first create index, then settings, then mappings
+        client.indices.create(index=index_name)
+        client.indices.put_settings(
+            mapping["settings"],
+            index=index_name,
+        )
+        client.indices.put_mapping(
+            index=index_name,
+            mapping=mapping["mappings"],
+        )
