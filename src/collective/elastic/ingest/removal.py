@@ -1,13 +1,13 @@
-from .elastic import get_ingest_client
+from .client import get_client
 from .logging import logger
 
 
 def remove(uid, index_name):
-    es = get_ingest_client()
-    if es is None:
-        logger.warning("No ElasticSearch client available.")
+    client = get_client()
+    if client is None:
+        logger.warning("No index client available.")
         return
     try:
-        es.delete(index=index_name, id=uid)
+        client.delete(index=index_name, id=uid)
     except Exception:
         logger.exception("unindexing of {} on index {} failed".format(uid, index_name))

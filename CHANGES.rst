@@ -18,7 +18,8 @@ Changelog
 - rename `ELASTIC_*` environment variables to have an consistent naming scheme, see README for details. [jensens]
 - Add tox, Github Actions, CI and CD. [jensens]
 - Refactor field-map loading to not happen on startup. [jensens]
-- Remove Support for OpensSearch 1.x and ElasticSearch < 8 [jensens]
+- Remove Support for OpenSearch 1.x and ElasticSearch < 8 [jensens]
+- rename .elastic.get_ingest_client to .client.get_client [jensens]
 
 
 1.4 (2023-08-17)

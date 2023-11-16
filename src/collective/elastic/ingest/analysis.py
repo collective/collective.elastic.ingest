@@ -1,6 +1,5 @@
-from .elastic import get_ingest_client
+from .client import get_client
 from .logging import logger
-from collective.elastic.ingest import OPENSEARCH
 
 import json
 import os
@@ -21,7 +20,7 @@ else:
 
 
 def update_analysis(index_name):
-    """Provide elasticsearch with analyzers to be used in mapping.
+    """Provide index with analyzers to be used in mapping.
 
     Sample is found in analysis.json.example.
     Overwrite with your analyzers by creating an ANALYSIS_FILE `analysis.json`.
@@ -38,11 +37,11 @@ def update_analysis(index_name):
     if not analysis_settings:
         logger.warning("No analyzer settings found in configuration.")
         return
-    es = get_ingest_client()
-    if es is None:
+    client = get_client()
+    if client is None:
         logger.warning("No ElasticSearch client available.")
         return
-    if es.indices.exists(index_name):
+    if client.indices.exists(index_name):
         logger.debug(
             f"Analysis for index '{index_name}' already exists, skip creation."
         )
@@ -51,4 +50,4 @@ def update_analysis(index_name):
         f"Create index '{index_name}' with analysis settings "
         f"from '{_analysis_file}', but without mapping."
     )
-    es.indices.create(index_name, body=ANALYSISMAP)
+    client.indices.create(index_name, body=ANALYSISMAP)

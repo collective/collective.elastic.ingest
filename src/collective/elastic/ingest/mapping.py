@@ -1,4 +1,4 @@
-from .elastic import get_ingest_client
+from .client import get_client
 from .logging import logger
 from copy import deepcopy
 
@@ -128,15 +128,15 @@ DETECTOR_METHODS["replace"] = _replacement_detector
 
 
 def create_or_update_mapping(full_schema, index_name):
-    es = get_ingest_client()
-    if es is None:
-        logger.warning("No ElasticSearch client available.")
+    client = get_client()
+    if client is None:
+        logger.warning("No index client available.")
         return
 
     # get current mapping
-    index_exists = es.indices.exists(index=index_name)
+    index_exists = client.indices.exists(index=index_name)
     if index_exists:
-        original_mapping = es.indices.get_mapping(index=index_name)[index_name]
+        original_mapping = client.indices.get_mapping(index=index_name)[index_name]
         mapping = deepcopy(original_mapping)
         if "properties" not in mapping["mappings"]:
             mapping["mappings"]["properties"] = {}
@@ -197,14 +197,13 @@ def create_or_update_mapping(full_schema, index_name):
                     json.dumps(mapping["mappings"], sort_keys=True, indent=2)
                 )
             )
-            es.indices.put_mapping(
+            client.indices.put_mapping(
                 index=[index_name],
                 body=mapping["mappings"],
             )
         else:
             logger.debug("No update necessary. Mapping is unchanged.")
     else:
-        # from celery.contrib import rdb; rdb.set_trace()
         logger.info("Create index with mapping.")
         logger.debug(f"mapping is:\n{json.dumps(mapping, sort_keys=True, indent=2)}")
-        es.indices.create(index=index_name, mappings=mapping["mappings"])
+        client.indices.create(index=index_name, mappings=mapping["mappings"])

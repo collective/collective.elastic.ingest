@@ -128,6 +128,27 @@ Or with debug information::
 The number is the concurrency of the worker.
 For production use, it should be set to the number of Plone backends available for indexing load.
 
+---------
+OCI Image
+---------
+
+For use in Docker, Podman, Kubernetes, ..., an OCI image is provided at ...
+
+The environment variables above are used as configuration.
+
+Additional the following environment variables are used:
+
+CELERY_CONCURENCY
+    The number of concurrent tasks to run.
+
+    Default: 1
+
+CELERY_LOGLEVEL
+    The log level for celery.
+
+    Default: info
+
+
 --------
 Examples
 --------

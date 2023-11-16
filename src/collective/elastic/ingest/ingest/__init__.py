@@ -1,6 +1,6 @@
 from .. import OPENSEARCH
 from ..analysis import update_analysis
-from ..elastic import get_ingest_client
+from ..client import get_client
 from ..logging import logger
 from ..mapping import create_or_update_mapping
 from ..mapping import expanded_processors
@@ -27,7 +27,7 @@ def _es_pipeline_name(index_name):
 
 def setup_ingest_pipelines(full_schema, index_name):
     logger.debug("setup ingest piplines")
-    es = get_ingest_client()
+    client = get_client()
     pipeline_name = _es_pipeline_name(index_name)
     pipelines = {
         "description": "Extract Plone Binary attachment information",
@@ -48,12 +48,14 @@ def setup_ingest_pipelines(full_schema, index_name):
         logger.info(f"update ingest pipelines {pipeline_name}")
         logger.debug(f"pipeline definitions:\n{pipelines}")
         if OPENSEARCH:
-            es.ingest.put_pipeline(id=pipeline_name, body=pipelines)
+            client.ingest.put_pipeline(id=pipeline_name, body=pipelines)
         else:
-            es.ingest.put_pipeline(id=pipeline_name, processors=pipelines["processors"])
+            client.ingest.put_pipeline(
+                id=pipeline_name, processors=pipelines["processors"]
+            )
     else:
         logger.info(f"delete ingest pipelines {pipeline_name}")
-        es.ingest.delete_pipeline(pipeline_name)
+        client.ingest.delete_pipeline(pipeline_name)
 
 
 def ingest(content, full_schema, index_name):
@@ -79,11 +81,11 @@ def ingest(content, full_schema, index_name):
     postprocess(content, info)
 
     logger.info(f"Index content: {pformat(content)}")
-    es = get_ingest_client()
-    es_kwargs = dict(
+    client = get_client()
+    kwargs = dict(
         index=index_name,
         id=content["UID"],
         pipeline=_es_pipeline_name(index_name),
         body=content,
     )
-    es.index(**es_kwargs)
+    client.index(**kwargs)
