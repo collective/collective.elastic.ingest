@@ -163,7 +163,7 @@ Example configuration files are provided in the `./examples <https://github.com/
 OpenSearch with Docker Compose
 ------------------------------
 
-Location: ``examples/docker/*``
+Location: ``examples/docker-os/*``
 
 A docker-compose file ``docker-compose.yml`` and a ``Dockerfile`` to start an Ingest, Redis and an OpenSearch server with dashboard is provided.
 
@@ -186,6 +186,49 @@ Steps to start the example OpenSearch Server with the ``ingest-attachment`` plug
 Now you have an OpenSearch server running on ``http://localhost:9200`` and an OpenSearch Dashboard running on ``http://localhost:5601`` (user/pass: admin/admin).
 The OpenSearch server has the ``ingest-attachment`` plugin installed.
 The plugin enables OpenSearch to extract text from binary files like PDFs.
+
+A Redis server is running on ``localhost:6379``.
+
+Additional the ingest worker runs and is ready to index content from a Plone backend.
+
+Open another terminal.
+
+In another terminal window `run a Plone backend <https://6.docs.plone.org/install/index.html>`_ at ``http://localhost:8080/Plone`` with the add-on `collective.elastic.plone` installed.
+There, create an item or modify an existing one.
+You should see the indexing task in the celery worker terminal window.
+
+
+ElasticSearch with Docker Compose
+---------------------------------
+
+Location: ``examples/docker-es/*``
+
+A docker-compose file ``docker-compose.yml`` to start an Ingest, Redis and an ElasticSearch server with Dejavu dashboard is provided.
+
+Precondition:
+
+- Docker and docker-compose are installed.
+- Max virtual memory map needs increase to run this: `sudo sysctl -w vm.max_map_count=262144` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
+- enter the directory ``cd examples/docker-es``
+
+Run the cluster with
+
+```
+source .env
+docker-compose up
+```
+
+First you need to set the passwords for the ElasticSearch, execute the following command and note the passwords printed on the console.
+
+```
+docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto
+```
+
+Find the password for the user ``elastic`` and set it in the environment variable ``INDEX_PASSWORD`` in the ``.env`` file.
+Stop the cluster (Ctrl-C), `source .env` with the new settings and start it again (as above).
+
+Now you have an ElasticSearch server running on ``http://localhost:9200`` and an Dejavu Dashboard running on ``http://localhost:1358``.
+(The ElasticSearch server has the ``ingest-attachment`` plugin installed by default).
 
 A Redis server is running on ``localhost:6379``.
 

@@ -24,7 +24,6 @@ def get_client(index_server_baseurl: str = ""):
         return _local_storage.client
 
     raw_addr = index_server_baseurl or os.environ.get("INDEX_SERVER", "")
-    use_ssl = bool(int(os.environ.get("INDEX_USE_SSL", "0")))
     addresses = [x for x in raw_addr.split(",") if x.strip()]
     if not addresses:
         addresses.append("127.0.0.1:9200")
@@ -41,6 +40,7 @@ def get_client(index_server_baseurl: str = ""):
         for address in addresses:
             host, port = address.rsplit(":", 1)
             hosts.append({"host": host, "port": port})
+        use_ssl = bool(int(os.environ.get("INDEX_USE_SSL", "0")))
         client = OpenSearch(
             hosts=hosts,
             http_auth=auth,
@@ -50,10 +50,9 @@ def get_client(index_server_baseurl: str = ""):
         info = client.info()
         logger.info(f"OpenSearch client info: {info}")
     else:
-        logger.info(f"Use ElasticSearch client at {addresses}")
+        logger.info(f"Use ElasticSearch client at {addresses} with auth: {auth}")
         client = Elasticsearch(
             addresses,
-            use_ssl=use_ssl,
             basic_auth=auth,
             verify_certs=False,
         )

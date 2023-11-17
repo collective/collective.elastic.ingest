@@ -20,6 +20,13 @@ STATE = {
     "initial": True,
     "fieldmap": {},
 }
+DEFAULT_INDEX_SETTINGS = {
+    # xxx: number should be made configurable
+    "index.mapping.nested_fields.limit": 100,
+    # xxx: to be removed or at least made configurable by env var
+    # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
+    "index.blocks.read_only_allow_delete": False,
+}
 
 DETECTOR_METHODS: dict[str, typing.Callable] = {}
 
@@ -146,14 +153,8 @@ def create_or_update_mapping(full_schema, index_name: str) -> None:
     else:
         # ftr: here is the basic structure of a mapping
         mapping = {
-            "mappings": {"properties": {}},
-            "settings": {
-                # xxx: number should be made configurable
-                "index.mapping.nested_fields.limit": 100,
-                # xxx: to be removed or at least made configurable by env var
-                # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
-                "index.blocks.read_only_allow_delete": False,
-            },
+            "mappings": {"properties": {},},
+            "settings": DEFAULT_INDEX_SETTINGS,
         }
     # process mapping
     properties = mapping["mappings"]["properties"]
@@ -204,20 +205,14 @@ def create_or_update_mapping(full_schema, index_name: str) -> None:
             )
         )
         if OPENSEARCH:
-            # both, settings and mappings, at once
             client.indices.put_mapping(
                 index=[index_name],
                 body=mapping,
             )
         else:
-            # first settings, then mappings
-            client.indices.put_settings(
-                mapping["settings"],
-                index=index_name,
-            )
             client.indices.put_mapping(
                 index=index_name,
-                mapping=mapping["mappings"],
+                properties=mapping["mappings"]["properties"],
             )
         return
 
@@ -230,10 +225,10 @@ def create_or_update_mapping(full_schema, index_name: str) -> None:
         # first create index, then settings, then mappings
         client.indices.create(index=index_name)
         client.indices.put_settings(
-            mapping["settings"],
+            settings=mapping["settings"],
             index=index_name,
         )
         client.indices.put_mapping(
             index=index_name,
-            mapping=mapping["mappings"],
+            properties=mapping["mappings"]["properties"],
         )
