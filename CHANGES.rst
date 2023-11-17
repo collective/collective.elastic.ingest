@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.0.0b7 (2023-11-16)
+--------------------
+
+- Fix ElasticSearch support. [jensens]
+- Add examples for a docker-compose setup for both, OpenSearch and ElasticSearch. [jensens]
+
 
 2.0.0b6 (2023-11-16)
 --------------------
