@@ -77,15 +77,14 @@ def test_action_field_remove():
         "foo": "bar",
         "title": "Foo",
     }
-    from .preprocessing import action_field_remove
 
-    action_field_remove(root, full_schema, config)
+    preprocessing.action_field_remove(root, full_schema, config)
 
     assert root == {"foo": "bar"}
     assert len(full_schema["behaviors"]["plone.basic"]) == 1
 
 
-def test_action_field_remove():
+def test_action_full_remove():
     full_schema = {
         "behaviors": {
             "plone.basic": [
@@ -113,9 +112,8 @@ def test_action_field_remove():
         "language": "de",
         "baz": "Baaz",
     }
-    from .preprocessing import action_full_remove
 
-    action_full_remove(root, full_schema, config)
+    preprocessing.action_full_remove(root, full_schema, config)
 
     assert root == {"baz": "Baaz", "description": "Bar", "title": "Foo"}
     assert "plone.categorization" not in full_schema["behaviors"]
