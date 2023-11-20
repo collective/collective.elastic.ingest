@@ -1,7 +1,14 @@
 Changelog
 =========
 
-2.0.0b8 (2023-11-16)
+2.0.0b9 (2023-11-20)
+--------------------
+
+- fix CI to not release when tests are failing [jensens]
+- fix tests [jensens]
+
+
+2.0.0b8 (2023-11-20)
 --------------------
 
 - Add documentation for preprocessings [jensens]
