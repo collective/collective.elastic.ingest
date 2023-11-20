@@ -32,6 +32,10 @@ DETECTOR_METHODS: dict[str, typing.Callable] = {}
 
 
 def get_field_map() -> dict:
+    """The field map from file passed as filename in an env var.
+
+    To not load 1000s of times, this is cached.
+    """
     if STATE["fieldmap"] == {}:
         _mappings_file = os.environ.get("MAPPINGS_FILE", None)
         if not _mappings_file:
@@ -45,33 +49,24 @@ def get_field_map() -> dict:
 def iterate_schema(
     full_schema: dict[str, dict[str, dict[str, dict]]],
 ) -> typing.Generator[tuple, None, None]:
+    """Iterate over the 3 Levels of the schema and flattend yield field definitions.
+
+    The full_schema is the dict as received from Plone "@cesp" endpoint.
+    The endpoint is defined in collective.elastic.plone.
+
+    The yielded tuple containes the section_name, schema_name and field definition.
+    """
     for section_name, section in sorted(
         full_schema.items(), key=operator.itemgetter(0)
     ):
         for schema_name, schema in sorted(section.items(), key=operator.itemgetter(0)):
+            logger.debug(f"Schema: {section_name}/{schema_name}\n{schema}")
             for field in sorted(schema, key=operator.itemgetter("name")):
                 yield section_name, schema_name, field
 
 
-def _expand_dict(mapping, **kw):
-    record = {}
-    for key, value in mapping.items():
-        if isinstance(value, str):
-            value = value.format(**kw)
-        elif isinstance(value, dict):
-            value = _expand_dict(value, **kw)
-        record[key] = value
-    return record
-
-
-def expanded_processors(processors, source, target):
-    result = []
-    for processor in processors:
-        result.append(_expand_dict(processor, source=source, target=target))
-    return result
-
-
 def map_field(field, properties, fqfieldname, seen):
+    """Map a field to a definition and add it to the properties."""
     fieldmap = get_field_map()
     definition = fieldmap.get(fqfieldname, fieldmap.get(field["field"], None))
     if definition is None:
@@ -103,6 +98,12 @@ def map_field(field, properties, fqfieldname, seen):
 
 
 def update_expansion_fields(field, fqfieldname):
+    """Remember expansion fields for later use in post_processors.
+
+    This are fields where content need to be added in a postprocessing step,
+    i.e. images or files to be fetched from Plone, because the binaries are
+    not part of the inital information.
+    """
     fieldmap = get_field_map()
     definition = fieldmap.get(fqfieldname, fieldmap.get(field["field"], None))
     if definition is None:
@@ -128,9 +129,8 @@ def _replacement_detector(field, properties, definition, fqfieldname, seen):
         properties[field["name"]] = definition["detection"]["default"]
         return
     replacement["name"] = field["name"]
-    update_expansion_fields(
-        field, fqfieldname
-    )  # TODO Needed here? Was part of map_field.
+    # since we replace here, a new expansion field could be needed
+    update_expansion_fields(field, fqfieldname)
     map_field(replacement, properties, fqfieldname, seen)
 
 
@@ -138,6 +138,18 @@ DETECTOR_METHODS["replace"] = _replacement_detector
 
 
 def create_or_update_mapping(full_schema, index_name: str) -> None:
+    """Create or update the mapping for the given index.
+
+    Based on the full_schema as provided by the "@cesp" endpoint,
+    enriched by the preprocessings.
+
+    Based on the MAPPINGS_FILE env var JSON file.
+
+    It globally collects fields for later expansion in postprocessing.
+
+    Finaly it initially creates the index (also index settings are set)
+    or updates the mapping for the given index.
+    """
     client = get_client()
     if client is None:
         logger.warning("No index client available.")
@@ -153,7 +165,9 @@ def create_or_update_mapping(full_schema, index_name: str) -> None:
     else:
         # ftr: here is the basic structure of a mapping
         mapping = {
-            "mappings": {"properties": {},},
+            "mappings": {
+                "properties": {},
+            },
             "settings": DEFAULT_INDEX_SETTINGS,
         }
     # process mapping
@@ -183,6 +197,7 @@ def create_or_update_mapping(full_schema, index_name: str) -> None:
         map_field(field, properties, fqfieldname, seen)
 
     # Mapping for blocks_plaintext (not a schema field, but received from api expansion "collectiveelastic")
+    # TODO: handle this with preprocessings.json
     map_field(
         dict(name="blocks_plaintext", field="blocks_plaintext"),
         properties,

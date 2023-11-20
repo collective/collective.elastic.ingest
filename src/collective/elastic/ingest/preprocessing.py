@@ -97,13 +97,49 @@ ACTION_FUNCTIONS["rewrite"] = action_rewrite
 def action_remove(content, full_schema, config):
     """remove unused entry"""
     target, target_key = _find_last_container_in_path(
-        content, config["target"].split("/")
+        content,
+        config["target"].split("/"),
     )
     if target and target_key in target:
         del target[target_key]
 
 
 ACTION_FUNCTIONS["remove"] = action_remove
+
+
+def action_field_remove(content, full_schema, config):
+    """remove full field from content and schema."""
+    if config["field"] in content:
+        del content[config["field"]]
+    if not full_schema:
+        # cached schema, not passed, no need to process
+        return
+    section = full_schema[config["section"]]
+    fields = section[config["name"]]
+    index = [f["name"] for f in fields].index(config["field"])
+    del fields[index]
+
+
+ACTION_FUNCTIONS["field_remove"] = action_field_remove
+
+
+def action_full_remove(content, full_schema, config):
+    """remove full behavior or types fields."""
+    section = full_schema[config["section"]]
+    if full_schema:
+        # we need to cache the fields, because in subsequent calls there is no schema provided
+        fields = section[config["name"]]
+        if "__fields" not in "config":
+            config["__fields"] = fields
+    else:
+        fields = config["__fields"]
+    for field in fields:
+        if field["name"] in content:
+            del content[field["name"]]
+    del section[config["name"]]
+
+
+ACTION_FUNCTIONS["full_remove"] = action_full_remove
 
 
 def action_empty_removal(content, full_schema, key):
@@ -123,8 +159,9 @@ def preprocess(content, full_schema):
     """run full preprocessing pipeline on content and schema"""
     for ppcfg in PREPROCESSOR_CONFIGS:
         logger.debug("Preprocessor configuration:\n{}\n".format(ppcfg))
-        matcher = MATCHING_FUNCTIONS[ppcfg["match"]["type"]]
-        if not matcher(content, full_schema, ppcfg["match"]):
+        match = ppcfg.get("match", {"type": "always"})
+        matcher = MATCHING_FUNCTIONS[match["type"]]
+        if not matcher(content, full_schema, match):
             continue
         action = ACTION_FUNCTIONS[ppcfg["action"]]
         action(content, full_schema, ppcfg.get("configuration", {}))

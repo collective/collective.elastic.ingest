@@ -3,16 +3,12 @@ from ..analysis import update_analysis
 from ..client import get_client
 from ..logging import logger
 from ..mapping import create_or_update_mapping
-from ..mapping import expanded_processors
 from ..mapping import EXPANSION_FIELDS
 from ..mapping import get_field_map
 from ..mapping import iterate_schema
 from ..postprocessing import postprocess
 from ..preprocessing import preprocess
-from .blocks import enrichWithBlocksPlainText
-from .rid import enrichWithRid
 from .section import enrichWithSection
-from .security import enrichWithSecurityInfo
 from .vocabularyfields import stripVocabularyTermTitles
 from pprint import pformat
 
@@ -22,10 +18,32 @@ PIPELINE_PREFIX = "attachment_ingest"
 
 
 def _es_pipeline_name(index_name):
+    """Return the name of the ingest pipeline for the given index."""
     return "{}_{}".format(PIPELINE_PREFIX, index_name)
 
 
+def _expand_dict(mapping, **kw):
+    """Recursivly expand a dictionary with keyword arguments."""
+    record = {}
+    for key, value in mapping.items():
+        if isinstance(value, str):
+            value = value.format(**kw)
+        elif isinstance(value, dict):
+            value = _expand_dict(value, **kw)
+        record[key] = value
+    return record
+
+
+def _expanded_processors(processors, source, target):
+    """Expand a list of processors with source and target."""
+    result = []
+    for processor in processors:
+        result.append(_expand_dict(processor, source=source, target=target))
+    return result
+
+
 def setup_ingest_pipelines(full_schema, index_name):
+    """Setup ingest pipelines for the given index based on the schema."""
     logger.debug("setup ingest piplines")
     client = get_client()
     pipeline_name = _es_pipeline_name(index_name)
@@ -33,15 +51,15 @@ def setup_ingest_pipelines(full_schema, index_name):
         "description": "Extract Plone Binary attachment information",
         "processors": [],
     }
+    fieldmap = get_field_map()
     for section_name, schema_name, field in iterate_schema(full_schema):
         fqfieldname = "/".join([section_name, schema_name, field["name"]])
-        fieldmap = get_field_map()
         definition = fieldmap.get(fqfieldname, fieldmap.get(field["field"], None))
         if not definition or "pipeline" not in definition:
             continue
         source = definition["pipeline"]["source"].format(name=field["name"])
         target = definition["pipeline"]["target"].format(name=field["name"])
-        pipelines["processors"] += expanded_processors(
+        pipelines["processors"] += _expanded_processors(
             definition["pipeline"]["processors"], source, target
         )
     if pipelines["processors"]:
@@ -59,16 +77,22 @@ def setup_ingest_pipelines(full_schema, index_name):
 
 
 def ingest(content, full_schema, index_name):
-    """Preprocess content and schema."""
+    """Process content and schema.
+
+    This brings it together: Preprocess, create a mapping (and index/pipelines if not exists yet),
+    then postprocess and finally index the content.
+    """
 
     logger.debug(f"Process content: {pformat(content)}")
 
-    enrichWithSecurityInfo(content)
-    enrichWithRid(content)
+    # special preprocessing logic for section and vocabulary fields
+    # TODO: refactor as special preprocessing
     enrichWithSection(content)
-    enrichWithBlocksPlainText(content)
     stripVocabularyTermTitles(content)
+
+    # generic preprocessing accrording to rule in preprocessings.json
     preprocess(content, full_schema)
+
     if full_schema:
         # first update_analysis, then create_or_update_mapping:
         # mapping can use analyzers from analysis.json

@@ -57,3 +57,65 @@ def test_action_rewrite_non_existing_forced():
     }
     with pytest.raises(ValueError):
         preprocessing.action_rewrite(root, {}, config)
+
+
+def test_action_field_remove():
+    full_schema = {
+        "behaviors": {
+            "plone.basic": [
+                {"field": "zope.schema._bootstrapfields.TextLine", "name": "title"},
+                {"field": "zope.schema._bootstrapfields.Text", "name": "description"},
+            ]
+        }
+    }
+    config = {
+        "section": "behaviors",
+        "name": "plone.basic",
+        "field": "title",
+    }
+    root = {
+        "foo": "bar",
+        "title": "Foo",
+    }
+    from .preprocessing import action_field_remove
+
+    action_field_remove(root, full_schema, config)
+
+    assert root == {"foo": "bar"}
+    assert len(full_schema["behaviors"]["plone.basic"]) == 1
+
+
+def test_action_field_remove():
+    full_schema = {
+        "behaviors": {
+            "plone.basic": [
+                {"field": "zope.schema._bootstrapfields.TextLine", "name": "title"},
+                {"field": "zope.schema._bootstrapfields.Text", "name": "description"},
+            ],
+            "plone.categorization": [
+                {
+                    "field": "zope.schema._field.Tuple",
+                    "name": "subjects",
+                    "value_type": {"field": "zope.schema._bootstrapfields.TextLine"},
+                },
+                {"field": "zope.schema._field.Choice", "name": "language"},
+            ],
+        }
+    }
+    config = {
+        "section": "behaviors",
+        "name": "plone.categorization",
+    }
+    root = {
+        "title": "Foo",
+        "description": "Bar",
+        "subjects": ["Foo", "Bar"],
+        "language": "de",
+        "baz": "Baaz",
+    }
+    from .preprocessing import action_full_remove
+
+    action_full_remove(root, full_schema, config)
+
+    assert root == {"baz": "Baaz", "description": "Bar", "title": "Foo"}
+    assert "plone.categorization" not in full_schema["behaviors"]

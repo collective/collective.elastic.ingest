@@ -1,175 +1,156 @@
 [
   {
-    "match": {
-      "type": "always"
-    },
+    "comment": "Remove all empty fields.",
+    "action": "remove_empty"
+  },
+  {
+    "comment": "ProxyIndex needs this information, essential rewrite, do not remove",
+    "action": "rewrite",
+    "configuration": {
+      "source": "@components/collectiveelastic/catalog_rid",
+      "target": "rid",
+      "enforce": true
+    }
+  },
+  {
+    "comment": "CESP Restapi endpoint needs this information, essential rewrite, do not remove",
+    "action": "rewrite",
+    "configuration": {
+      "source": "@components/collectiveelastic/allowedRolesAndUsers",
+      "target": "allowedRolesAndUsers",
+      "enforce": true
+    }
+  },
+  {
+    "comment": "If Volto is available, this is important for full text search, do not remove unless in Classic UI only environments",
+    "action": "rewrite",
+    "configuration": {
+      "source": "@components/collectiveelastic/blocks_plaintext",
+      "target": "blocks_plaintext",
+      "enforce": false
+    }
+  },
+  {
+    "comment": "If volto.blocks is available, this removes a field not used in search.",
     "action": "remove",
     "configuration": {
       "target": "blocks"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
+    "comment": "If volto.blocks is available, this removes a field not used in search.",
     "action": "remove",
     "configuration": {
       "target": "blocks_layout"
     }
   },
-
   {
-    "match": {
-      "type": "always"
-    },
-    "action": "additional_schema",
-    "configuration": {
-      "name": "portal_type",
-      "field": "zope.schema._field.ASCIILine"
-    }
-  },
-  {
-    "match": {
-      "type": "always"
-    },
+    "comment": "We want the field to be called portal_type, not @type, so we rewrite it.",
     "action": "rewrite",
     "configuration": {
       "source": "@type",
       "target": "portal_type"
     }
   },
-  
   {
-    "match": {
-      "type": "always"
-    },
+    "comment": "After all the rewrites, we want to remove the @components field, as it is not needed anymore.",
     "action": "remove",
     "configuration": {
       "target": "@components"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
+    "comment": "No need for restapi specific folder/collection information.",
     "action": "remove",
     "configuration": {
       "target": "items"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
+    "comment": "No need for restapi specific information.",
     "action": "remove",
     "configuration": {
       "target": "items_total"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
+    "comment": "No need for restapi specific information.",
     "action": "remove",
     "configuration": {
       "target": "previous_item"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
+    "comment": "No need for restapi specific information.",
     "action": "remove",
     "configuration": {
       "target": "next_item"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
+    "comment": "No need for restapi versioning related information.",
     "action": "remove",
     "configuration": {
       "target": "version"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove",
+    "comment": "No need for plone.versioning related information.",
+    "action": "full_remove",
     "configuration": {
-      "target": "version_enabled"
+      "section": "behaviors",
+      "name": "plone.versioning"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove_empty"
-  },
-
-  {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove",
+    "comment": "No need for plone.collection related information.",
+    "action": "full_remove",
     "configuration": {
-      "target": "showFields"
+      "section": "behaviors",
+      "name": "plone.collection"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove",
+    "comment": "No need for plone.thumb_icon related information.",
+    "action": "full_remove",
     "configuration": {
-      "target": "query"
+      "section": "behaviors",
+      "name": "plone.thumb_icon"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove",
+    "comment": "No need for plone.tableofcontents related information.",
+    "action": "full_remove",
     "configuration": {
-      "target": "sort_on"
+      "section": "behaviors",
+      "name": "plone.tableofcontents"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove",
+    "comment": "No need for plone.layoutaware (Mosaic) layout related.",
+    "action": "field_remove",
     "configuration": {
-      "target": "sort_reversed"
+      "section": "behaviors",
+      "name": "plone.layoutaware",
+      "field": "contentLayout"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove",
+    "comment": "No need for plone.layoutaware (Mosaic) layout related.",
+    "action": "field_remove",
     "configuration": {
-      "target": "limit"
+      "section": "behaviors",
+      "name": "plone.layoutaware",
+      "field": "pageSiteLayout"
     }
   },
   {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove",
+    "comment": "No need for plone.layoutaware (Mosaic) layout related.",
+    "action": "field_remove",
     "configuration": {
-      "target": "item_count"
-    }
-  },
-  {
-    "match": {
-      "type": "always"
-    },
-    "action": "remove",
-    "configuration": {
-      "target": "customViewFields"
+      "section": "behaviors",
+      "name": "plone.layoutaware",
+      "field": "sectionSiteLayout"
     }
   }
 
