@@ -131,10 +131,44 @@ The mappings file is a JSON file with the following structure:
 First level: ``Key: Value`` Pairs
 
 The key is
-- either a Plone behavior base field starting with ``behaviors/`` or a Plone behavior field starting with ``behaviors/``, followed by the behavior-name, followed by ``/`` and the field-name,
-- or the fully qualified dotted name of a zope.schema based field type.
+- either a fully qualified field name (path) to the field in the schema (``behaviors/...`` or ``types/...``), like ``behaviors/plone.basic/title``.
+- or the dotted name of a zope.schema based field type, like ``plone.namedfile.field.NamedBlobImage``.
 
-TODO: Document the value.
+The value is an instruction how to map this specific field or field type to OpenSearch or ElasticSearch.
+The actual mapping send to the index server is generated from this instruction and the full schema fetched from Plone.
+At generation time, the process iterates over the full schema and applies the mapping instructions to each field.
+
+At first the instruction lookup is done by the fully qualified field name.
+If no instruction is found, the dotted name of the field type is used.
+
+There are two types of instructions: Simple ones and complex ones.
+
+The **simple instruction** has the ``type`` defined as a top level key.
+The type is the mapping type defined by the index server for the mapping, like ``text`` or ``boolean``.
+For some types this is enough, others take additional keys.
+The ``nested`` type is such a type.
+Here the keys ``properties`` and ``dynamic`` are required.
+Those keys are provided on top level.
+
+The **complex instruction** has the ``type`` defined in the ``definition`` key.
+The ``definition`` key is a mapping with the ``type`` key and the same additional keys for the definition of the field type as for the simple one.
+There are two other possible top-level keys for complex instructions: ``detections`` and ``pipelines``.
+
+A ``detection`` is a method to do something based on the schemas field parameters.
+At the moment this is only used to detect a ``value_type`` of a Plone list field or similar.
+This detector is registered as ``replace``.
+
+A ``pipeline`` is a method to add a processing pipeline to the field.
+Those are used to ingest binary data like images or PDFs, but any other pipeline can be configured.
+The pipeline is registered and executed.
+The configuration of a pipeline consists of a ``source``, a ``target``, ``type`` as above for defining the target data, ``processors``, and an ``expansion``.
+
+- source is the field name with the input data for the pipeline.
+- target is the field name for the output data of the pipeline.
+- type is the definition of the target field.
+- processors are a list of processors to apply to the data.
+- expansion not directly mapping related, but configured here as it defines where in a postprocessing step the data is fetched from.
+  Binary data is not provided in the content data, only a link where to download.
 
 
 ``preprocessings.json``
