@@ -259,7 +259,7 @@ Or with debug information::
 The number is the concurrency of the worker.
 For production use, it should be set to the number of Plone backends available for indexing load.
 
-git d
+
 OCI Image usage
 ===============
 
