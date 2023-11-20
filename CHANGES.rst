@@ -1,15 +1,20 @@
 Changelog
 =========
 
+2.0.0b8 (2023-11-16)
+--------------------
+
+- Add documentation for preprocessings [jensens]
+- Remove 2 of the 4 static preprocessings and use preprocessings file for those. [jensens]
+- Refactor and add  preprocessings to be more consistent and less verbose.
+  Attention: JSON file format changed [jensens]
+
+
 2.0.0b7 (2023-11-16)
 --------------------
 
 - Fix ElasticSearch support. [jensens]
 - Add examples for a docker-compose setup for both, OpenSearch and ElasticSearch. [jensens]
-- Add documentation for preprocessings [jensens]
-- Remove 2 of the 4 static preprocessings and use preprocessings file for those. [jensens]
-- Refactor and add  preprocessings to be more consistent and less verbose.
-  Attention: JSON file format changed [jensens]
 
 
 2.0.0b6 (2023-11-16)
