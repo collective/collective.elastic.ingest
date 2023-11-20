@@ -236,7 +236,7 @@ These actions ar available:
     Deletes all empty fields from the content data.
     A field is considered empty if it is ``None``, ``[]``, ``{}`` or ``""``
 
-```analysis.json``
+``analysis.json``
 ------------------
 
 This file provide the index with analyzers to be used in mappingsjson different definition section (top-level, nested, complex or pipeline target).
