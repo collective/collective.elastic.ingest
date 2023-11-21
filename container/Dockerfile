@@ -6,7 +6,7 @@ ARG PACKAGE_VERSION
 RUN <<EOT
     mkdir /configuration
     pip install --upgrade pip
-    pip install "collective.elastic.ingest[opensearch,elasticsearch,redis,rabbitmq]==$PACKAGE_VERSION"
+    pip install "collective.elastic.ingest[opensearch,elasticsearch,redis,rabbitmq,sentry]==$PACKAGE_VERSION"
 EOT
 
 ENV MAPPINGS_FILE=/configuration/mappings.json \

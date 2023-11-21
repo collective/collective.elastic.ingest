@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.0.0b10 (2023-11-21)
+--------------------
+
+- add an extra "sentry" and install by default in Dockerfile [jensens]
+
 2.0.0b9 (2023-11-20)
 --------------------
 

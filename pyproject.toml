@@ -1,6 +1,6 @@
 [project]
 name = "collective.elastic.ingest"
-version = "2.0.0b9"
+version = "2.0.0b10"
 description = "Ingestion service queue runner between Plone RestAPI and ElasticSearch or OpenSearch."
 keywords = ["elasticsearch", "opensearch", "plone", "celery", "search", "indexer"]
 readme = "README.rst"
@@ -46,6 +46,7 @@ redis = ["celery[redis]"]
 rabbitmq = ["celery[librabbitmq]"]
 opensearch = ["opensearch-py>=2"]
 elasticsearch = ["elasticsearch>=8.0"]
+sentry = ["sentry-sdk"]
 test = [
     "pytest",
     "requests-mock",
