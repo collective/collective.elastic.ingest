@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.0b11 (2023-11-xx)
+2.0.0b11 (2023-11-22)
 --------------------
 
 - Packaging: remove namespace level empty ``__init__.py`` to make interoperable with multiple ``collective.*`` namespaces while in editable mode [jensens]
