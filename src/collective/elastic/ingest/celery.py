@@ -10,7 +10,8 @@ import os
 
 # sentry integration
 sentry_dsn = os.environ.get("SENTRY_DSN", None)
-if sentry_dsn:
+sentry_ingest = os.environ.get("SENTRY_INGEST", "false") == "true"
+if sentry_dsn and sentry_ingest:
     try:
         from sentry_sdk.integrations.celery import CeleryIntegration
 

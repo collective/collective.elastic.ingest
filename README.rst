@@ -117,6 +117,14 @@ SENTRY_DSN
 
     Default: disabled
 
+SENTRY_INGEST
+    (optional) Enable sentry reporting in Celery.
+    Reason behind this is, SENTRY_DSN_DSN is possibly provided in a Plone environment when this package is used as a library.
+    To not override any existing sentry-sdk initialization, this flag is used to enable sentry reporting specifically in ingest mode.
+    Allowed values: true, false
+
+    Default: false
+
 
 ----------
 JSON-Files
