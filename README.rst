@@ -320,12 +320,11 @@ Precondition:
 
 Steps to start the example OpenSearch Server with the ``ingest-attachment`` plugin installed:
 
-- locally build the custom OpenSearch Docker image enriched with the plugin using:
+- locally build the custom OpenSearch Docker image enriched with the plugin using::
 
-  ```bash
   docker buildx use default
   docker buildx build --tag opensearch-ingest-attachment:latest Dockerfile
-  ```
+
 - start the cluster with ``docker-compose up``.
 
 Now you have an OpenSearch server running on ``http://localhost:9200`` and an OpenSearch Dashboard running on ``http://localhost:5601`` (user/pass: admin/admin).
