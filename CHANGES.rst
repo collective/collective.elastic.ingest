@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.0.0b12 (2023-11-xx)
+--------------------
+
+- Add a note to the README about the steps needed if upgrading from 1.x [jensens]
+
 2.0.0b11 (2023-11-22)
 --------------------
 
