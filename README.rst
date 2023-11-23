@@ -256,7 +256,7 @@ These actions ar available:
 ``analysis.json``
 -----------------
 
-This file provide the index with analyzers to be used in ``mappings.json`` different definition section (top-level, nested, complex or pipeline target).
+This file provides the index with analyzers to be used in the ``mappings.json`` files different definition sections (top-level, nested, complex or pipeline target).
 
 Read more on this topic in the dedicated section below.
 
