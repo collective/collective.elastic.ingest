@@ -358,18 +358,16 @@ Precondition:
 - Max virtual memory map needs increase to run this: `sudo sysctl -w vm.max_map_count=262144` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
 - enter the directory ``cd examples/docker-es``
 
-Run the cluster with
+Run the cluster with::
 
-```
-source .env
-docker-compose up
-```
+    source .env
+    docker-compose up
 
 First you need to set the passwords for the ElasticSearch, execute the following command and note the passwords printed on the console.
 
-```
-docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto
-```
+::
+
+    docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto
 
 Find the password for the user ``elastic`` and set it in the environment variable ``INDEX_PASSWORD`` in the ``.env`` file.
 Stop the cluster (Ctrl-C), `source .env` with the new settings and start it again (as above).
