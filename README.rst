@@ -31,8 +31,8 @@ Install ``collective.elastic.ingest`` ready to use with redis and opensearch::
 
 Depending on the queue server and index server used, the extra requirements vary:
 
-- index server: ``opensearch``,  ``elasticsearch``.
 - queue server: ``redis`` or ``rabbitmq``.
+- index server: ``opensearch`` or ``elasticsearch``.
 
 
 Configuration
