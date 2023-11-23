@@ -322,8 +322,8 @@ Steps to start the example OpenSearch Server with the ``ingest-attachment`` plug
 
 - locally build the custom OpenSearch Docker image enriched with the plugin using::
 
-  docker buildx use default
-  docker buildx build --tag opensearch-ingest-attachment:latest Dockerfile
+    docker buildx use default
+    docker buildx build --tag opensearch-ingest-attachment:latest Dockerfile
 
 - start the cluster with ``docker-compose up``.
 
@@ -363,9 +363,7 @@ Run the cluster with::
     source .env
     docker-compose up
 
-First you need to set the passwords for the ElasticSearch, execute the following command and note the passwords printed on the console.
-
-::
+First you need to set the passwords for the ElasticSearch, execute the following command and note the passwords printed on the console::
 
     docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto
 
