@@ -342,6 +342,9 @@ In another terminal window `run a Plone backend <https://6.docs.plone.org/instal
 There, create an item or modify an existing one.
 You should see the indexing task in the celery worker terminal window.
 
+For production use, please **check that the port 9200 is not exposed to the internet**.
+For a good measure block it with a firewall rule.
+
 ---------------------------------
 ElasticSearch with Docker Compose
 ---------------------------------
@@ -384,6 +387,9 @@ Open another terminal.
 In another terminal window `run a Plone backend <https://6.docs.plone.org/install/index.html>`_ at ``http://localhost:8080/Plone`` with the add-on `collective.elastic.plone` installed.
 There, create an item or modify an existing one.
 You should see the indexing task in the celery worker terminal window.
+
+For production use, please **check that the port 9200 is not exposed to the internet**.
+For a good measure block it with a firewall rule.
 
 ------------------
 Local/ Development

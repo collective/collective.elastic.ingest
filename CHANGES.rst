@@ -5,6 +5,7 @@ Changelog
 --------------------
 
 - Add a note to the README about the steps needed if upgrading from 1.x [jensens]
+- Add a note to the README about exposed port 9200 and a hint to block it if needed. [jensens]
 
 2.0.0b11 (2023-11-22)
 --------------------
