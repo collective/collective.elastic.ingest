@@ -20,8 +20,9 @@ Changelog
 2.0.0b9 (2023-11-20)
 --------------------
 
-- fix CI to not release when tests are failing [jensens]
-- fix tests [jensens]
+- Fix CI to not release when tests are failing [jensens]
+- Fix tests [jensens]
+- Remove check for elasticsearch/opensearch-py library version, we already pin this down in pyproject.toml [jensens]
 
 
 2.0.0b8 (2023-11-20)
