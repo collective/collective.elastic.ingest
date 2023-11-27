@@ -132,7 +132,7 @@ Coming from version 1.x of this package, in 2.x you need to change some names of
 
 - ``ELASTICSEARCH_INGEST_*`` to ``INDEX_*``
 - ``OPENSEARCH*`` to ``INDEX_OPENSEARCH``
-- If use use Sentry, additional ``SENTRY_INGEST=true`` is needed.
+- If you use Sentry, additional ``SENTRY_INGEST=true`` is needed.
 
 ----------
 JSON-Files
