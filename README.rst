@@ -66,6 +66,16 @@ INDEX_VERIFY_CERTS
 
     Default: 0
 
+INDEX_SSL_SHOW_WARN
+    Whether to warn for unverified TLS request is made or not.
+
+    Default: 0
+
+INDEX_SSL_ASSERT_HOSTNAME
+    Whether to assert the hostname in TLS request or not.
+
+    Default: 0
+
 INDEX_LOGIN
     Username for the ElasticSearch 8+ or OpenSearch server.
 
@@ -75,6 +85,7 @@ INDEX_PASSWORD
     Password for the ElasticSearch 8+ or OpenSearch server.
 
     Default: admin
+
 
 CELERY_BROKER
     The broker URL for Celery.

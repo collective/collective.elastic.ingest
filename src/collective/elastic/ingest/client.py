@@ -48,6 +48,12 @@ def get_client(index_server_baseurl: str = ""):
             kwargs["verify_certs"] = bool(
                 int(os.environ.get("INDEX_VERIFY_CERTS", "0"))
             )
+            kwargs["ssl_show_warn"] = bool(
+                int(os.environ.get("INDEX_SSL_SHOW_WARN", "0"))
+            )
+            kwargs["ssl_assert_hostname"] = bool(
+                int(os.environ.get("INDEX_SSL_ASSERT_HOSTNAME", "0"))
+            )
         kwargs["http_auth"] = auth
         logger.info(f"OpenSearch client kwargs: {kwargs}")
         client = OpenSearch(**kwargs)

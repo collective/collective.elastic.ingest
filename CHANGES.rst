@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0.0rc3 (2023-11-28)
+--------------------
+
+- Feature: set env ``INDEX_SSL_SHOW_WARN=1`` to pass as ``ssl_show_warn`` kwarg in OpenSearch client [jensens]
+- Feature: set env ``INDEX_SSL_ASSERT_HOSTNAME=1`` to pass as ``ssl_assert_hostname`` kwarg in OpenSearch client [jensens]
+
+
 2.0.0rc2 (2023-11-28)
 --------------------
 
