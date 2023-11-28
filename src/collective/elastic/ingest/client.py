@@ -3,6 +3,7 @@ from .logging import logger
 
 import os
 import threading
+import typing
 
 
 if OPENSEARCH:
@@ -36,7 +37,7 @@ def get_client(index_server_baseurl: str = ""):
 
     if OPENSEARCH:
         logger.info(f"Use OpenSearch client at {addresses}")
-        kwargs = {
+        kwargs: dict[str, typing.Any] = {
             "hosts": [
                 dict(zip(("host", "port"), address.rsplit(":", 1)))
                 for address in addresses
