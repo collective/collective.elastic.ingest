@@ -26,7 +26,7 @@ def get_client(index_server_baseurl: str = ""):
     raw_addr = index_server_baseurl or os.environ.get("INDEX_SERVER", "")
     addresses = [x for x in raw_addr.split(",") if x.strip()]
     if not addresses:
-        addresses.append("127.0.0.1:9200")
+        addresses.append("127.0.0.1:9200" if OPENSEARCH else "https://localhost:9200")
 
     # TODO: more auth options (cert, bearer token, api-key, etc)
     auth = (
@@ -36,17 +36,20 @@ def get_client(index_server_baseurl: str = ""):
 
     if OPENSEARCH:
         logger.info(f"Use OpenSearch client at {addresses}")
-        hosts = []
-        for address in addresses:
-            host, port = address.rsplit(":", 1)
-            hosts.append({"host": host, "port": port})
-        use_ssl = bool(int(os.environ.get("INDEX_USE_SSL", "0")))
-        client = OpenSearch(
-            hosts=hosts,
-            http_auth=auth,
-            use_ssl=use_ssl,
-            verify_certs=False,
-        )
+        kwargs = {
+            "hosts": [
+                dict(zip(("host", "port"), address.rsplit(":", 1)))
+                for address in addresses
+            ]
+        }
+        kwargs["use_ssl"] = bool(int(os.environ.get("INDEX_USE_SSL", "0")))
+        if kwargs["use_ssl"]:
+            kwargs["verify_certs"] = bool(
+                int(os.environ.get("INDEX_VERIFY_CERTS", "0"))
+            )
+        kwargs["http_auth"] = auth
+        logger.info(f"OpenSearch client kwargs: {kwargs}")
+        client = OpenSearch(**kwargs)
         info = client.info()
         logger.info(f"OpenSearch client info: {info}")
     else:

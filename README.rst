@@ -46,20 +46,25 @@ Environment
 
 Environment variables are:
 
+INDEX_OPENSEARCH
+    Whether to use OpenSearch or ElasticSearch.
+
+    Default: 1
+
 INDEX_SERVER
     The URL of the ElasticSearch or OpenSearch server.
 
     Default: localhost:9200
 
 INDEX_USE_SSL
-    Whether to use a secure connection or not.
+    Whether to use a secure TLS connection or not.
 
     Default: 0
 
-INDEX_OPENSEARCH
-    Whether to use OpenSearch or ElasticSearch.
+INDEX_VERIFY_CERTS
+    Whether to verify TLS certificates on secure connection or not.
 
-    Default: 1
+    Default: 0
 
 INDEX_LOGIN
     Username for the ElasticSearch 8+ or OpenSearch server.

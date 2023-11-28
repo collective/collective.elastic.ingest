@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.0.0rc2 (2023-xx-xx)
+--------------------
+
+- Fix: Default address for ElasticSearch needs ``https://`` prefix [jensens]
+- Feature: set env ``INDEX_VERIFY_CERTS=1`` to pass as ``verify_certs`` kwarg in OpenSearch client [jensens]
+
 2.0.0rc1 (2023-11-27)
 --------------------
 
