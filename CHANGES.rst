@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.0rc2 (2023-xx-xx)
+2.0.0rc2 (2023-11-28)
 --------------------
 
 - Fix: Default address for ElasticSearch needs ``https://`` prefix [jensens]
