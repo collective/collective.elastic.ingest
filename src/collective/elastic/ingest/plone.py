@@ -18,7 +18,7 @@ RETRIES_TIMESTAMP_MAX = 10
 RETRY_TIMESTAMP_BASE = 0.33333  # seconds
 
 STATES = {"mapping_fetched": 0}
-MAPPING_TIMEOUT_SEK = 3600
+MAPPING_TIMEOUT_SEK = 60  # seconds
 
 
 def _full_url(path):
@@ -91,6 +91,7 @@ def fetch_schema(refetch=False):
         logger.info("fetch full schema from {}".format(url))
         resp = session.get(url)
         # xxx: check resp here
+        STATES["mapping_fetched"] = time.time()
         return resp.json()
     return
 

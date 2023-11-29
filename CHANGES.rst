@@ -8,6 +8,7 @@ Changelog
 - Fix Do not fail in preprocessing fullremove, when source does not exist. [jensens]
 - Fix: Optimize preprocessing.json to do fullremove for volto blocks and add schema for blocks_plaintext. [jensens]
 - Fix: In preprocessing rewrite, do remove source field. [jensens]
+- Fix: @cesp schema (aka full_schema) was not cached. Now cache for 60s [jensens]
 
 2.0.0rc3 (2023-11-28)
 --------------------
