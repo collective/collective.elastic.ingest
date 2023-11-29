@@ -39,6 +39,7 @@ def test_action_rewrite():
     preprocessing.action_rewrite(root, {}, config)
     assert "rid" in root
     assert root["rid"] == ridvalue
+    assert "rid" not in root["@components"]
 
 
 def test_action_rewrite_non_existing():
