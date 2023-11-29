@@ -1,4 +1,3 @@
-from .client import get_client
 from .logging import logger
 
 import json
