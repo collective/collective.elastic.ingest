@@ -222,9 +222,13 @@ def create_or_update_mapping(full_schema, index_name: str) -> None:
             return
     else:
         logger.info(f"Create index {index_name} with settings.")
-        logger.debug(f"settings: \n{json.dumps(mapping['settings'], sort_keys=True, indent=2)}")
+        logger.debug(
+            f"settings: \n{json.dumps(mapping['settings'], sort_keys=True, indent=2)}"
+        )
         if OPENSEARCH:
-            client.indices.create(index=index_name, body={"settings": mapping["settings"]})
+            client.indices.create(
+                index=index_name, body={"settings": mapping["settings"]}
+            )
         else:
             client.indices.create(index=index_name)
             client.indices.put_settings(
