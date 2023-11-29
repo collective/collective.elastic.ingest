@@ -38,6 +38,20 @@
     }
   },
   {
+    "comment": "Remove plone.restapi parent information",
+    "action": "remove",
+    "configuration": {
+      "target": "parent"
+    }
+  },
+  {
+    "comment": "Remove plone.restapi lock information",
+    "action": "remove",
+    "configuration": {
+      "target": "lock"
+    }
+  },
+  {
     "comment": "If Volto is available, this is important for full text search, do not remove unless in Classic UI only environments",
     "action": "rewrite",
     "configuration": {
