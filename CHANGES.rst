@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.0.0rc4 (2023-11-xx)
+--------------------
+
+- Fix: Analysis creation overruled index settings. [jensens]
+
 2.0.0rc3 (2023-11-28)
 --------------------
 

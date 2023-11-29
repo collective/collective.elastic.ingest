@@ -1,4 +1,5 @@
 from . import OPENSEARCH
+from .analysis import get_analysis
 from .client import get_client
 from .logging import logger
 from copy import deepcopy
@@ -26,6 +27,8 @@ DEFAULT_INDEX_SETTINGS = {
     # xxx: to be removed or at least made configurable by env var
     # if disk is full (dev) this helps. see https://bit.ly/2q1Jzdd
     "index.blocks.read_only_allow_delete": False,
+    # default is 1 and that is too low for our (all) use cases:
+    "index.max_ngram_diff": 12,
 }
 
 DETECTOR_METHODS: dict[str, typing.Callable] = {}
@@ -168,8 +171,13 @@ def create_or_update_mapping(full_schema, index_name: str) -> None:
             "mappings": {
                 "properties": {},
             },
-            "settings": DEFAULT_INDEX_SETTINGS,
+            "settings": deepcopy(DEFAULT_INDEX_SETTINGS),
         }
+        analysis_settings = get_analysis()
+        logger.debug(f"analysis_settings: {analysis_settings}")
+        if analysis_settings:
+            mapping["settings"]["analysis"] = analysis_settings
+
     # process mapping
     properties = mapping["mappings"]["properties"]
     seen: set[str] = set()
@@ -212,37 +220,26 @@ def create_or_update_mapping(full_schema, index_name: str) -> None:
         ):
             logger.debug("No update necessary. Mapping is unchanged.")
             return
-
-        logger.info("Update mapping.")
-        logger.debug(
-            "Mapping is:\n{}".format(
-                json.dumps(mapping["mappings"], sort_keys=True, indent=2)
-            )
-        )
+    else:
+        logger.info(f"Create index {index_name} with settings.")
+        logger.debug(f"settings: \n{json.dumps(mapping['settings'], sort_keys=True, indent=2)}")
         if OPENSEARCH:
-            client.indices.put_mapping(
-                index=[index_name],
-                body=mapping,
-            )
+            client.indices.create(index=index_name, body={"settings": mapping["settings"]})
         else:
-            client.indices.put_mapping(
+            client.indices.create(index=index_name)
+            client.indices.put_settings(
+                settings=mapping["settings"],
                 index=index_name,
-                properties=mapping["mappings"]["properties"],
             )
-        return
-
-    logger.info("Create index with mapping.")
+    # set/update mapping
+    logger.info("Set mapping.")
     logger.debug(f"mapping is:\n{json.dumps(mapping, sort_keys=True, indent=2)}")
     if OPENSEARCH:
-        # both, settings and mappings, at once
-        client.indices.create(index=index_name, body=mapping)
-    else:
-        # first create index, then settings, then mappings
-        client.indices.create(index=index_name)
-        client.indices.put_settings(
-            settings=mapping["settings"],
-            index=index_name,
+        client.indices.put_mapping(
+            index=[index_name],
+            body=mapping["mappings"],
         )
+    else:
         client.indices.put_mapping(
             index=index_name,
             properties=mapping["mappings"]["properties"],
