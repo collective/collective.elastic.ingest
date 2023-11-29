@@ -10,6 +10,7 @@ Changelog
 - Fix: In preprocessing rewrite, do remove source field. [jensens]
 - Fix: @cesp schema (aka full_schema) was not cached. Now cache for 60s [jensens]
 - Fix: Do not fail in preprocessing full_remove, when full_schema is None. [jensens]
+- Enhancement: Default preprocessings removes lock and parent fields . [jensens]
 
 2.0.0rc3 (2023-11-28)
 --------------------
