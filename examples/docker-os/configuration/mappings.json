@@ -1,333 +1,455 @@
 {
-  "behaviors/plone.allowdiscussion/allow_discussion": {
+    "behaviors/plone.basic/title": {
+      "type": "text",
+      "fields": {
+        "de": {
+          "type": "text",
+          "analyzer": "german"
+        },
+        "en": {
+          "type": "text",
+          "analyzer": "english"
+        }
+      }
+    },
+    "behaviors/plone.basic/description": {
+      "type": "text",
+      "fields": {
+        "de": {
+          "type": "text",
+          "analyzer": "german"
+        },
+        "en": {
+          "type": "text",
+          "analyzer": "english"
+        }
+
+      }
+    },
+    "behaviors/plone.categorization/subjects": {
+        "type": "text",
+        "fields": {
+          "de": {
+            "type": "text",
+            "analyzer": "german"
+          },
+          "en": {
+            "type": "text",
+            "analyzer": "english"
+          }
+
+        }
+    },
+    "behaviors/plone.allowdiscussion/allow_discussion": {
       "type": "boolean"
-  },
-  "plone.app.textfield.RichText": {
+    },
+
+    "plone.app.textfield.RichText": {
       "pipeline": {
-          "source": "{name}__data",
-          "target": "{name}__extracted",
-          "processors": [
-              {
-                  "attachment": {
-                      "field": "{source}",
-                      "target_field": "{target}",
-                      "ignore_missing": true
-                  }
-              },
-              {
-                  "remove": {
-                      "field": "{source}",
-                      "ignore_missing": true
-                  }
-              }
-          ],
-          "type": {
-              "type": "nested",
-              "dynamic": false,
-              "properties": {
-                  "author": {
-                      "type": "text"
-                  },
-                  "content": {
-                      "type": "text"
-                  },
-                  "content_length": {
-                      "type": "long"
-                  },
-                  "content_type": {
-                      "type": "keyword"
-                  },
-                  "date": {
-                      "type": "date"
-                  },
-                  "keywords": {
-                      "type": "keyword"
-                  },
-                  "language": {
-                      "type": "keyword"
-                  },
-                  "name": {
-                      "type": "text"
-                  },
-                  "title": {
-                      "type": "text"
-                  }
-              }
+        "source": "{name}__data",
+        "target": "{name}__extracted",
+        "processors": [
+          {
+            "attachment": {
+              "field": "{source}",
+              "target_field": "{target}",
+              "ignore_missing": true
+            }
           },
-          "expansion": {
-              "method": "field",
-              "field": "data"
+          {
+            "remove": {
+              "field": "{source}",
+              "ignore_missing": true
+            }
           }
-      },
-      "definition": {
+        ],
+        "type": {
           "type": "nested",
           "dynamic": false,
           "properties": {
-              "data": {
-                  "type": "text"
-              },
-              "content-type": {
-                  "type": "keyword"
-              },
-              "encoding": {
-                  "type": "keyword"
+            "author": {
+              "type": "text"
+            },
+            "content": {
+              "type": "text",
+              "fields": {
+                "de": {
+                  "type": "text",
+                  "analyzer": "german"
+                },
+                "en": {
+                  "type": "text",
+                  "analyzer": "english"
+                }
+
               }
+            },
+            "content_length": {
+              "type": "long"
+            },
+            "content_type": {
+              "type": "keyword"
+            },
+            "date": {
+              "type": "date"
+            },
+            "keywords": {
+              "type": "keyword"
+            },
+            "language": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "text"
+            },
+            "title": {
+              "type": "text"
+            }
           }
+        },
+        "expansion": {
+          "method": "field",
+          "field": "data"
+        }
+      },
+      "definition": {
+        "type": "nested",
+        "dynamic": false,
+        "properties": {
+          "data": {
+            "type": "text"
+          },
+          "content-type": {
+            "type": "keyword"
+          },
+          "encoding": {
+            "type": "keyword"
+          }
+        }
       }
-  },
-  "plone.namedfile.field.NamedBlobFile": {
+    },
+    "plone.namedfile.field.NamedBlobFile": {
       "pipeline": {
-          "source": "{name}__data",
-          "target": "{name}__extracted",
-          "processors": [
-              {
-                  "attachment": {
-                      "field": "{source}",
-                      "target_field": "{target}",
-                      "ignore_missing": true
-                  }
-              },
-              {
-                  "remove": {
-                      "field": "{source}",
-                      "ignore_missing": true
-                  }
-              }
-          ],
-          "type": {
-              "type": "nested",
-              "dynamic": false,
-              "include_in_parent": true,
-              "properties": {
-                  "author": {
-                      "type": "text"
-                  },
-                  "content": {
-                      "type": "text"
-                  },
-                  "content_length": {
-                      "type": "long"
-                  },
-                  "content_type": {
-                      "type": "keyword"
-                  },
-                  "date": {
-                      "type": "date"
-                  },
-                  "keywords": {
-                      "type": "keyword"
-                  },
-                  "language": {
-                      "type": "keyword"
-                  },
-                  "name": {
-                      "type": "text"
-                  },
-                  "title": {
-                      "type": "text"
-                  }
-              }
+        "source": "{name}__data",
+        "target": "{name}__extracted",
+              "processors": [
+                  {
+            "attachment": {
+              "field": "{source}",
+              "target_field": "{target}",
+              "ignore_missing": true
+            }
           },
-          "expansion": {
-              "method": "fetch",
-              "field": "download"
+          {
+            "remove": {
+              "field": "{source}",
+              "ignore_missing": true
+            }
           }
-      },
-      "definition": {
+        ],
+        "type": {
           "type": "nested",
           "dynamic": false,
           "properties": {
-              "content-type": {
-                  "type": "keyword"
-              },
-              "download": {
-                  "type": "text"
-              },
-              "filename": {
-                  "type": "text"
-              },
-              "size": {
-                  "type": "long"
+            "author": {
+              "type": "text"
+            },
+            "content": {
+              "type": "text",
+              "fields": {
+                "de": {
+                  "type": "text",
+                  "analyzer": "german"
+                },
+                "en": {
+                  "type": "text",
+                  "analyzer": "english"
+                }
+
               }
+            },
+            "content_length": {
+              "type": "long"
+            },
+            "content_type": {
+              "type": "keyword"
+            },
+            "date": {
+              "type": "date"
+            },
+            "keywords": {
+              "type": "keyword"
+            },
+            "language": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "text"
+            },
+            "title": {
+              "type": "text",
+              "fields": {
+                "de": {
+                  "type": "text",
+                  "analyzer": "german"
+                },
+                "en": {
+                  "type": "text",
+                  "analyzer": "english"
+                }
+              }
+            }
           }
+        },
+        "expansion": {
+          "method": "fetch",
+          "field": "download"
+        }
+      },
+      "definition": {
+        "type": "nested",
+        "dynamic": false,
+        "properties": {
+          "content-type": {
+            "type": "keyword"
+          },
+          "download": {
+            "type": "text"
+          },
+          "filename": {
+            "type": "text"
+          },
+          "size": {
+            "type": "long"
+          }
+        }
       }
-  },
-  "plone.namedfile.field.NamedBlobImage": {
+    },
+    "plone.namedfile.field.NamedBlobImage": {
       "pipeline": {
-          "source": "{name}__data",
-          "target": "{name}__extracted",
+        "source": "{name}__data",
+        "target": "{name}__extracted",
           "processors": [
-              {
-                  "attachment": {
-                      "field": "{source}",
-                      "target_field": "{target}",
-                      "ignore_missing": true
-                  }
-              },
-              {
-                  "remove": {
-                      "field": "{source}",
-                      "ignore_missing": true
-                  }
-              }
-          ],
-          "type": {
-              "type": "nested",
-              "dynamic": false,
-              "properties": {
-                  "author": {
-                      "type": "text"
-                  },
-                  "content": {
-                      "type": "text"
-                  },
-                  "content_length": {
-                      "type": "long"
-                  },
-                  "content_type": {
-                      "type": "keyword"
-                  },
-                  "date": {
-                      "type": "date"
-                  },
-                  "keywords": {
-                      "type": "keyword"
-                  },
-                  "language": {
-                      "type": "keyword"
-                  },
-                  "name": {
-                      "type": "text"
-                  },
-                  "title": {
-                      "type": "text"
-                  }
-              }
+                  {
+            "attachment": {
+              "field": "{source}",
+              "target_field": "{target}",
+              "ignore_missing": true
+            }
           },
-          "expansion": {
-              "method": "fetch",
-              "field": "download"
+          {
+            "remove": {
+              "field": "{source}",
+              "ignore_missing": true
+            }
           }
-      },
-      "definition": {
+        ],
+        "type": {
           "type": "nested",
           "dynamic": false,
           "properties": {
-              "content-type": {
-                  "type": "keyword"
-              },
+            "author": {
+              "type": "text"
+            },
+            "content": {
+              "type": "text",
+              "fields": {
+                "de": {
+                  "type": "text",
+                  "analyzer": "german"
+                },
+                "en": {
+                  "type": "text",
+                  "analyzer": "english"
+                }
+              }
+            },
+            "content_length": {
+              "type": "long"
+            },
+            "content_type": {
+              "type": "keyword"
+            },
+            "date": {
+              "type": "date"
+            },
+            "keywords": {
+              "type": "keyword"
+            },
+            "language": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "text"
+            },
+            "title": {
+              "type": "text"
+            }
+          }
+        },
+        "expansion": {
+          "method": "fetch",
+          "field": "download"
+        }
+      },
+      "definition": {
+        "type": "nested",
+        "dynamic": false,
+        "properties": {
+          "content-type": {
+            "type": "keyword"
+          },
+          "download": {
+            "type": "text"
+          },
+          "filename": {
+            "type": "text"
+          },
+          "size": {
+            "type": "long"
+          },
+          "height": {
+            "type": "long"
+          },
+          "width": {
+            "type": "long"
+          },
+          "scales": {
+            "type": "nested",
+            "dynamic": false,
+            "properties": {
               "download": {
-                  "type": "text"
-              },
-              "filename": {
-                  "type": "text"
-              },
-              "size": {
-                  "type": "long"
+                "type": "text"
               },
               "height": {
-                  "type": "long"
+                "type": "long"
               },
               "width": {
-                  "type": "long"
-              },
-              "scales": {
-                  "type": "nested",
-                  "dynamic": false,
-                  "properties": {
-                      "download": {
-                          "type": "text"
-                      },
-                      "height": {
-                          "type": "long"
-                      },
-                      "width": {
-                          "type": "long"
-                      }
-                  }
+                "type": "long"
               }
+            }
           }
+        }
       }
-  },
-  "plone.schema.jsonfield.JSONField": {
-      "type": "text"
-  },
-  "z3c.relationfield.schema.RelationList": {
+    },
+    "plone.schema.jsonfield.JSONField": {
+      "type": "text",
+      "fields": {
+        "de": {
+          "type": "text",
+          "analyzer": "german"
+        },
+        "en": {
+          "type": "text",
+          "analyzer": "english"
+        }
+      }
+    },
+    "z3c.relationfield.schema.RelationList": {
       "type": "nested",
       "dynamic": false,
       "properties": {
-          "@id": {
-              "type": "keyword"
-          },
-          "@type": {
-              "type": "keyword"
-          },
-          "description": {
-              "type": "text"
-          },
-          "review_state": {
-              "type": "keyword"
-          },
-          "title": {
-              "type": "text"
-          }
+        "@id": {
+          "type": "keyword"
+        },
+        "@type": {
+          "type": "keyword"
+        },
+        "description": {
+          "type": "text"
+        },
+        "review_state": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text"
+        }
       }
-  },
-  "z3c.relationfield.schema.RelationChoice": {
+    },
+    "z3c.relationfield.schema.RelationChoice": {
       "type": "nested",
       "dynamic": false,
       "properties": {
-          "@id": {
-              "type": "keyword"
-          },
-          "@type": {
-              "type": "keyword"
-          },
-          "description": {
-              "type": "text"
-          },
-          "review_state": {
-              "type": "keyword"
-          },
-          "title": {
-              "type": "text"
-          }
+        "@id": {
+          "type": "keyword"
+        },
+        "@type": {
+          "type": "keyword"
+        },
+        "description": {
+          "type": "text"
+        },
+        "review_state": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text"
+        }
       }
-  },
-  "zope.schema._bootstrapfields.Bool": {
+    },
+    "zope.schema._bootstrapfields.Bool": {
       "type": "boolean"
-  },
-  "zope.schema._bootstrapfields.Int": {
+    },
+    "zope.schema._bootstrapfields.Int": {
       "type": "long"
-  },
-  "zope.schema._bootstrapfields.Text": {
-      "type": "text"
-  },
-  "zope.schema._bootstrapfields.TextLine": {
-      "type": "text"
-  },
-  "zope.schema._field.ASCIILine": {
+    },
+    "zope.schema._bootstrapfields.Text": {
+      "type": "text",
+      "fields": {
+        "de": {
+          "type": "text",
+          "analyzer": "german"
+        },
+        "en": {
+          "type": "text",
+          "analyzer": "english"
+        }
+      }
+    },
+    "zope.schema._bootstrapfields.TextLine": {
+      "type": "text",
+      "fields": {
+        "de": {
+          "type": "text",
+          "analyzer": "german"
+        },
+        "en": {
+          "type": "text",
+          "analyzer": "english"
+        }
+      }
+    },
+    "zope.schema._field.ASCIILine": {
       "type": "keyword"
-  },
-  "zope.schema._field.Choice": {
-      "type": "keyword"
-  },
-  "zope.schema._field.Datetime": {
+    },
+    "zope.schema._field.Choice": {
+      "type": "nested",
+      "dynamic": false,
+      "properties": {
+        "token": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text"
+        }
+      }
+    },
+    "zope.schema._field.Datetime": {
       "type": "date"
-  },
-  "zope.schema._field.Dict": {
+    },
+    "zope.schema._field.Dict": {
       "type": "object"
-  },
-  "zope.schema._field.Float": {
+    },
+    "zope.schema._field.Float": {
       "type": "double"
-  },
-  "zope.schema._field.List": {
+    },
+    "zope.schema._field.List": {
       "type": "keyword"
-  },
-  "zope.schema._field.Tuple": {
+    },
+    "zope.schema._field.Tuple": {
       "type": "keyword"
-  },
-  "zope.schema._field.URI": {
+    },
+    "zope.schema._field.URI": {
       "type": "text"
+    }
   }
-}

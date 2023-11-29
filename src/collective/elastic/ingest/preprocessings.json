@@ -13,12 +13,28 @@
     }
   },
   {
+    "comment": "Schema for above rid, do not remove",
+    "action": "additional_schema",
+    "configuration": {
+      "name": "rid",
+      "field": "zope.schema._field.ASCIILine"
+    }
+  },
+  {
     "comment": "CESP Restapi Volto endpoint needs this information, essential rewrite, do not remove",
     "action": "rewrite",
     "configuration": {
       "source": "@components/collectiveelastic/allowedRolesAndUsers",
       "target": "allowedRolesAndUsers",
       "enforce": true
+    }
+  },
+  {
+    "comment": "Schema for above allowedRolesAndUsers, do not remove",
+    "action": "additional_schema",
+    "configuration": {
+      "name": "allowedRolesAndUsers",
+      "field": "zope.schema._field.List"
     }
   },
   {
@@ -31,17 +47,27 @@
     }
   },
   {
-    "comment": "If volto.blocks is available, this removes a field not used in search.",
-    "action": "remove",
+    "comment": "If Volto is available, this is important for full text search, do not remove unless in Classic UI only environments",
+    "action": "additional_schema",
     "configuration": {
-      "target": "blocks"
+      "name": "blocks_plaintext",
+      "field": "zope.schema._bootstrapfields.Text"
     }
   },
   {
-    "comment": "If volto.blocks is available, this removes a field not used in search.",
-    "action": "remove",
+    "comment": "If volto.blocks is available, remove all its fields.",
+    "action": "full_remove",
     "configuration": {
-      "target": "blocks_layout"
+      "section": "behaviors",
+      "name": "volto.blocks"
+    }
+  },
+  {
+    "comment": "If volto.blocks.editable.layout is available, remove all its fields.",
+    "action": "full_remove",
+    "configuration": {
+      "section": "behaviors",
+      "name": "volto.blocks.editable.layout"
     }
   },
   {
@@ -50,6 +76,14 @@
     "configuration": {
       "source": "@type",
       "target": "portal_type"
+    }
+  },
+  {
+    "comment": "Schema for above portal_type",
+    "action": "additional_schema",
+    "configuration": {
+      "name": "portal_type",
+      "field": "zope.schema._field.ASCIILine"
     }
   },
   {
@@ -153,5 +187,4 @@
       "field": "sectionSiteLayout"
     }
   }
-
 ]
