@@ -5,6 +5,7 @@ Changelog
 --------------------
 
 - Fix: Analysis creation overruled index settings. [jensens]
+- Fix Do not fail in preprocessing fullremove, when source does not exist. [jensens]
 
 2.0.0rc3 (2023-11-28)
 --------------------
