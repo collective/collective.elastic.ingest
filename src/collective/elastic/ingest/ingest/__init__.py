@@ -11,6 +11,7 @@ from .section import enrichWithSection
 from .vocabularyfields import stripVocabularyTermTitles
 from pprint import pformat
 
+import time
 
 STATES = {"pipelines_created": False}
 PIPELINE_PREFIX = "attachment_ingest"
@@ -83,6 +84,7 @@ def ingest(content, full_schema, index_name):
     """
 
     logger.debug(f"Process content: {pformat(content)}")
+    start = time.time()
 
     # special preprocessing logic for section and vocabulary fields
     # TODO: refactor as special preprocessing
@@ -110,3 +112,4 @@ def ingest(content, full_schema, index_name):
     )
     logger.debug(f"index kwargs:\n{pformat(kwargs)}")
     client.index(**kwargs)
+    logger.info(f"Indexing of {kwargs['id']} took {(time.time() - start)*1000:0.3f}ms")
