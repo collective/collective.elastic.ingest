@@ -46,11 +46,9 @@ def action_additional_schema(content, full_schema, config):
     if full_schema is None:
         # case: in subsequent calls there is no need to modify schema b/c of caching
         return
-    if "additional" not in full_schema:
-        full_schema["additional"] = {}
-    if "preprocessed" not in full_schema["additional"]:
-        full_schema["additional"]["preprocessed"] = []
-    full_schema["additional"]["preprocessed"].append(config)
+    additional = full_schema.setdefault("additional", {})
+    preprocessed = additional.setdefault("preprocessed", [])
+    preprocessed.append(config)
 
 
 ACTION_FUNCTIONS["additional_schema"] = action_additional_schema
