@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0.0rc4 (2023-11-xx)
---------------------
+2.0.0rc4 (2023-11-20)
+---------------------
 
 - Fix: Analysis creation overruled index settings. [jensens]
 - Fix Do not fail in preprocessing fullremove, when source does not exist. [jensens]
@@ -13,7 +13,7 @@ Changelog
 - Enhancement: Default preprocessings removes lock and parent fields . [jensens]
 
 2.0.0rc3 (2023-11-28)
---------------------
+---------------------
 
 - Feature: set env ``INDEX_SSL_SHOW_WARN=1`` to pass as ``ssl_show_warn`` kwarg in OpenSearch client [jensens]
 - Feature: set env ``INDEX_SSL_ASSERT_HOSTNAME=1`` to pass as ``ssl_assert_hostname`` kwarg in OpenSearch client [jensens]
@@ -26,18 +26,18 @@ Changelog
 - Feature: set env ``INDEX_VERIFY_CERTS=1`` to pass as ``verify_certs`` kwarg in OpenSearch client [jensens]
 
 2.0.0rc1 (2023-11-27)
---------------------
+---------------------
 
 - Add a note to the README about the steps needed if upgrading from 1.x [jensens]
 - Add a note to the README about exposed port 9200 and a hint to block it if needed. [jensens]
 
 2.0.0b11 (2023-11-22)
---------------------
+---------------------
 
 - Packaging: remove namespace level empty ``__init__.py`` to make interoperable with multiple ``collective.*`` namespaces while in editable mode [jensens]
 
 2.0.0b10 (2023-11-21)
---------------------
+---------------------
 
 - add an extra "sentry" and install by default in Dockerfile [jensens]
 
