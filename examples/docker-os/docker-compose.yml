@@ -41,7 +41,7 @@ services:
       - node.name=opensearch
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx2g"
     ulimits:
       memlock:
         soft: -1
