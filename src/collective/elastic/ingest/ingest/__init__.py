@@ -113,4 +113,6 @@ def ingest(content, full_schema, index_name):
     )
     logger.debug(f"index kwargs:\n{pformat(kwargs)}")
     client.index(**kwargs)
-    logger.info(f"Indexing of {kwargs['id']} took {(time.time() - start) * 1000:0.3f}ms")
+    logger.info(
+        f"Indexing of {kwargs['id']} took {(time.time() - start) * 1000:0.3f}ms"
+    )
