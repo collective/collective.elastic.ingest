@@ -102,7 +102,7 @@ def ingest(content, full_schema, index_name):
     info = {"expansion_fields": EXPANSION_FIELDS}
     postprocess(content, info)
 
-    logger.info(f"Index content: {pformat(content)}")
+    logger.debug(f"Index content: {pformat(content)}")
     client = get_client()
     kwargs = dict(
         index=index_name,
