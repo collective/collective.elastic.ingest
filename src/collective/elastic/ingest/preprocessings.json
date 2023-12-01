@@ -52,6 +52,13 @@
     }
   },
   {
+    "comment": "Remove plone.restapi batching information",
+    "action": "remove",
+    "configuration": {
+      "target": "batching"
+    }
+  },
+  {
     "comment": "If Volto is available, this is important for full text search, do not remove unless in Classic UI only environments",
     "action": "rewrite",
     "configuration": {
