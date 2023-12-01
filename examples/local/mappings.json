@@ -327,6 +327,9 @@
   "zope.schema._field.Tuple": {
       "type": "keyword"
   },
+  "zope.schema._field.Set": {
+      "type": "keyword"
+  },
   "zope.schema._field.URI": {
       "type": "text"
   }
