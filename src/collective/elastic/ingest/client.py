@@ -1,5 +1,5 @@
-from . import OPENSEARCH
 from .logging import logger
+from collective.elastic.ingest import OPENSEARCH
 
 import os
 import threading

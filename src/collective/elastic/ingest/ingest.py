@@ -1,14 +1,12 @@
-from .. import OPENSEARCH
-from ..client import get_client
-from ..logging import logger
-from ..mapping import create_or_update_mapping
-from ..mapping import EXPANSION_FIELDS
-from ..mapping import get_field_map
-from ..mapping import iterate_schema
-from ..postprocessing import postprocess
-from ..preprocessing import preprocess
-from .section import enrichWithSection
-from .vocabularyfields import stripVocabularyTermTitles
+from .client import get_client
+from .logging import logger
+from .mapping import create_or_update_mapping
+from .mapping import EXPANSION_FIELDS
+from .mapping import get_field_map
+from .mapping import iterate_schema
+from .postprocessing import postprocess
+from .preprocessing import preprocess
+from collective.elastic.ingest import OPENSEARCH
 from pprint import pformat
 
 import time
@@ -84,13 +82,8 @@ def ingest(content, full_schema, index_name):
     then postprocess and finally index the content.
     """
 
-    logger.debug(f"Process content: {pformat(content)}")
     start = time.time()
-
-    # special preprocessing logic for section and vocabulary fields
-    # TODO: refactor as special preprocessing
-    enrichWithSection(content)
-    stripVocabularyTermTitles(content)
+    logger.debug(f"Process content: {pformat(content)}")
 
     # generic preprocessing accrording to rule in preprocessings.json
     preprocess(content, full_schema)

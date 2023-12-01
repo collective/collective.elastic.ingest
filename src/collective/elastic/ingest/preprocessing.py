@@ -156,6 +156,51 @@ def action_empty_removal(content, full_schema, key):
 ACTION_FUNCTIONS["remove_empty"] = action_empty_removal
 
 
+def action_strip_vocabulary_term_titles(content, full_schema):
+    """If field with vocabulary: Convert field value to token or list of tokens."""
+    for fieldname, field in content.items():
+        if isinstance(field, dict) and set(field.keys()) == {"title", "token"}:
+            content[fieldname] = field["token"]
+        elif (
+            isinstance(field, list)
+            and len(field) > 0
+            and isinstance(field[0], dict)
+            and set(field.keys()) == {"title", "token"}
+        ):
+            content[fieldname] = [el["token"] for el in field]
+
+
+ACTION_FUNCTIONS["strip_vocabulary_term_titles"] = action_strip_vocabulary_term_titles
+
+
+def action_enrich_with_section(content, fullschema):
+    """Add section to content.
+
+    TODO: make this take the site root into account and remove this step (see below)
+
+    At the moment this is not very generic.
+    It guesses the section based on the path element after the root.
+
+    In fact, this element can be something else, e.g. a language root folder defining a subsite.
+    Same is possible with Lineage based subsites and so on.
+
+    A solution would be to add an expansion in c.e.plone to add the site and section to the content and use this information.
+    Then this step can be deprecated and later on removed and a rewrite + addtional schema would be enough.
+    """
+    base = "/".join(
+        [
+            str(os.environ.get("PLONE_SERVICE")),
+            str(os.environ.get("PLONE_PATH")),
+        ]
+    ).strip("/")
+    content_url = content["@id"]
+    path = content_url.replace(base, "")
+    content["section"] = path.split("/")[1] if len(path.split("/")) > 1 else "__root__"
+
+
+ACTION_FUNCTIONS["enrich_with_section"] = action_enrich_with_section
+
+
 def preprocess(content, full_schema):
     """run full preprocessing pipeline on content and schema"""
     for ppcfg in PREPROCESSOR_CONFIGS:

@@ -1,7 +1,7 @@
-from . import OPENSEARCH
 from .analysis import get_analysis
 from .client import get_client
 from .logging import logger
+from collective.elastic.ingest import OPENSEARCH
 from copy import deepcopy
 
 import json
