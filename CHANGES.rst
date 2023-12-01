@@ -9,7 +9,10 @@ Changelog
 - Fix: Add missing ``zope.schema._field.Set`` to examples mapping. [jensens]
 - Enhancement: Move vocabulary and section handling to preprocessing.
   Turn ``ingest`` package into module. [jensens]
-- Fix: Get OPENSEARCH from c.e.ingest module and do not dup here. [jensens]
+- Fix: Get OPENSEARCH from c.e.ingest module and do n`ot dup here. [jensens]
+- Fix: Remove leftover/defunct blocks_plaintext handling.
+  This was moved already to preprocessing. [jensens]
+
 
 2.0.0rc4 (2023-11-28)
 ---------------------
