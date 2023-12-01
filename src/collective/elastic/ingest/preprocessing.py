@@ -165,7 +165,7 @@ def action_strip_vocabulary_term_titles(content, full_schema, config):
             isinstance(field, list)
             and len(field) > 0
             and isinstance(field[0], dict)
-            and set(field.keys()) == {"title", "token"}
+            and set(field[0].keys()) == {"title", "token"}
         ):
             content[fieldname] = [el["token"] for el in field]
 

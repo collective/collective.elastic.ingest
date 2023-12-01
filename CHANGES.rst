@@ -1,7 +1,13 @@
 Changelog
 =========
 
-2.0.0rc6 (2023-12-01)
+2.0.0rc7 (2023-12-01)
+---------------------
+
+- Fix new bug in vocab transforming action [jensens]
+
+
+2.0.0rc7 (2023-12-01)
 ---------------------
 
 - Fix the wrong OPENSEARCH fix [jensens]
