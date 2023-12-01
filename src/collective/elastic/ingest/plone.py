@@ -86,14 +86,14 @@ def fetch_content(path, timestamp):
 
 def fetch_schema(refetch=False):
     # from celery.contrib import rdb; rdb.set_trace()
-    if refetch or time.time() + MAPPING_TIMEOUT_SEK > STATES["mapping_fetched"]:
-        url = _schema_url()
-        logger.info("fetch full schema from {}".format(url))
-        resp = session.get(url)
-        # xxx: check resp here
-        STATES["mapping_fetched"] = time.time()
-        return resp.json()
-    return
+    if not refetch or STATES["mapping_fetched"] + MAPPING_TIMEOUT_SEK < time.time():
+        return
+    url = _schema_url()
+    logger.info("fetch full schema from {}".format(url))
+    resp = session.get(url)
+    # xxx: check resp here
+    STATES["mapping_fetched"] = time.time()
+    return resp.json()
 
 
 def fetch_binary(url):

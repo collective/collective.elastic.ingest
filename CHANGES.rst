@@ -1,7 +1,14 @@
 Changelog
 =========
 
-2.0.0rc4 (2023-11-20)
+2.0.0rc5 (2023-12-01)
+---------------------
+
+- Fix: Plone schema caching logic was broken. [jensens]
+- Fix: Remove unnecessary ``batching`` on preprocessing. [jensens]
+- Fix: Add missigit sng ``zope.schema._field.Set`` to examples mapping. [jensens]
+
+2.0.0rc4 (2023-11-28)
 ---------------------
 
 - Fix: Analysis creation overruled index settings. [jensens]
