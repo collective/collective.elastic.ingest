@@ -156,7 +156,7 @@ def action_empty_removal(content, full_schema, key):
 ACTION_FUNCTIONS["remove_empty"] = action_empty_removal
 
 
-def action_strip_vocabulary_term_titles(content, full_schema):
+def action_strip_vocabulary_term_titles(content, full_schema, config):
     """If field with vocabulary: Convert field value to token or list of tokens."""
     for fieldname, field in content.items():
         if isinstance(field, dict) and set(field.keys()) == {"title", "token"}:
@@ -173,7 +173,7 @@ def action_strip_vocabulary_term_titles(content, full_schema):
 ACTION_FUNCTIONS["strip_vocabulary_term_titles"] = action_strip_vocabulary_term_titles
 
 
-def action_enrich_with_section(content, fullschema):
+def action_enrich_with_section(content, fullschema, config):
     """Add section to content.
 
     TODO: make this take the site root into account and remove this step (see below)

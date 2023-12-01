@@ -75,7 +75,7 @@ def setup_ingest_pipelines(full_schema, index_name):
         client.ingest.delete_pipeline(pipeline_name)
 
 
-def ingest(content, full_schema, index_name):
+def process_ingest(content, full_schema, index_name):
     """Process content and schema.
 
     This brings it together: Preprocess, create a mapping (and index/pipelines if not exists yet),

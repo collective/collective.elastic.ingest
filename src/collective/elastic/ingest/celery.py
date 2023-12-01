@@ -1,4 +1,4 @@
-from .ingest import ingest
+from .ingestion import process_ingest
 from .logging import logger
 from .plone import fetch_content
 from .plone import fetch_schema
@@ -52,7 +52,7 @@ def index(path, timestamp, index_name):
         logger.exception(msg)
         return msg
     try:
-        ingest(content, schema, index_name)
+        process_ingest(content, schema, index_name)
     except Exception:
         # xxx: retry handling!
         msg = "Error while writing data to ElasticSearch"
