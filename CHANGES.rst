@@ -4,6 +4,8 @@ Changelog
 2.0.0rc7 (2023-12-01)
 ---------------------
 
+- Fix bug in field cache on full_remove [jensens]
+- Fix bug in full schema cache on full_remove [jensens]
 - Fix new bug in vocab transforming action [jensens]
 
 

@@ -127,12 +127,10 @@ def action_full_remove(content, full_schema, config):
     if full_schema:
         section = full_schema[config["section"]]
         # we need to cache the fields, because in subsequent calls there is no schema provided
-        fields = section.get(config["name"])
-        if not fields:
-            return
-        del section[config["name"]]
-        if "__fields" not in "config":
-            config["__fields"] = fields
+        fields = section.get(config["name"], [])
+        if fields:
+            del section[config["name"]]
+        config["__fields"] = fields
     else:
         fields = config["__fields"]
     for field in fields:

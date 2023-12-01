@@ -84,9 +84,8 @@ def fetch_content(path, timestamp):
     logger.error("-> can not fetch content {}".format(url))
 
 
-def fetch_schema(refetch=False):
-    # from celery.contrib import rdb; rdb.set_trace()
-    if not refetch or STATES["mapping_fetched"] + MAPPING_TIMEOUT_SEK < time.time():
+def fetch_schema():
+    if time.time() <= STATES["mapping_fetched"] + MAPPING_TIMEOUT_SEK:
         return
     url = _schema_url()
     logger.info("fetch full schema from {}".format(url))
