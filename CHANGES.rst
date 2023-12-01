@@ -14,7 +14,7 @@ Changelog
   This was moved already to preprocessing. [jensens]
 
 
-2.0.0rc4 (2023-11-28)
+2.0.0rc4 (2023-11-30)
 ---------------------
 
 - Fix: Analysis creation overruled index settings. [jensens]
