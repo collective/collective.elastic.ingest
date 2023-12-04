@@ -22,7 +22,7 @@ MAPPING_TIMEOUT_SEK = 60  # seconds
 
 
 def _full_url(path):
-    return "/".join([str(os.environ.get("PLONE_SERVICE")), path.strip("/")])
+    return "/".join([str(os.environ.get("PLONE_SERVICE")).strip("/"), path.strip("/")])
 
 
 def _schema_url():

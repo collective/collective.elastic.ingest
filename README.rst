@@ -314,6 +314,7 @@ CELERY_LOGLEVEL
 The `MAPPINGS_FILE` variable defaults to `/configuration/mappings.json`.
 By default no file is present.
 When a mount is provided to `/configuration`, the mappings file can be placed there.
+Alternatively, the mappings file can be provided as a `configs element in docker compose <https://docs.docker.com/compose/compose-file/08-configs/>`_ or as a `configmap <>`_ in Kubernetes.
 
 Examples
 ========

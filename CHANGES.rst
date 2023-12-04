@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0.0rc9 (2023-12-04)
+---------------------
+
+- Enhancement: OCI image documentation. [jensens]
+- Enhancement: Strip trailing slash from ``PLONE_SERVICE`` URL. [jensens]
+
+
 2.0.0rc8 (2023-12-01)
 ---------------------
 
