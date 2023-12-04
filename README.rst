@@ -115,6 +115,8 @@ PLONE_SITE_PREFIX_METHOD
     If the ``PLONE_SERVICE`` runs under ``https://www.mydomain.tld`` and the ``PLONE_SITE_PREFIX_PATH`` is ``Plone``,
     the index/schema base path is ``https://www.mydomain.tld``.
 
+    Default: ``keep``
+
 PLONE_USER
     Username for the Plone Server, needs to have at least Site Administrator role.
 
