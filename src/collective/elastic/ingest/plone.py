@@ -22,17 +22,38 @@ MAPPING_TIMEOUT_SEK = 60  # seconds
 
 
 def _full_url(path):
-    return "/".join([str(os.environ.get("PLONE_SERVICE")).strip("/"), path.strip("/")])
+    """return the full url to fetch the content from
+
+    the path is the getPhysicalPath of the content object
+    It is prefixed with the path to the plone site, like "Plone/en/about-us".
+
+    Now we have three ways to configure the plone site prefix:
+    1. keep - Directly with site prefix (default)
+    2. strip - behind Virtual Host Monster with stripped site prefix
+    """
+    path = path.strip("/")
+    plone_base_url = str(os.environ.get("PLONE_SERVICE")).strip("/")
+    prefix_handling = str(os.environ.get("PLONE_SITE_PREFIX_METHOD", "keep")).strip()
+    if prefix_handling == "keep":
+        return "/".join([plone_base_url, path])
+
+    if prefix_handling == "strip":
+        prefix_path = str(os.environ.get("PLONE_SITE_PREFIX_PATH")).strip("/")
+        path_parts = path.split("/")[len(prefix_path.split("/")) :]
+        return "/".join([plone_base_url] + path_parts)
+
+    raise ValueError(
+        f"PLONE_SITE_PREFIX_METHOD must be one of keep, strip or add, not {prefix_handling}"
+    )
 
 
 def _schema_url():
-    return "/".join(
-        [
-            str(os.environ.get("PLONE_SERVICE")),
-            str(os.environ.get("PLONE_PATH")),
-            "@cesp-schema",
-        ]
-    )
+    """return the url to fetch the schema from"""
+    url = [str(os.environ.get("PLONE_SERVICE"))]
+    if str(os.environ.get("PLONE_SITE_PREFIX_METHOD", "keep")).strip() == "keep":
+        url.append(str(os.environ.get("PLONE_SITE_PREFIX_PATH")))
+    url.append("@cesp-schema")
+    return "/".join(url)
 
 
 def fetch_content(path, timestamp):
@@ -48,7 +69,7 @@ def fetch_content(path, timestamp):
             )
         )
         resp = session.get(url)
-        # xxx: move status retry to HTTPAdapter/ulrib3 retry
+        # xxx: move status retry to HTTPAdapter/urllib3 retry
         if resp.status_code != 200:
             if retries_status > RETRIES_STATUS_MAX:
                 logger.info(

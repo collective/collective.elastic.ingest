@@ -91,18 +91,29 @@ CELERY_BROKER
     The broker URL for Celery.
     See `docs.celeryq.dev <https://docs.celeryq.dev/>`_ for details.
 
-    Default: `redis://localhost:6379/0`
-
+    Default: ``redis://localhost:6379/0``
 
 PLONE_SERVICE
     Base URL of the Plone Server
 
-    Default: http://localhost:8080
+    Default: ``http://localhost:8080``
 
-PLONE_PATH
-    Path to the site to index at the Plone Server
+PLONE_SITE_PREFIX_PATH
+    Path to the site to index at the Plone Server.
 
-    Default: `Plone`
+    Default: ``Plone``
+
+PLONE_SITE_PREFIX_METHOD
+    Wether to keep the prefix path while requesting the content from the Plone Server or not.
+    Allowed values: ``strip``, ``keep``
+
+    On ``keep``, the prefix path is kept in the index/schema path.
+    If the ``PLONE_SERVICE`` runs under ``http://localhost:8080`` and the ``PLONE_SITE_PREFIX_PATH`` is ``Plone``,
+    the index/schema base path where the ingest service fetches its data and schema from is ``http://localhost:8080/Plone``.
+
+    On ``strip``, the prefix path is stripped from the index/schema path.
+    If the ``PLONE_SERVICE`` runs under ``https://www.mydomain.tld`` and the ``PLONE_SITE_PREFIX_PATH`` is ``Plone``,
+    the index/schema base path is ``https://www.mydomain.tld``.
 
 PLONE_USER
     Username for the Plone Server, needs to have at least Site Administrator role.
@@ -148,6 +159,9 @@ Coming from version 1.x of this package, in 2.x you need to change some names of
 
 - ``ELASTICSEARCH_INGEST_*`` to ``INDEX_*``
 - ``OPENSEARCH*`` to ``INDEX_OPENSEARCH``
+- ``PLONE_PATH`` to ``PLONE_SITE_PREFIX_PATH``.
+  Additional a new option ``PLONE_SITE_PREFIX_METHOD=strip`` to strip the path prefix from the index/schema path is available.
+  See above for details.
 - If you use Sentry, additional ``SENTRY_INGEST=true`` is needed.
 
 ----------
@@ -311,10 +325,12 @@ CELERY_LOGLEVEL
 
     Default: info
 
-The `MAPPINGS_FILE` variable defaults to `/configuration/mappings.json`.
+The ``MAPPINGS_FILE`` variable defaults to ``/configuration/mappings.json``.
 By default no file is present.
-When a mount is provided to `/configuration`, the mappings file can be placed there.
-Alternatively, the mappings file can be provided as a `configs element in docker compose <https://docs.docker.com/compose/compose-file/08-configs/>`_ or as a `configmap <>`_ in Kubernetes.
+
+When a mount is provided to ``/configuration``, the mappings file can be placed there.
+Alternatively, the mappings file can be provided as a `configs element in docker compose <https://docs.docker.com/compose/compose-file/08-configs/>`_ or as a `configmap <https://kubernetes.io/docs/concepts/configuration/configmap/>`_ in Kubernetes.
+
 
 Examples
 ========
@@ -332,7 +348,7 @@ A docker-compose file ``docker-compose.yml`` and a ``Dockerfile`` to start an In
 Precondition:
 
 - Docker and docker-compose are installed.
-- Max virtual memory map needs increase to run this: `sudo sysctl -w vm.max_map_count=262144` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
+- Max virtual memory map needs increase to run this: ``sudo sysctl -w vm.max_map_count=262144`` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
 - enter the directory ``cd examples/docker``
 
 Steps to start the example OpenSearch Server with the ``ingest-attachment`` plugin installed:
@@ -372,7 +388,7 @@ A docker-compose file ``docker-compose.yml`` to start an Ingest, Redis and an El
 Precondition:
 
 - Docker and docker-compose are installed.
-- Max virtual memory map needs increase to run this: `sudo sysctl -w vm.max_map_count=262144` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
+- Max virtual memory map needs increase to run this: ``sudo sysctl -w vSITE_PREFIXm.max_map_count=262144`` (not permanent, `see StackOverflow post <https://stackoverflow.com/questions/66444027/max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-lea>`_).
 - enter the directory ``cd examples/docker-es``
 
 Run the cluster with::
@@ -385,7 +401,7 @@ First you need to set the passwords for the ElasticSearch, execute the following
     docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto
 
 Find the password for the user ``elastic`` and set it in the environment variable ``INDEX_PASSWORD`` in the ``.env`` file.
-Stop the cluster (Ctrl-C), `source .env` with the new settings and start it again (as above).
+Stop the cluster (Ctrl-C), ``source .env`` with the new settings and start it again (as above).
 
 Now you have an ElasticSearch server running on ``http://localhost:9200`` and an Dejavu Dashboard running on ``http://localhost:1358``.
 (The ElasticSearch server has the ``ingest-attachment`` plugin installed by default).
@@ -396,7 +412,7 @@ Additional the ingest worker runs and is ready to index content from a Plone bac
 
 Open another terminal.
 
-In another terminal window `run a Plone backend <https://6.docs.plone.org/install/index.html>`_ at ``http://localhost:8080/Plone`` with the add-on `collective.elastic.plone` installed.
+In another terminal window `run a Plone backend <https://6.docs.plone.org/install/index.html>`_ at ``http://localhost:8080/Plone`` with the add-on `collective.elastic.plone <https://github.com/collective/collective.elastic.plone>`_ installed.
 There, create an item or modify an existing one.
 You should see the indexing task in the celery worker terminal window.
 
@@ -410,8 +426,8 @@ Local/ Development
 Location: ``examples/docker/local/*``
 
 A very basic mappings file ``examples/docker/local/mappings.json`` is provided.
-To use it set `MAPPINGS_FILE=examples/mappings-basic.json` and then start the celery worker.
-An environemnt file ``examples/docker/local/.env`` is provided with the environment variables ready to use for local startup.
+To use it set ``MAPPINGS_FILE=examples/mappings-basic.json`` and then start the celery worker.
+An environment file ``examples/docker/local/.env`` is provided with the environment variables ready to use for local startup.
 
 Run ``source examples/.env`` to load the environment variables.
 Then start the celery worker with ``celery -A collective.elastic.ingest.celery.app worker -l debug``.
