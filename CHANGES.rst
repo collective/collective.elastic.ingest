@@ -8,6 +8,7 @@ Changelog
 - Enhancement: Strip trailing slash from ``PLONE_SERVICE`` URL. [jensens]
 - Enhancement: Add ``PLONE_SITE_PREFIX_METHOD`` env var:
   ``keep`` lets the prefix untouched, ``strip`` removes it. [jensens]
+- Breaking: Rename ``PLONE_PATH`` to ``PLONE_SITE_PREFIX_METHOD``. [jensens]
 
 
 2.0.0rc8 (2023-12-01)
