@@ -8,7 +8,7 @@ maintainers = [
     {name = "Jens Klein", email = "jk@kleinundpartner.at"},
 ]
 authors = [
-    {name = "Jens Klein"},
+    {name = "Jens Klein", email = "jk@kleinundpartner.at"},
     {name = "Katja Süss"},
     {name = "Peter Holzer"},
 ]
