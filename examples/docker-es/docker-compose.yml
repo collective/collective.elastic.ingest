@@ -38,7 +38,6 @@ services:
 
   elasticsearch:
     image: elasticsearch:8.11.1
-    container_name: elasticsearch
     environment:
       - discovery.type=single-node
       - http.port=9200
@@ -65,7 +64,6 @@ services:
 
   dejavu:
     image: appbaseio/dejavu:latest
-    container_name: dejavu
     ports:
       - "1358:1358"
     networks:

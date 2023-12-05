@@ -396,11 +396,11 @@ Precondition:
 Run the cluster with::
 
     source .env
-    docker-compose up
+    docker compose up
 
-First you need to set the passwords for the ElasticSearch, execute the following command and note the passwords printed on the console::
+First you need to set the passwords for the ElasticSearch, execute the following command and note the passwords printed in a new terminal::
 
-    docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto
+    docker exec -it docker-es-elasticsearch-1 /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto
 
 Find the password for the user ``elastic`` and set it in the environment variable ``INDEX_PASSWORD`` in the ``.env`` file.
 Stop the cluster (Ctrl-C), ``source .env`` with the new settings and start it again (as above).

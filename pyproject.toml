@@ -1,12 +1,14 @@
 [project]
 name = "collective.elastic.ingest"
-version = "2.0.0rc9"
+version = "2.0.0"
 description = "Ingestion service queue runner between Plone RestAPI and ElasticSearch or OpenSearch."
 keywords = ["elasticsearch", "opensearch", "plone", "celery", "search", "indexer"]
 readme = "README.rst"
-
-authors = [
+maintainers = [
     {name = "Jens Klein", email = "jk@kleinundpartner.at"},
+]
+authors = [
+    {name = "Jens Klein"},
     {name = "Katja Süss"},
     {name = "Peter Holzer"},
 ]
