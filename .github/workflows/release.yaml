@@ -53,8 +53,6 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/collective/collective.elastic.ingest
-          flavor: |
-            latest=true
           tags: |
             type=ref,event=branch
             type=ref,event=pr
