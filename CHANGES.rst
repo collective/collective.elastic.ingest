@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - Fix: Do not fail on `field_remove` or `full_remove` if section or name does not exist. [jensens]
+- Fix: Fail and exit worker if there is `mappings.json` is missing or has a syntax error. [jensens]
 
 2.0.0 (2023-12-05)
 ------------------

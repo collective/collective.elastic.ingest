@@ -6,6 +6,7 @@ from .removal import remove
 from celery import Celery
 
 import os
+import sys
 
 
 # sentry integration
@@ -38,6 +39,9 @@ app = Celery("collective.elastic.ingest", broker=os.environ.get("CELERY_BROKER")
 def index(path, timestamp, index_name):
     try:
         content = fetch_content(path, timestamp)
+    except RuntimeError:
+        logger.error("Fatal error, stop worker")
+        sys.exit(1)
     except Exception:
         msg = "Error while fetching content from Plone"
         # xxx: retry handling!
@@ -47,12 +51,18 @@ def index(path, timestamp, index_name):
         return
     try:
         schema = fetch_schema()
+    except RuntimeError:
+        logger.error("Fatal error, stop worker")
+        sys.exit(1)
     except Exception:
         msg = "Error while fetching schema from Plone"
         logger.exception(msg)
         return msg
     try:
         process_ingest(content, schema, index_name)
+    except RuntimeError:
+        logger.error("Fatal error, stop worker")
+        sys.exit(1)
     except Exception:
         # xxx: retry handling!
         msg = "Error while writing data to ElasticSearch"
@@ -65,6 +75,9 @@ def index(path, timestamp, index_name):
 def unindex(uid, index_name):
     try:
         remove(uid, index_name)
+    except RuntimeError:
+        logger.error("Fatal error, stop worker")
+        sys.exit(1)
     except Exception:
         # xxx: retry handling!
         msg = "Error while removing data from ElasticSearch"

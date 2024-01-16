@@ -42,9 +42,14 @@ def get_field_map() -> dict:
     if STATE["fieldmap"] == {}:
         _mappings_file = os.environ.get("MAPPINGS_FILE", None)
         if not _mappings_file:
-            raise ValueError("No mappings file configured.")
+            raise RuntimeError("No mappings file configured.")
         with open(_mappings_file) as fp:
-            STATE["fieldmap"] = json.load(fp)
+            try:
+                STATE["fieldmap"] = json.load(fp)
+            except json.decoder.JSONDecodeError as e:
+                raise RuntimeError(
+                    f"Error while loading mappings file {_mappings_file}: {e}"
+                )
     assert isinstance(STATE["fieldmap"], dict)
     return STATE["fieldmap"]
 
