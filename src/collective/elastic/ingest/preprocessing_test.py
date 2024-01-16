@@ -64,8 +64,14 @@ def test_action_field_remove():
     full_schema = {
         "behaviors": {
             "plone.basic": [
-                {"field": "zope.schema._bootstrapfields.TextLine", "name": "title"},
-                {"field": "zope.schema._bootstrapfields.Text", "name": "description"},
+                {
+                    "field": "zope.schema._bootstrapfields.TextLine",
+                    "name": "title",
+                },
+                {
+                    "field": "zope.schema._bootstrapfields.Text",
+                    "name": "description",
+                },
             ]
         }
     }
@@ -98,16 +104,27 @@ def test_action_full_remove():
     full_schema = {
         "behaviors": {
             "plone.basic": [
-                {"field": "zope.schema._bootstrapfields.TextLine", "name": "title"},
-                {"field": "zope.schema._bootstrapfields.Text", "name": "description"},
+                {
+                    "field": "zope.schema._bootstrapfields.TextLine",
+                    "name": "title",
+                },
+                {
+                    "field": "zope.schema._bootstrapfields.Text",
+                    "name": "description",
+                },
             ],
             "plone.categorization": [
                 {
                     "field": "zope.schema._field.Tuple",
                     "name": "subjects",
-                    "value_type": {"field": "zope.schema._bootstrapfields.TextLine"},
+                    "value_type": {
+                        "field": "zope.schema._bootstrapfields.TextLine",
+                    },
                 },
-                {"field": "zope.schema._field.Choice", "name": "language"},
+                {
+                    "field": "zope.schema._field.Choice",
+                    "name": "language",
+                },
             ],
         }
     }
