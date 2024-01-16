@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.0.1 (2024-01-16)
+------------------
+
+- Fix: Do not fail on `field_remove` or `full_remove` if section or name does not exist. [jensens]
+
 2.0.0 (2023-12-05)
 ------------------
 

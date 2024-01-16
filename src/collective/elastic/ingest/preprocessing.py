@@ -108,13 +108,27 @@ ACTION_FUNCTIONS["remove"] = action_remove
 
 def action_field_remove(content, full_schema, config):
     """remove full field from content and schema."""
+    # remove from content if exists
     if config["field"] in content:
         del content[config["field"]]
     if not full_schema:
         # cached schema, not passed, no need to process
         return
-    section = full_schema[config["section"]]
-    fields = section[config["name"]]
+    # remove from schema
+    section = full_schema.get(config["section"], None)
+    if not section:
+        logger.warning(
+            f"Section {config['section']} not in schema. "
+            f"Cannot remove field {config['field']}."
+        )
+        return
+    fields = section.get(config["name"], None)
+    if fields is None:
+        logger.warning(
+            f"No fields in section {config['section']}. "
+            f"Cannot remove field {config['field']}."
+        )
+        return
     index = [f["name"] for f in fields].index(config["field"])
     del fields[index]
 
@@ -124,16 +138,26 @@ ACTION_FUNCTIONS["field_remove"] = action_field_remove
 
 def action_full_remove(content, full_schema, config):
     """remove full behavior or types fields."""
+    # remove from schema
     if full_schema:
-        section = full_schema[config["section"]]
-        # we need to cache the fields, because in subsequent calls there is no schema provided
+        section = full_schema.get(config["section"], {})
+        if not section:
+            logger.warning(
+                f"Section {config['section']} not in schema. Cannot remove fields under name {config['name']}."
+            )
         fields = section.get(config["name"], [])
         if fields:
             del section[config["name"]]
+        elif section:
+            logger.warning(
+                f"No fields in section {config['section']} with name {config['name']}. Cannot remove its fields."
+            )
+
+        # we need to cache the fields, because in subsequent calls there is
+        # no schema provided
         config["__fields"] = fields
-    else:
-        fields = config["__fields"]
-    for field in fields:
+    # remove from content
+    for field in config["__fields"]:
         if field["name"] in content:
             del content[field["name"]]
 
