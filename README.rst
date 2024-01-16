@@ -254,7 +254,8 @@ These actions ar available:
 
 ``additional_schema``
     Adds an additional schema to the full schema.
-    The configuration must a valid schema to add.
+    The configuration must a valid schema, i.e. with name and field, to add.
+    In the resulting mapping the schema is added to a (new) section ``additional`` under the subsection ``preprocessed``.
 
 ``rewrite``
     Moves content data from one position in the field-tree to another.
