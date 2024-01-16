@@ -85,7 +85,7 @@ def process_ingest(content, full_schema, index_name):
     start = time.time()
     logger.debug(f"Process content: {pformat(content)}")
 
-    # generic preprocessing accrording to rule in preprocessings.json
+    # generic preprocessing according to rule in preprocessings.json
     preprocess(content, full_schema)
 
     if full_schema:
