@@ -4,7 +4,7 @@ Changelog
 2.0.2 (2024-xx-xx)
 ------------------
 
-- nothing yet
+- Fix preprocessing of blocks text. [ksuess]
 
 2.0.1 (2024-01-16)
 ------------------
