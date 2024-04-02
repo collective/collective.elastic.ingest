@@ -211,5 +211,13 @@
       "name": "plone.layoutaware",
       "field": "sectionSiteLayout"
     }
+  },
+  {
+      "comment": "Fix field type of review_state to keyword",
+      "action": "additional_schema",
+      "configuration": {
+      "name": "review_state",
+      "field": "zope.schema._field.ASCIILine"
+      }
   }
 ]
