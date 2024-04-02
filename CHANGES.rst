@@ -4,7 +4,10 @@ Changelog
 2.0.2 (2024-xx-xx)
 ------------------
 
-- nothing yet
+- "behaviors/plone.categorization/subjects" both searchable and also usable as facet. [ksuess]
+- Add celery task "deleteindex". [ksuess]
+- Fix field type of review_state to keyword: review_state can be used as facet. [ksuess]
+
 
 2.0.1 (2024-01-16)
 ------------------
