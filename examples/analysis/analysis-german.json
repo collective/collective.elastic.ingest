@@ -7,11 +7,11 @@
           "filter": [
             "lowercase",
             "custom_dictionary_decompounder",
-            "light_german_stemmer",
-            "unique"
+            "no_stem",
+            "light_german_stemmer"
           ]
         },
-        "german_exact": {
+        "german_exact_analyzer": {
           "tokenizer": "standard",
           "filter": [
             "lowercase"
@@ -21,7 +21,11 @@
       "filter": {
         "custom_dictionary_decompounder": {
             "type": "dictionary_decompounder",
-            "word_list_path": "elasticsearch-lexicon.txt"
+            "word_list_path": "elasticsearch-lexicon-german.txt"
+        },
+        "no_stem": {
+          "type": "keyword_marker",
+          "keywords_path": "elasticsearch-keywords-german.txt"
         },
         "light_german_stemmer": {
           "type": "stemmer",
