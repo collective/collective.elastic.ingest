@@ -1,3 +1,4 @@
+from .deleteindex import delete_index
 from .ingestion import process_ingest
 from .logging import logger
 from .plone import fetch_content
@@ -84,3 +85,17 @@ def unindex(uid, index_name):
         logger.exception(msg)
         return msg
     return "unindexed {}".format(uid)
+
+
+@app.task(name="collective.elastic.ingest.deleteindex")
+def deleteindex(index_name):
+    try:
+        delete_index(index_name)
+    except RuntimeError:
+        logger.error("Fatal error, stop worker")
+        sys.exit(1)
+    except Exception:
+        msg = "Error while deleting index '{}'".format(index_name)
+        logger.exception(msg)
+        return msg
+    return "Index deleted: {}".format(index_name)

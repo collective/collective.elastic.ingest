@@ -264,7 +264,7 @@ These actions ar available:
     The value of ``target`` is the path to the new location of the data (missing containers are created).
     The value of ``enforce`` is a boolean value (default: False). If True, the source must exist, otherwise an error is raised.
 
-    Example: ``"configuration": {"source": "@components/collectiveelastic/blocks_plaintext",  "target": "blocks_plaintext", "enforce": false}``
+    Example: ``"configuration": {"source": "@components/blocks_plaintext",  "target": "blocks_plaintext", "enforce": false}``
 
 ``remove``
     Deletes a field or sub-field from the content data.
