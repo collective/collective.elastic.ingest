@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.2 (2024-xx-xx)
+2.1.0 (2024-04-19)
 ------------------
 
 - "behaviors/plone.categorization/subjects" both searchable and also usable as facet. [ksuess]
