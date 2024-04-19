@@ -1,6 +1,6 @@
 [project]
 name = "collective.elastic.ingest"
-version = "2.0.2dev0"
+version = "2.1.0"
 description = "Ingestion service queue runner between Plone RestAPI and ElasticSearch or OpenSearch."
 keywords = ["elasticsearch", "opensearch", "plone", "celery", "search", "indexer"]
 readme = "README.rst"
@@ -17,9 +17,6 @@ license = { text = "GPL 2.0" }
 classifiers = [
     "Environment :: Web Environment",
     "Framework :: Plone",
-    "Framework :: Plone :: Addon",
-    "Framework :: Plone :: 5.2",
-    "Framework :: Plone :: 6.0",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
