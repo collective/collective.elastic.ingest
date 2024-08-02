@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.1 (2024-xx-xx)
+2.1.1 (2024-08-02)
 ------------------
 
 - Fix typo CELERY_LOGLEVEL according spelling in /container [ksuess]
