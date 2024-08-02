@@ -1,6 +1,6 @@
 [project]
 name = "collective.elastic.ingest"
-version = "2.1.1dev0"
+version = "2.1.1"
 description = "Ingestion service queue runner between Plone RestAPI and ElasticSearch or OpenSearch."
 keywords = ["elasticsearch", "opensearch", "plone", "celery", "search", "indexer"]
 readme = "README.rst"
