@@ -38,12 +38,12 @@ def _full_url(path):
         return "/".join([plone_base_url, path])
 
     if prefix_handling == "strip":
-        prefix_path = str(os.environ.get("PLONE_SITE_PREFIX_PATH")).strip("/")
+        prefix_path = str(os.environ.get("PLONE_SITE_PREFIX_PATH", "Plone")).strip("/")
         path_parts = path.split("/")[len(prefix_path.split("/")) :]
         return "/".join([plone_base_url] + path_parts)
 
     raise ValueError(
-        f"PLONE_SITE_PREFIX_METHOD must be one of keep, strip or add, not {prefix_handling}"
+        f"PLONE_SITE_PREFIX_METHOD must be either 'keep' or 'strip', got '{prefix_handling}'"
     )
 
 
@@ -51,7 +51,7 @@ def _schema_url():
     """return the url to fetch the schema from"""
     url = [str(os.environ.get("PLONE_SERVICE"))]
     if str(os.environ.get("PLONE_SITE_PREFIX_METHOD", "keep")).strip() == "keep":
-        url.append(str(os.environ.get("PLONE_SITE_PREFIX_PATH")))
+        url.append(str(os.environ.get("PLONE_SITE_PREFIX_PATH", "Plone")))
     url.append("@cesp-schema")
     return "/".join(url)
 

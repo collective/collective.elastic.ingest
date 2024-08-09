@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.1.2 (2024-08-09)
+------------------
+
+- Fix missing default in PLONE_SITE_PREFIX_PATH [jensens]
+
 2.1.1 (2024-08-02)
 ------------------
 
